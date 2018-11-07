@@ -24,7 +24,7 @@ BinTemp/
 x64/
 x86/
 bld/
-[Bb]in/
+[Bb]in/*.exe
 [Oo]bj/
 [Ll]og/
 
