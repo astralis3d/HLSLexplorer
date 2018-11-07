@@ -1,0 +1,1094 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
+  <object class="wxPanel" name="PanelControls">
+    <style>wxTAB_TRAVERSAL</style>
+    <object class="wxBoxSizer">
+      <orient>wxHORIZONTAL</orient>
+      <object class="sizeritem">
+        <option>0</option>
+        <flag>wxEXPAND</flag>
+        <border>5</border>
+        <object class="wxStaticBoxSizer">
+          <orient>wxVERTICAL</orient>
+          <label>Shader Target</label>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxEXPAND</flag>
+            <border>5</border>
+            <object class="wxBoxSizer">
+              <orient>wxHORIZONTAL</orient>
+              <object class="sizeritem">
+                <option>1</option>
+                <flag>wxALL</flag>
+                <border>5</border>
+                <object class="wxRadioBox" name="radioboxShaderType">
+                  <style>wxRA_SPECIFY_COLS</style>
+                  <label>Type</label>
+                  <selection>0</selection>
+                  <content>
+                    <item>VS</item>
+                    <item>GS</item>
+                    <item>PS</item>
+                    <item>HS</item>
+                    <item>DS</item>
+                    <item>CS</item>
+                  </content>
+                  <dimension>1</dimension>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <option>1</option>
+                <flag>wxALL|wxEXPAND</flag>
+                <border>5</border>
+                <object class="wxRadioBox" name="radioboxShaderProfile">
+                  <style>wxRA_SPECIFY_COLS</style>
+                  <label>Profile</label>
+                  <selection>0</selection>
+                  <content>
+                    <item>4_0</item>
+                    <item>5_0</item>
+                    <item>5_1</item>
+                    <item>6_0</item>
+                    <item>6_1</item>
+                    <item>6_2</item>
+                  </content>
+                  <dimension>1</dimension>
+                </object>
+              </object>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <option>1</option>
+            <flag>wxEXPAND</flag>
+            <border>5</border>
+            <object class="wxBoxSizer">
+              <orient>wxVERTICAL</orient>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxEXPAND</flag>
+            <border>5</border>
+            <object class="wxBoxSizer">
+              <orient>wxHORIZONTAL</orient>
+              <object class="sizeritem">
+                <option>0</option>
+                <flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+                <border>5</border>
+                <object class="wxStaticText" name="m_staticText1">
+                  <label>Entrypoint</label>
+                  <wrap>-1</wrap>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <option>0</option>
+                <flag>wxALL</flag>
+                <border>5</border>
+                <object class="wxTextCtrl" name="textEntrypoint">
+                  <value></value>
+                  <maxlength>0</maxlength>
+                </object>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <option>1</option>
+        <flag>wxEXPAND</flag>
+        <border>5</border>
+        <object class="wxBoxSizer">
+          <orient>wxVERTICAL</orient>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxEXPAND|wxALL</flag>
+            <border>5</border>
+            <object class="wxNotebook" name="m_notebook1">
+              <object class="notebookpage">
+                <label>Compile Flags</label>
+                <selected>1</selected>
+                <object class="wxPanel" name="m_panel1">
+                  <style>wxTAB_TRAVERSAL</style>
+                  <object class="wxGridSizer">
+                    <rows>0</rows>
+                    <cols>2</cols>
+                    <vgap>0</vgap>
+                    <hgap>0</hgap>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxCheckBox" name="optionCompileDebug">
+                        <label>D3DCOMPILE__DEBUG</label>
+                        <checked>0</checked>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxCheckBox" name="optionCompileSkipValidation">
+                        <label>D3DCOMPILE__SKIP__VALIDATION</label>
+                        <checked>0</checked>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxCheckBox" name="optionCompileSkipOptimization">
+                        <label>D3DCOMPILE__SKIP__OPTIMIZATION</label>
+                        <checked>0</checked>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxCheckBox" name="optionCompilePartialPrecision">
+                        <label>D3DCOMPILE__PARTIAL__PRECISION</label>
+                        <checked>0</checked>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxCheckBox" name="optionCompileForceVSSoftwareNoOpt">
+                        <label>D3DCOMPILE__FORCE__VS__SOFTWARE__NO__OPT</label>
+                        <checked>0</checked>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxCheckBox" name="optionCompileForcePSSoftNoOpt">
+                        <label>D3DCOMPILE__FORCE__PS__SOFTWARE__NO__OPT</label>
+                        <checked>0</checked>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxCheckBox" name="optionCompileNoPreshader">
+                        <label>D3DCOMPILE__NO__PRESHADER</label>
+                        <checked>0</checked>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxCheckBox" name="optionCompileEnableStrictness">
+                        <label>D3DCOMPILE__ENABLE__STRICTNESS</label>
+                        <checked>0</checked>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxCheckBox" name="optionCompileEnableBackwards">
+                        <label>D3DCOMPILE__ENABLE__BACKWARDS__COMPATIBILITY</label>
+                        <checked>0</checked>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxCheckBox" name="optionCompileIEEEStrictness">
+                        <label>D3DCOMPILE__IEEE__STRICTNESS</label>
+                        <checked>0</checked>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxCheckBox" name="optionCompileWarningsAreErrors">
+                        <label>D3DCOMPILE__WARNINGS__ARE__ERRORS</label>
+                        <checked>0</checked>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxCheckBox" name="optionCompileResourcesMayAlias">
+                        <label>D3DCOMPILE__RESOURCES__MAY__ALIAS</label>
+                        <checked>0</checked>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxCheckBox" name="optionCompileEnableUnboundedDescriptorTables">
+                        <label>D3DCOMPILE__ENABLE__UNBOUNDED__DESCRIPTOR__TABLES</label>
+                        <checked>0</checked>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxCheckBox" name="optionCompileAllResourcesBound">
+                        <label>D3DCOMPILE__ALL__RESOURCES__BOUND</label>
+                        <checked>0</checked>
+                      </object>
+                    </object>
+                  </object>
+                </object>
+              </object>
+              <object class="notebookpage">
+                <label>Compile Flags #2</label>
+                <selected>0</selected>
+                <object class="wxPanel" name="m_panel2">
+                  <style>wxTAB_TRAVERSAL</style>
+                  <object class="wxBoxSizer">
+                    <orient>wxVERTICAL</orient>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxRadioBox" name="radioboxFlowControl">
+                        <style>wxRA_SPECIFY_ROWS</style>
+                        <label>Flow Control</label>
+                        <selection>0</selection>
+                        <content>
+                          <item>Not Set</item>
+                          <item>Avoid</item>
+                          <item>Prefer</item>
+                        </content>
+                        <dimension>1</dimension>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxRadioBox" name="radioboxPackMatrix">
+                        <style>wxRA_SPECIFY_ROWS</style>
+                        <label>Pack Matrix</label>
+                        <selection>0</selection>
+                        <content>
+                          <item>Not Set</item>
+                          <item>Row Major</item>
+                          <item>Column Major</item>
+                        </content>
+                        <dimension>1</dimension>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxRadioBox" name="radioboxOptimization">
+                        <style>wxRA_SPECIFY_ROWS</style>
+                        <label>Optimization</label>
+                        <selection>0</selection>
+                        <content>
+                          <item>Not Set</item>
+                          <item>Level 0</item>
+                          <item>Level 1</item>
+                          <item>Level 2</item>
+                          <item>Level 3</item>
+                        </content>
+                        <dimension>1</dimension>
+                      </object>
+                    </object>
+                  </object>
+                </object>
+              </object>
+              <object class="notebookpage">
+                <label>Stripping</label>
+                <selected>0</selected>
+                <object class="wxPanel" name="m_panel3">
+                  <style>wxTAB_TRAVERSAL</style>
+                  <object class="wxBoxSizer">
+                    <orient>wxVERTICAL</orient>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxCheckBox" name="chPerformStripping">
+                        <label>Perform stripping</label>
+                        <checked>0</checked>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>1</option>
+                      <flag>wxEXPAND</flag>
+                      <border>5</border>
+                      <object class="wxStaticBoxSizer">
+                        <orient>wxVERTICAL</orient>
+                        <label>Stripping Flags</label>
+                        <object class="sizeritem">
+                          <option>1</option>
+                          <flag>wxEXPAND</flag>
+                          <border>5</border>
+                          <object class="wxBoxSizer">
+                            <orient>wxVERTICAL</orient>
+                            <object class="sizeritem">
+                              <option>0</option>
+                              <flag>wxALL</flag>
+                              <border>5</border>
+                              <object class="wxCheckBox" name="optionStrippingReflectionData">
+                                <label>D3DCOMPILER__STRIP__REFLECTION__DATA</label>
+                                <checked>0</checked>
+                              </object>
+                            </object>
+                            <object class="sizeritem">
+                              <option>0</option>
+                              <flag>wxALL</flag>
+                              <border>5</border>
+                              <object class="wxCheckBox" name="optionStrippingDebugInfo">
+                                <label>D3DCOMPILER__STRIP__DEBUG__INFO</label>
+                                <checked>0</checked>
+                              </object>
+                            </object>
+                            <object class="sizeritem">
+                              <option>0</option>
+                              <flag>wxALL</flag>
+                              <border>5</border>
+                              <object class="wxCheckBox" name="optionStrippingTestBlobs">
+                                <label>D3DCOMPILER__STRIP__TEST__BLOBS</label>
+                                <checked>0</checked>
+                              </object>
+                            </object>
+                          </object>
+                        </object>
+                      </object>
+                    </object>
+                  </object>
+                </object>
+              </object>
+              <object class="notebookpage">
+                <label>Disassembly</label>
+                <selected>0</selected>
+                <object class="wxPanel" name="m_panel4">
+                  <style>wxTAB_TRAVERSAL</style>
+                  <object class="wxBoxSizer">
+                    <orient>wxVERTICAL</orient>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxEXPAND</flag>
+                      <border>5</border>
+                      <object class="wxGridSizer">
+                        <rows>0</rows>
+                        <cols>2</cols>
+                        <vgap>0</vgap>
+                        <hgap>0</hgap>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL</flag>
+                          <border>5</border>
+                          <object class="wxCheckBox" name="optionDisassemblyEnableColorCodes">
+                            <tooltip>Enable the output of color codes.</tooltip>
+                            <label>D3D__DISASM__ENABLE__COLOR__CODE</label>
+                            <checked>0</checked>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL</flag>
+                          <border>5</border>
+                          <object class="wxCheckBox" name="optionDisassemblyEnableDefaultValues">
+                            <tooltip>Enable the output of default values.</tooltip>
+                            <label>D3D__DISASM__ENABLE__DEFAULT__VALUE__PRINTS</label>
+                            <checked>0</checked>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL</flag>
+                          <border>5</border>
+                          <object class="wxCheckBox" name="optionDisassemblyEnableInstructionNumbering">
+                            <tooltip>Enable instruction numbering.</tooltip>
+                            <label>D3D__DISASM__ENABLE__INSTRUCTION__NUMBERING</label>
+                            <checked>0</checked>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL</flag>
+                          <border>5</border>
+                          <object class="wxCheckBox" name="optionDisassemblyDisableDebugInfo">
+                            <tooltip>Disable debug information.</tooltip>
+                            <label>D3D__DISASM__DISABLE__DEBUG__INFO</label>
+                            <checked>0</checked>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL</flag>
+                          <border>5</border>
+                          <object class="wxCheckBox" name="optionDisassemblyEnableInstructionOffset">
+                            <tooltip>Enable instruction offsets.</tooltip>
+                            <label>D3D__DISASM__ENABLE__INSTRUCTION__OFFSET</label>
+                            <checked>0</checked>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL</flag>
+                          <border>5</border>
+                          <object class="wxCheckBox" name="optionDisassemblyInstructionOnly">
+                            <label>D3D__DISASM__INSTRUCTION__ONLY</label>
+                            <checked>0</checked>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL</flag>
+                          <border>5</border>
+                          <object class="wxCheckBox" name="optionDisassemblyPrintHexLiterals">
+                            <label>D3D__DISASM__PRINT__HEX__LITERALS</label>
+                            <checked>0</checked>
+                          </object>
+                        </object>
+                      </object>
+                    </object>
+                  </object>
+                </object>
+              </object>
+              <object class="notebookpage">
+                <label>Others</label>
+                <selected>0</selected>
+                <object class="wxPanel" name="m_panel5">
+                  <style>wxTAB_TRAVERSAL</style>
+                  <object class="wxBoxSizer">
+                    <orient>wxVERTICAL</orient>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxEXPAND</flag>
+                      <border>5</border>
+                      <object class="wxBoxSizer">
+                        <orient>wxVERTICAL</orient>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL</flag>
+                          <border>5</border>
+                          <object class="wxCheckBox" name="optionPreprocess">
+                            <label>Perform D3DPreprocess</label>
+                            <checked>0</checked>
+                          </object>
+                        </object>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxALL</flag>
+                      <border>5</border>
+                      <object class="wxStaticBoxSizer">
+                        <orient>wxVERTICAL</orient>
+                        <label>AMD GCN ISA</label>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag></flag>
+                          <border>5</border>
+                          <object class="wxFlexGridSizer">
+                            <rows>0</rows>
+                            <cols>2</cols>
+                            <vgap>0</vgap>
+                            <hgap>0</hgap>
+                            <growablecols></growablecols>
+                            <growablerows></growablerows>
+                            <object class="sizeritem">
+                              <option>0</option>
+                              <flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+                              <border>5</border>
+                              <object class="wxStaticText" name="m_staticText14">
+                                <label>Asic</label>
+                                <wrap>-1</wrap>
+                              </object>
+                            </object>
+                            <object class="sizeritem">
+                              <option>0</option>
+                              <flag>wxALL</flag>
+                              <border>5</border>
+                              <object class="wxChoice" name="m_choiceAsic">
+                                <size>150,-1</size>
+                                <selection>0</selection>
+                                <content />
+                              </object>
+                            </object>
+                          </object>
+                        </object>
+                      </object>
+                    </object>
+                  </object>
+                </object>
+              </object>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxEXPAND</flag>
+            <border>5</border>
+            <object class="wxBoxSizer">
+              <orient>wxHORIZONTAL</orient>
+              <object class="sizeritem">
+                <option>0</option>
+                <flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+                <border>5</border>
+                <object class="wxStaticText" name="m_staticText2">
+                  <label>Presets</label>
+                  <wrap>-1</wrap>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <option>0</option>
+                <flag>wxALL</flag>
+                <border>5</border>
+                <object class="wxComboBox" name="comboboxPresets">
+                  <size>200,-1</size>
+                  <value></value>
+                  <content />
+                </object>
+              </object>
+              <object class="sizeritem">
+                <option>0</option>
+                <flag>wxALL</flag>
+                <border>5</border>
+                <object class="wxButton" name="btnSavePreset">
+                  <label>Save preset</label>
+                  <default>0</default>
+                  <markup>0</markup>
+                  <bitmap />
+                </object>
+              </object>
+              <object class="sizeritem">
+                <option>0</option>
+                <flag>wxALL</flag>
+                <border>5</border>
+                <object class="wxButton" name="btnDeletePreset">
+                  <label>Delete preset</label>
+                  <default>0</default>
+                  <markup>0</markup>
+                  <bitmap />
+                </object>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+    </object>
+  </object>
+  <object class="wxDialog" name="nameDialog">
+    <style>wxDEFAULT_DIALOG_STYLE</style>
+    <title>New preset</title>
+    <centered>1</centered>
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <object class="sizeritem">
+        <option>1</option>
+        <flag>wxEXPAND</flag>
+        <border>5</border>
+        <object class="wxBoxSizer">
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+            <border>5</border>
+            <object class="wxStaticText" name="m_staticText3">
+              <label>Name</label>
+              <wrap>-1</wrap>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <option>1</option>
+            <flag>wxALL</flag>
+            <border>5</border>
+            <object class="wxTextCtrl" name="editPresetName">
+              <value></value>
+              <maxlength>0</maxlength>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <option>1</option>
+        <flag>wxEXPAND</flag>
+        <border>5</border>
+        <object class="wxBoxSizer">
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxALL</flag>
+            <border>5</border>
+            <object class="wxButton" name="btnOK">
+              <label>OK</label>
+              <default>0</default>
+              <markup>0</markup>
+              <bitmap />
+            </object>
+          </object>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxALL</flag>
+            <border>5</border>
+            <object class="wxButton" name="btnCancel">
+              <label>Cancel</label>
+              <default>0</default>
+              <markup>0</markup>
+              <bitmap />
+            </object>
+          </object>
+        </object>
+      </object>
+    </object>
+  </object>
+  <object class="wxDialog" name="AboutDlg">
+    <style>wxDEFAULT_DIALOG_STYLE</style>
+    <title>About HLSLexplorer...</title>
+    <centered>1</centered>
+    <object class="wxBoxSizer">
+      <orient>wxHORIZONTAL</orient>
+      <object class="sizeritem">
+        <option>0</option>
+        <flag>wxALIGN_CENTER_VERTICAL|wxTOP|wxBOTTOM|wxLEFT</flag>
+        <border>10</border>
+        <object class="wxStaticBitmap" name="m_icon">
+          <bitmap>image001.png</bitmap>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <option>1</option>
+        <flag>wxEXPAND|wxTOP|wxBOTTOM</flag>
+        <border>10</border>
+        <object class="wxBoxSizer">
+          <minsize>300,-1</minsize>
+          <orient>wxVERTICAL</orient>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxALIGN_CENTER_HORIZONTAL|wxRIGHT|wxLEFT</flag>
+            <border>5</border>
+            <object class="wxStaticText" name="m_staticAppName">
+              <font>
+                <size>10</size>
+                <family>swiss</family>
+                <style>normal</style>
+                <weight>bold</weight>
+                <underlined>0</underlined>
+                <face>Arial</face>
+              </font>
+              <label>HLSLexplorer</label>
+              <wrap>-1</wrap>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxALIGN_CENTER_HORIZONTAL|wxRIGHT|wxLEFT</flag>
+            <border>5</border>
+            <object class="wxStaticText" name="m_staticVersion">
+              <label>Version</label>
+              <wrap>-1</wrap>
+            </object>
+          </object>
+          <object class="spacer">
+            <option>0</option>
+            <flag>wxEXPAND</flag>
+            <border>5</border>
+            <size>0,5</size>
+          </object>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxTOP|wxRIGHT|wxLEFT|wxALIGN_CENTER_HORIZONTAL</flag>
+            <border>5</border>
+            <object class="wxStaticText" name="m_staticCopyright">
+              <label>Copyright (c) Mateusz Nagórka 2017-2018</label>
+              <wrap>-1</wrap>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxRIGHT|wxLEFT|wxALIGN_CENTER_HORIZONTAL</flag>
+            <border>5</border>
+            <object class="wxHyperlinkCtrl" name="m_twitter">
+              <label>@astralis3d</label>
+              <url>http://twitter.com/astralis3d</url>
+              <style>wxHL_DEFAULT_STYLE</style>
+            </object>
+          </object>
+          <object class="spacer">
+            <option>0</option>
+            <flag>wxEXPAND</flag>
+            <border>5</border>
+            <size>0,5</size>
+          </object>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxALL|wxEXPAND</flag>
+            <border>5</border>
+            <object class="wxTextCtrl" name="m_staticLicense">
+              <style>wxTE_MULTILINE|wxTE_READONLY</style>
+              <value>This software is using blah blah blah and so on</value>
+              <maxlength>0</maxlength>
+            </object>
+          </object>
+          <object class="spacer">
+            <option>1</option>
+            <flag>wxEXPAND</flag>
+            <border>5</border>
+            <size>0,0</size>
+          </object>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxALL|wxALIGN_CENTER_HORIZONTAL</flag>
+            <border>5</border>
+            <object class="wxButton" name="btnOK">
+              <label>_OK</label>
+              <default>1</default>
+              <markup>0</markup>
+              <bitmap />
+            </object>
+          </object>
+        </object>
+      </object>
+    </object>
+  </object>
+  <object class="wxFrame" name="RealtimePSPreview">
+    <style>wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL</style>
+    <size>887,552</size>
+    <title>Real-Time Pixel Shader Preview</title>
+    <centered>1</centered>
+    <aui_managed>0</aui_managed>
+    <object class="wxSplitterWindow" name="Splitter">
+      <style>wxSP_3D</style>
+      <sashpos>520</sashpos>
+      <gravity>0</gravity>
+      <minsize>0</minsize>
+      <orientation>vertical</orientation>
+      <object class="wxPanel" name="renderingPanel">
+        <style>wxTAB_TRAVERSAL|wxBORDER_SIMPLE</style>
+        <bg>#000000</bg>
+      </object>
+      <object class="wxPanel" name="optionsPanel">
+        <style>wxTAB_TRAVERSAL|wxBORDER_SIMPLE</style>
+        <object class="wxBoxSizer">
+          <orient>wxVERTICAL</orient>
+          <object class="sizeritem">
+            <option>1</option>
+            <flag>wxEXPAND|wxBOTTOM</flag>
+            <border>5</border>
+            <object class="wxNotebook" name="m_notebook2">
+              <object class="notebookpage">
+                <label>Textures</label>
+                <selected>1</selected>
+                <object class="wxPanel" name="PanelTextures">
+                  <style>wxTAB_TRAVERSAL</style>
+                  <object class="wxBoxSizer">
+                    <orient>wxVERTICAL</orient>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxEXPAND</flag>
+                      <border>5</border>
+                      <object class="wxBoxSizer">
+                        <orient>wxHORIZONTAL</orient>
+                        <object class="sizeritem">
+                          <option>1</option>
+                          <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                          <border>5</border>
+                          <object class="wxStaticText" name="m_textTexture0">
+                            <label>texture0 (null)</label>
+                            <wrap>-1</wrap>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                          <border>5</border>
+                          <object class="wxFilePickerCtrl" name="m_pickerTexture0">
+                            <value></value>
+                            <message>Select a file</message>
+                            <wildcard>*.*</wildcard>
+                            <style>wxFLP_FILE_MUST_EXIST|wxFLP_OPEN|wxFLP_SMALL</style>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL</flag>
+                          <border>5</border>
+                          <object class="wxButton" name="m_btnReset0">
+                            <label>Set to null</label>
+                            <default>0</default>
+                            <markup>0</markup>
+                            <bitmap />
+                          </object>
+                        </object>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxEXPAND</flag>
+                      <border>5</border>
+                      <object class="wxBoxSizer">
+                        <orient>wxHORIZONTAL</orient>
+                        <object class="sizeritem">
+                          <option>1</option>
+                          <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                          <border>5</border>
+                          <object class="wxStaticText" name="m_textTexture1">
+                            <label>texture1 (null)</label>
+                            <wrap>-1</wrap>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                          <border>5</border>
+                          <object class="wxFilePickerCtrl" name="m_pickerTexture1">
+                            <value></value>
+                            <message>Select a file</message>
+                            <wildcard>*.*</wildcard>
+                            <style>wxFLP_FILE_MUST_EXIST|wxFLP_OPEN|wxFLP_SMALL</style>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL</flag>
+                          <border>5</border>
+                          <object class="wxButton" name="m_btnReset1">
+                            <label>Set to null</label>
+                            <default>0</default>
+                            <markup>0</markup>
+                            <bitmap />
+                          </object>
+                        </object>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxEXPAND</flag>
+                      <border>5</border>
+                      <object class="wxBoxSizer">
+                        <orient>wxHORIZONTAL</orient>
+                        <object class="sizeritem">
+                          <option>1</option>
+                          <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                          <border>5</border>
+                          <object class="wxStaticText" name="m_textTexture2">
+                            <label>texture2 (null)</label>
+                            <wrap>-1</wrap>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                          <border>5</border>
+                          <object class="wxFilePickerCtrl" name="m_pickerTexture2">
+                            <value></value>
+                            <message>Select a file</message>
+                            <wildcard>*.*</wildcard>
+                            <style>wxFLP_FILE_MUST_EXIST|wxFLP_OPEN|wxFLP_SMALL</style>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL</flag>
+                          <border>5</border>
+                          <object class="wxButton" name="m_btnReset2">
+                            <label>Set to null</label>
+                            <default>0</default>
+                            <markup>0</markup>
+                            <bitmap />
+                          </object>
+                        </object>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxEXPAND</flag>
+                      <border>5</border>
+                      <object class="wxBoxSizer">
+                        <orient>wxHORIZONTAL</orient>
+                        <object class="sizeritem">
+                          <option>1</option>
+                          <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                          <border>5</border>
+                          <object class="wxStaticText" name="m_textTexture3">
+                            <label>texture3 (null)</label>
+                            <wrap>-1</wrap>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                          <border>5</border>
+                          <object class="wxFilePickerCtrl" name="m_pickerTexture3">
+                            <value></value>
+                            <message>Select a file</message>
+                            <wildcard>*.*</wildcard>
+                            <style>wxFLP_FILE_MUST_EXIST|wxFLP_OPEN|wxFLP_SMALL</style>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL</flag>
+                          <border>5</border>
+                          <object class="wxButton" name="m_btnReset3">
+                            <label>Set to null</label>
+                            <default>0</default>
+                            <markup>0</markup>
+                            <bitmap />
+                          </object>
+                        </object>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxEXPAND</flag>
+                      <border>5</border>
+                      <object class="wxBoxSizer">
+                        <orient>wxHORIZONTAL</orient>
+                        <object class="sizeritem">
+                          <option>1</option>
+                          <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                          <border>5</border>
+                          <object class="wxStaticText" name="m_textTexture4">
+                            <label>texture4 (null)</label>
+                            <wrap>-1</wrap>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                          <border>5</border>
+                          <object class="wxFilePickerCtrl" name="m_pickerTexture4">
+                            <value></value>
+                            <message>Select a file</message>
+                            <wildcard>*.*</wildcard>
+                            <style>wxFLP_FILE_MUST_EXIST|wxFLP_OPEN|wxFLP_SMALL</style>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL</flag>
+                          <border>5</border>
+                          <object class="wxButton" name="m_btnReset4">
+                            <label>Set to null</label>
+                            <default>0</default>
+                            <markup>0</markup>
+                            <bitmap />
+                          </object>
+                        </object>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxEXPAND</flag>
+                      <border>5</border>
+                      <object class="wxBoxSizer">
+                        <orient>wxHORIZONTAL</orient>
+                        <object class="sizeritem">
+                          <option>1</option>
+                          <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                          <border>5</border>
+                          <object class="wxStaticText" name="m_textTexture5">
+                            <label>texture5 (null)</label>
+                            <wrap>-1</wrap>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                          <border>5</border>
+                          <object class="wxFilePickerCtrl" name="m_pickerTexture5">
+                            <value></value>
+                            <message>Select a file</message>
+                            <wildcard>*.*</wildcard>
+                            <style>wxFLP_FILE_MUST_EXIST|wxFLP_OPEN|wxFLP_SMALL</style>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL</flag>
+                          <border>5</border>
+                          <object class="wxButton" name="m_btnReset5">
+                            <label>Set to null</label>
+                            <default>0</default>
+                            <markup>0</markup>
+                            <bitmap />
+                          </object>
+                        </object>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxEXPAND</flag>
+                      <border>5</border>
+                      <object class="wxBoxSizer">
+                        <orient>wxHORIZONTAL</orient>
+                        <object class="sizeritem">
+                          <option>1</option>
+                          <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                          <border>5</border>
+                          <object class="wxStaticText" name="m_textTexture6">
+                            <label>texture6 (null)</label>
+                            <wrap>-1</wrap>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                          <border>5</border>
+                          <object class="wxFilePickerCtrl" name="m_pickerTexture6">
+                            <value></value>
+                            <message>Select a file</message>
+                            <wildcard>*.*</wildcard>
+                            <style>wxFLP_FILE_MUST_EXIST|wxFLP_OPEN|wxFLP_SMALL</style>
+                          </object>
+                        </object>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL</flag>
+                          <border>5</border>
+                          <object class="wxButton" name="m_btnReset6">
+                            <label>Set to null</label>
+                            <default>0</default>
+                            <markup>0</markup>
+                            <bitmap />
+                          </object>
+                        </object>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <option>0</option>
+                      <flag>wxEXPAND</flag>
+                      <border>5</border>
+                      <object class="wxBoxSizer">
+                        <orient>wxVERTICAL</orient>
+                        <object class="sizeritem">
+                          <option>0</option>
+                          <flag>wxALL|wxEXPAND</flag>
+                          <border>5</border>
+                          <object class="wxButton" name="m_btnResetAllTextures">
+                            <label>Reset all</label>
+                            <default>1</default>
+                            <markup>0</markup>
+                            <bitmap />
+                          </object>
+                        </object>
+                      </object>
+                    </object>
+                  </object>
+                </object>
+              </object>
+              <object class="notebookpage">
+                <label>Data</label>
+                <selected>0</selected>
+                <object class="wxPanel" name="PanelData">
+                  <style>wxTAB_TRAVERSAL</style>
+                </object>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+    </object>
+  </object>
+</resource>

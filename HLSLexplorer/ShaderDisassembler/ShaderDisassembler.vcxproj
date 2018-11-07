@@ -1,0 +1,235 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{f22d858e-88a9-4f91-8ed8-99428b83b876}</ProjectGuid>
+    <RootNamespace>ShaderDissasembler</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <ProjectName>HLSLexplorer</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>../../Bin/$(Platform)_$(Configuration)/</OutDir>
+    <IntDir>../../BinTemp/$(Platform)_$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>$(ProjectName).$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>../../Bin/$(Platform)_$(Configuration)/</OutDir>
+    <IntDir>../../BinTemp/$(Platform)_$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>$(ProjectName).$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>../../Bin/</OutDir>
+    <IntDir>../../BinTemp/$(Platform)_$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>$(ProjectName).$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>../../Bin/</OutDir>
+    <IntDir>../../BinTemp/$(Platform)_$(Configuration)/$(ProjectName)/</IntDir>
+    <TargetName>$(ProjectName).$(Configuration)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(BOOST)\;%(WXWIN)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>../../BinTemp/$(Platform)_$(Configuration)/$(ProjectName)/PCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(BOOST)\lib32-msvc-14.0\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(BOOST)\;$(WXWIN)\include\;$(WXWIN)\lib\vc_x64_lib\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>../../BinTemp/$(Platform)_$(Configuration)/$(ProjectName)/PCH.pch</PrecompiledHeaderOutputFile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(BOOST)\lib64-msvc-14.0\;$(WXWIN)\lib\vc_x64_lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>wxbase31ud.lib;wxmsw31ud_core.lib;wxmsw31ud_stc.lib;wxscintillad.lib;wxmsw31ud_adv.lib;wxmsw31ud_xrc.lib;wxmsw31ud_html.lib;wxbase31ud_xml.lib;wxregexud.lib;wxexpatd.lib;wxpngd.lib;wxtiffd.lib;wxzlibd.lib;comctl32.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>wxrc -c -o "resource.cpp" resource.xrc</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(BOOST)\;%(WXWIN)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>../../BinTemp/$(Platform)_$(Configuration)/$(ProjectName)/PCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(BOOST)\lib32-msvc-14.0\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(BOOST)\;$(WXWIN)\include\;$(WXWIN)\lib\vc_x64_lib\mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>../../BinTemp/$(Platform)_$(Configuration)/$(ProjectName)/PCH.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(BOOST)\lib64-msvc-14.0\;$(WXWIN)\lib\vc_x64_lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>wxbase31u.lib;wxmsw31u_core.lib;wxmsw31u_adv.lib;wxmsw31u_xrc.lib;wxmsw31u_stc.lib;wxbase31u_xml.lib;wxmsw31u_html.lib;wxregexu.lib;wxexpat.lib;wxscintilla.lib;wxpng.lib;wxtiff.lib;wxzlib.lib;comctl32.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>wxrc -c -o "resource.cpp" resource.xrc</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AboutDialog.cpp" />
+    <ClCompile Include="App.cpp" />
+    <ClCompile Include="CompilationDXBC.cpp" />
+    <ClCompile Include="CompilerLoader.cpp" />
+    <ClCompile Include="CompilationDXBCModern.cpp" />
+    <ClCompile Include="CompilerModernDXLoader.cpp" />
+    <ClCompile Include="ControlsPanel.cpp" />
+    <ClCompile Include="DisassemblerGCNISA.cpp" />
+    <ClCompile Include="DriverD3D11.cpp" />
+    <ClCompile Include="Edit.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainFrame.cpp" />
+    <ClCompile Include="NewPresetDialog.cpp" />
+    <ClCompile Include="PCH.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Prefs.cpp" />
+    <ClCompile Include="RealtimePSPreviewFrame.cpp" />
+    <ClCompile Include="resource.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AboutDialog.h" />
+    <ClInclude Include="AmdDxGsaCompile.h" />
+    <ClInclude Include="App.h" />
+    <ClInclude Include="CompilationDXBC.h" />
+    <ClInclude Include="CompilerLoader.h" />
+    <ClInclude Include="CompilerModernDXLoader.h" />
+    <ClInclude Include="ControlsPanel.h" />
+    <ClInclude Include="Defines.h" />
+    <ClInclude Include="devices.h" />
+    <ClInclude Include="DisassemblerGCNISA.h" />
+    <ClInclude Include="DriverD3D11.h" />
+    <ClInclude Include="DummyShaders.h" />
+    <ClInclude Include="Edit.h" />
+    <ClInclude Include="elf32.h" />
+    <ClInclude Include="elf_common.h" />
+    <ClInclude Include="MainFrame.h" />
+    <ClInclude Include="NewPresetDialog.h" />
+    <ClInclude Include="PCH.h" />
+    <ClInclude Include="Prefs.h" />
+    <ClInclude Include="RealtimePSPreviewFrame.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resource.xrc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FullscreenVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">QuadVS</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">QuadVS</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </None>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

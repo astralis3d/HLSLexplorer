@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Edit.cpp">
+      <Filter>Application\gui\Edit</Filter>
+    </ClCompile>
+    <ClCompile Include="Prefs.cpp">
+      <Filter>Application\gui\Edit</Filter>
+    </ClCompile>
+    <ClCompile Include="resource.cpp">
+      <Filter>Application\gui\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>Application\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="DisassemblerGCNISA.cpp">
+      <Filter>Application\Compilation\disassemblers</Filter>
+    </ClCompile>
+    <ClCompile Include="NewPresetDialog.cpp">
+      <Filter>Application\gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="AboutDialog.cpp">
+      <Filter>Application\gui\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="RealtimePSPreviewFrame.cpp">
+      <Filter>Application\gui\RealtimePixelShaderPreview</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="PCH.cpp" />
+    <ClCompile Include="ControlsPanel.cpp">
+      <Filter>Application\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrame.cpp">
+      <Filter>Application\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="DriverD3D11.cpp">
+      <Filter>Application\gui\RealtimePixelShaderPreview\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="CompilerLoader.cpp">
+      <Filter>Application\Compilation\Loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="CompilerModernDXLoader.cpp">
+      <Filter>Application\Compilation\Loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="CompilationDXBC.cpp">
+      <Filter>Application\Compilation</Filter>
+    </ClCompile>
+    <ClCompile Include="CompilationDXBCModern.cpp">
+      <Filter>Application\Compilation</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Edit.h">
+      <Filter>Application\gui\Edit</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefs.h">
+      <Filter>Application\gui\Edit</Filter>
+    </ClInclude>
+    <ClInclude Include="App.h">
+      <Filter>Application\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="DisassemblerGCNISA.h">
+      <Filter>Application\Compilation\disassemblers</Filter>
+    </ClInclude>
+    <ClInclude Include="AmdDxGsaCompile.h">
+      <Filter>Application\Compilation\disassemblers\Official</Filter>
+    </ClInclude>
+    <ClInclude Include="devices.h">
+      <Filter>Application\Compilation\disassemblers\Official</Filter>
+    </ClInclude>
+    <ClInclude Include="elf32.h">
+      <Filter>Application\Compilation\disassemblers\Official\ELF</Filter>
+    </ClInclude>
+    <ClInclude Include="elf_common.h">
+      <Filter>Application\Compilation\disassemblers\Official\ELF</Filter>
+    </ClInclude>
+    <ClInclude Include="NewPresetDialog.h">
+      <Filter>Application\gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="AboutDialog.h">
+      <Filter>Application\gui\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="RealtimePSPreviewFrame.h">
+      <Filter>Application\gui\RealtimePixelShaderPreview</Filter>
+    </ClInclude>
+    <ClInclude Include="PCH.h" />
+    <ClInclude Include="Defines.h">
+      <Filter>Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="DummyShaders.h">
+      <Filter>Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlsPanel.h">
+      <Filter>Application\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrame.h">
+      <Filter>Application\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="DriverD3D11.h">
+      <Filter>Application\gui\RealtimePixelShaderPreview\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="CompilerLoader.h">
+      <Filter>Application\Compilation\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CompilerModernDXLoader.h">
+      <Filter>Application\Compilation\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CompilationDXBC.h">
+      <Filter>Application\Compilation</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Application">
+      <UniqueIdentifier>{6835c238-f446-4592-b138-ff72a74e0742}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\gui">
+      <UniqueIdentifier>{846021f0-4177-4be6-84b1-d618a50b5a1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\gui\Edit">
+      <UniqueIdentifier>{d34871ec-55a1-4675-a2f1-d9460823f73d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\gui\Resources">
+      <UniqueIdentifier>{dc5905ec-2eb8-4777-953f-c7bd0cb5a611}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\Compilation">
+      <UniqueIdentifier>{a9069040-e617-4491-a06b-8e94f8c51fdf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\Compilation\Loaders">
+      <UniqueIdentifier>{543947b5-a7f6-48e4-a253-6c414eeeda0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\Compilation\disassemblers">
+      <UniqueIdentifier>{30d19047-4dee-47f3-bbc5-a8fd9eb48872}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\Compilation\disassemblers\Official">
+      <UniqueIdentifier>{0781c918-e989-4f9a-84db-89fb50915d4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\Compilation\disassemblers\Official\ELF">
+      <UniqueIdentifier>{abba97ec-da6d-412b-af93-8e912ce729da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Defines">
+      <UniqueIdentifier>{e7de1663-c2e9-4274-97f4-665f2b36c94b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\gui\RealtimePixelShaderPreview">
+      <UniqueIdentifier>{5e2b5c97-f826-44c8-b6d1-f4be9b920809}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\gui\RealtimePixelShaderPreview\D3D11">
+      <UniqueIdentifier>{cc0f4467-b7d2-4764-9920-d02c90d27d60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\gui\Dialogs">
+      <UniqueIdentifier>{6db2a285-94cf-4f0b-9e8b-d17dc7a98ff0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resource.xrc">
+      <Filter>Application\gui\Resources</Filter>
+    </None>
+    <None Include="FullscreenVS.hlsl">
+      <Filter>Application\gui\RealtimePixelShaderPreview\D3D11</Filter>
+    </None>
+  </ItemGroup>
+</Project>
