@@ -69,11 +69,11 @@ void CMyFrame::InitializeUI()
 	m_pRightWindow->Bind( wxEVT_ENTER_WINDOW, &CMyFrame::OnMouseRightWindowActive, this );
 
 	m_pEditASM_DXBC->Bind( wxEVT_LEFT_DOWN, &CMyFrame::OnMouseRightWindowActive, this );
-	m_pEditASM_DXBC6->Bind( wxEVT_LEFT_DOWN, &CMyFrame::OnMouseRightWindowActive, this );
+	m_pEditASM_DXIL->Bind( wxEVT_LEFT_DOWN, &CMyFrame::OnMouseRightWindowActive, this );
 	m_pEditASM_GCNISA->Bind( wxEVT_LEFT_DOWN, &CMyFrame::OnMouseRightWindowActive, this );
 
 	//m_pEditASM_DXBC->Bind( wxEVT_ENTER_WINDOW, &CMyFrame::OnMouseRightWindowActive, this );
-	//m_pEditASM_DXBC6->Bind( wxEVT_ENTER_WINDOW, &CMyFrame::OnMouseRightWindowActive, this );
+	//m_pEditASM_DXIL->Bind( wxEVT_ENTER_WINDOW, &CMyFrame::OnMouseRightWindowActive, this );
 	//m_pEditASM_GCNISA->Bind( wxEVT_ENTER_WINDOW, &CMyFrame::OnMouseRightWindowActive, this );
 
 	// Setup main wxSplitterWindow
@@ -156,8 +156,8 @@ wxNotebook* CMyFrame::CreateDisassemblerOutputNotebook(wxWindow* parent)
 	m_pEditASM_DXBC->SetLanguage( Lang_ASM );
 
 	// DXBC Shader Model 6.0
-	m_pEditASM_DXBC6 = new CEditCtrl( pNotebook, wxID_ANY );
-	m_pEditASM_DXBC6->SetLanguage( Lang_ASM );
+	m_pEditASM_DXIL = new CEditCtrl( pNotebook, wxID_ANY );
+	m_pEditASM_DXIL->SetLanguage( Lang_ASM );
 
 	// AMD GCN ISA
 	m_pEditASM_GCNISA = new CEditCtrl( pNotebook, wxID_ANY );
@@ -165,7 +165,7 @@ wxNotebook* CMyFrame::CreateDisassemblerOutputNotebook(wxWindow* parent)
 
 	// add pages
 	pNotebook->AddPage(m_pEditASM_DXBC, wxT("DXBC"), true );
-	pNotebook->AddPage(m_pEditASM_DXBC6, wxT("DXBC 6.0"), false );
+	pNotebook->AddPage(m_pEditASM_DXIL, wxT("DXIL"), false );
 	pNotebook->AddPage(m_pEditASM_GCNISA, wxT("AMD GCN ISA"), false );
 
 	return pNotebook;
@@ -270,7 +270,7 @@ void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 	{
 		// Compiled ASM for Modern DXBC
 		const std::string strCompiledASM = nmCompile::CompileModern( m_D3DOptions, pszSourceHLSL, strEntrypoint.wc_str(), m_strHLSLPath.c_str());
-		m_pEditASM_DXBC6->SetText( strCompiledASM );
+		m_pEditASM_DXIL->SetText( strCompiledASM );
 
 		// If user selected shader model 6.0+, go to this tab immediately.
 		if ( m_D3DOptions.shaderProfile == EShaderProfile::ShaderProfile_6_0 ||
@@ -387,11 +387,11 @@ void CMyFrame::OnMenuFileSaveAuto( wxCommandEvent& evt )
 			}
 			break;
 
-			// DXBC 6
+			// DXIL
 			case 1:
 			{
-				pCodeWindow = m_pEditASM_DXBC6;
-				asmTypeString = wxT("DXBC 6");
+				pCodeWindow = m_pEditASM_DXIL;
+				asmTypeString = wxT("DXIL");
 			}
 			break;
 				

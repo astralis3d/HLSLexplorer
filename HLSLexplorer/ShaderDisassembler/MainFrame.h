@@ -98,7 +98,7 @@ private:
 	// right side (disassembled output)
 	wxNotebook*		m_pRightWindow;
 	CEditCtrl*		m_pEditASM_DXBC;
-	CEditCtrl*		m_pEditASM_DXBC6;
+	CEditCtrl*		m_pEditASM_DXIL;
 	CEditCtrl*		m_pEditASM_GCNISA;
 
 	// Compilation
