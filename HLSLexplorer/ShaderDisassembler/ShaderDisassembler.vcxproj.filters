@@ -108,6 +108,9 @@
     <ClInclude Include="CompilationDXBC.h">
       <Filter>Application\Compilation</Filter>
     </ClInclude>
+    <ClInclude Include="resource1.h">
+      <Filter>Application\gui\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Application">
@@ -157,5 +160,10 @@
     <None Include="FullscreenVS.hlsl">
       <Filter>Application\gui\RealtimePixelShaderPreview\D3D11</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="HLSLexplorer.rc">
+      <Filter>Application\gui\Resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

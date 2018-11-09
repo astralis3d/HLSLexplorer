@@ -212,6 +212,7 @@
     <ClInclude Include="PCH.h" />
     <ClInclude Include="Prefs.h" />
     <ClInclude Include="RealtimePSPreviewFrame.h" />
+    <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.xrc" />
@@ -228,6 +229,9 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">QuadVS</EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="HLSLexplorer.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
