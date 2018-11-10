@@ -1,6 +1,11 @@
 #include "PCH.h"
 #include "App.h"
 
+// Other common headers
+#ifdef _DEBUG
+#include <crtdbg.h>
+#endif
+
 wxIMPLEMENT_APP_NO_MAIN(CMyApp);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd )

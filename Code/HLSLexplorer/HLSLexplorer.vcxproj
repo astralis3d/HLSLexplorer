@@ -169,7 +169,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="CompilationDXBC.cpp" />
     <ClCompile Include="CompilerLoader.cpp" />
-    <ClCompile Include="CompilationDXBCModern.cpp" />
+    <ClCompile Include="CompilationDXIL.cpp" />
     <ClCompile Include="CompilerModernDXLoader.cpp" />
     <ClCompile Include="ControlsPanel.cpp" />
     <ClCompile Include="DisassemblerGCNISA.cpp" />
@@ -193,22 +193,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AboutDialog.h" />
-    <ClInclude Include="AmdDxGsaCompile.h" />
     <ClInclude Include="App.h" />
-    <ClInclude Include="CompilationDXBC.h" />
+    <ClInclude Include="CompilationDX.h" />
     <ClInclude Include="CompilerLoader.h" />
     <ClInclude Include="CompilerModernDXLoader.h" />
     <ClInclude Include="ControlsPanel.h" />
     <ClInclude Include="Defines.h" />
-    <ClInclude Include="devices.h" />
     <ClInclude Include="DisassemblerGCNISA.h" />
     <ClInclude Include="DriverD3D11.h" />
     <ClInclude Include="DummyShaders.h" />
     <ClInclude Include="Edit.h" />
-    <ClInclude Include="elf32.h" />
-    <ClInclude Include="elf_common.h" />
     <ClInclude Include="MainFrame.h" />
     <ClInclude Include="NewPresetDialog.h" />
+    <ClInclude Include="official\amd\AmdDxGsaCompile.h" />
+    <ClInclude Include="official\amd\devices.h" />
+    <ClInclude Include="official\elf\elf32.h" />
+    <ClInclude Include="official\elf\elf_common.h" />
     <ClInclude Include="PCH.h" />
     <ClInclude Include="Prefs.h" />
     <ClInclude Include="RealtimePSPreviewFrame.h" />

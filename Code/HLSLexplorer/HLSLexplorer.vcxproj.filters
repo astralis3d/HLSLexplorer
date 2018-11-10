@@ -7,9 +7,6 @@
     <ClCompile Include="Prefs.cpp">
       <Filter>Application\gui\Edit</Filter>
     </ClCompile>
-    <ClCompile Include="resource.cpp">
-      <Filter>Application\gui\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="App.cpp">
       <Filter>Application\gui</Filter>
     </ClCompile>
@@ -45,7 +42,10 @@
     <ClCompile Include="CompilationDXBC.cpp">
       <Filter>Application\Compilation</Filter>
     </ClCompile>
-    <ClCompile Include="CompilationDXBCModern.cpp">
+    <ClCompile Include="resource.cpp">
+      <Filter>Application\gui\Resources\wxWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="CompilationDXIL.cpp">
       <Filter>Application\Compilation</Filter>
     </ClCompile>
   </ItemGroup>
@@ -61,18 +61,6 @@
     </ClInclude>
     <ClInclude Include="DisassemblerGCNISA.h">
       <Filter>Application\Compilation\disassemblers</Filter>
-    </ClInclude>
-    <ClInclude Include="AmdDxGsaCompile.h">
-      <Filter>Application\Compilation\disassemblers\Official</Filter>
-    </ClInclude>
-    <ClInclude Include="devices.h">
-      <Filter>Application\Compilation\disassemblers\Official</Filter>
-    </ClInclude>
-    <ClInclude Include="elf32.h">
-      <Filter>Application\Compilation\disassemblers\Official\ELF</Filter>
-    </ClInclude>
-    <ClInclude Include="elf_common.h">
-      <Filter>Application\Compilation\disassemblers\Official\ELF</Filter>
     </ClInclude>
     <ClInclude Include="NewPresetDialog.h">
       <Filter>Application\gui\Dialogs</Filter>
@@ -105,11 +93,23 @@
     <ClInclude Include="CompilerModernDXLoader.h">
       <Filter>Application\Compilation\Loaders</Filter>
     </ClInclude>
-    <ClInclude Include="CompilationDXBC.h">
+    <ClInclude Include="resource1.h">
+      <Filter>Application\gui\Resources\winapi</Filter>
+    </ClInclude>
+    <ClInclude Include="CompilationDX.h">
       <Filter>Application\Compilation</Filter>
     </ClInclude>
-    <ClInclude Include="resource1.h">
-      <Filter>Application\gui\Resources</Filter>
+    <ClInclude Include="official\amd\AmdDxGsaCompile.h">
+      <Filter>Application\Compilation\disassemblers\official\amd</Filter>
+    </ClInclude>
+    <ClInclude Include="official\amd\devices.h">
+      <Filter>Application\Compilation\disassemblers\official\amd</Filter>
+    </ClInclude>
+    <ClInclude Include="official\elf\elf_common.h">
+      <Filter>Application\Compilation\disassemblers\official\elf</Filter>
+    </ClInclude>
+    <ClInclude Include="official\elf\elf32.h">
+      <Filter>Application\Compilation\disassemblers\official\elf</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -134,12 +134,6 @@
     <Filter Include="Application\Compilation\disassemblers">
       <UniqueIdentifier>{30d19047-4dee-47f3-bbc5-a8fd9eb48872}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Application\Compilation\disassemblers\Official">
-      <UniqueIdentifier>{0781c918-e989-4f9a-84db-89fb50915d4e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Application\Compilation\disassemblers\Official\ELF">
-      <UniqueIdentifier>{abba97ec-da6d-412b-af93-8e912ce729da}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Defines">
       <UniqueIdentifier>{e7de1663-c2e9-4274-97f4-665f2b36c94b}</UniqueIdentifier>
     </Filter>
@@ -152,18 +146,33 @@
     <Filter Include="Application\gui\Dialogs">
       <UniqueIdentifier>{6db2a285-94cf-4f0b-9e8b-d17dc7a98ff0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\gui\Resources\winapi">
+      <UniqueIdentifier>{ada9283f-0454-49d7-90ab-105d2e19b6b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\gui\Resources\wxWidgets">
+      <UniqueIdentifier>{6e0c8c99-8790-4734-b5b0-b4fa5f3f6ec3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\Compilation\disassemblers\official">
+      <UniqueIdentifier>{d601d931-c200-4509-8607-64d59746aa31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\Compilation\disassemblers\official\amd">
+      <UniqueIdentifier>{bce193aa-78c7-44fb-a853-b1eac3ea3f1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\Compilation\disassemblers\official\elf">
+      <UniqueIdentifier>{91458cf4-2c59-4c22-b7ee-9e671b8014e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resource.xrc">
-      <Filter>Application\gui\Resources</Filter>
-    </None>
     <None Include="FullscreenVS.hlsl">
       <Filter>Application\gui\RealtimePixelShaderPreview\D3D11</Filter>
+    </None>
+    <None Include="resource.xrc">
+      <Filter>Application\gui\Resources\wxWidgets</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="HLSLexplorer.rc">
-      <Filter>Application\gui\Resources</Filter>
+      <Filter>Application\gui\Resources\winapi</Filter>
     </ResourceCompile>
   </ItemGroup>
 </Project>

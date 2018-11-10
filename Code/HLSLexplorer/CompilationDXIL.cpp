@@ -1,5 +1,5 @@
 #include "PCH.h"
-#include "CompilationDXBC.h"
+#include "CompilationDX.h"
 #include <d3dcompiler.h>
 #include "official/dxcapi.h"
 #include "CompilerLoader.h"

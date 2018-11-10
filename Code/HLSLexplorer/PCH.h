@@ -10,11 +10,6 @@
 // wxWidgets
 #include <wx/wxprec.h>
 
-// Other common headers
-#ifdef _DEBUG
-#include <crtdbg.h>
-#endif
-
 enum class ETextureType
 {
 	ETexType_Invalid,

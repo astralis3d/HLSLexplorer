@@ -4,7 +4,7 @@
 #include "ControlsPanel.h"
 #include "AboutDialog.h"
 #include "RealtimePSPreviewFrame.h"
-#include "CompilationDXBC.h"
+#include "CompilationDX.h"
 
 #include "DummyShaders.h"
 

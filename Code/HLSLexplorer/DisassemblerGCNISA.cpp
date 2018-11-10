@@ -2,9 +2,9 @@
 #include "DisassemblerGCNISA.h"
 
 //! external
-#include "AmdDxGsaCompile.h"
-#include "devices.h"
-#include "elf32.h"
+#include "official/amd/AmdDxGsaCompile.h"
+#include "official/amd/devices.h"
+#include "official/elf/elf32.h"
 
 // Done with pretty much the same fashion as in RenderDoc.
 
