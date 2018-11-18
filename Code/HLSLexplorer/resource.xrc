@@ -45,12 +45,13 @@
                   <label>Profile</label>
                   <selection>0</selection>
                   <content>
-                    <item>4_0</item>
-                    <item>5_0</item>
-                    <item>5_1</item>
-                    <item>6_0</item>
-                    <item>6_1</item>
-                    <item>6_2</item>
+                    <item>4.0</item>
+                    <item>5.0</item>
+                    <item>5.1</item>
+                    <item>6.0</item>
+                    <item>6.1</item>
+                    <item>6.2</item>
+                    <item>6.3</item>
                   </content>
                   <dimension>1</dimension>
                 </object>

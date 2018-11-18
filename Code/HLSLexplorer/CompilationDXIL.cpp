@@ -110,6 +110,7 @@ std::wstring GetShaderTargetW( const SD3DOptions& options )
 		case ShaderProfile_6_0:	shaderTarget += std::wstring( L"6_0" );	break;
 		case ShaderProfile_6_1:	shaderTarget += std::wstring( L"6_1" );	break;
 		case ShaderProfile_6_2:	shaderTarget += std::wstring( L"6_2" );	break;
+		case ShaderProfile_6_3:	shaderTarget += std::wstring( L"6_3" );	break;
 	}
 
 	return shaderTarget;

@@ -22,7 +22,8 @@ enum EShaderProfile
 	ShaderProfile_5_1,
 	ShaderProfile_6_0,
 	ShaderProfile_6_1,
-	ShaderProfile_6_2
+	ShaderProfile_6_2,
+	ShaderProfile_6_3
 };
 
 enum EOptimization

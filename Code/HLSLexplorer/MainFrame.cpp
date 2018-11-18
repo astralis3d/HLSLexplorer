@@ -50,9 +50,9 @@ void CMyFrame::InitializeUI()
 	// Main panel
 	m_mainPanel = new wxPanel( this, wxID_ANY );
 
-	// Main spliiter
+	//! Initialize main splitter
 	m_pSplitter = new wxSplitterWindow( m_mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D | wxSP_LIVE_UPDATE );
-
+	
 	//! Left window. Also bind enter/leave events
 	m_pEditHLSL = new CEditCtrl( m_pSplitter, wxID_ANY, wxDefaultPosition, wxSize( -1, 500 ) );
 
@@ -76,7 +76,7 @@ void CMyFrame::InitializeUI()
 	//m_pEditASM_DXIL->Bind( wxEVT_ENTER_WINDOW, &CMyFrame::OnMouseRightWindowActive, this );
 	//m_pEditASM_GCNISA->Bind( wxEVT_ENTER_WINDOW, &CMyFrame::OnMouseRightWindowActive, this );
 
-	// Setup main wxSplitterWindow
+	// !Setup main wxSplitterWindow
 	m_pSplitter->SetMinimumPaneSize( 100 );
 	m_pSplitter->SetSashPosition( 500 );
 	m_pSplitter->SplitVertically( m_pEditHLSL, m_pRightWindow, 0 );
@@ -155,7 +155,7 @@ wxNotebook* CMyFrame::CreateDisassemblerOutputNotebook(wxWindow* parent)
 	m_pEditASM_DXBC = new CEditCtrl( pNotebook, wxID_ANY );
 	m_pEditASM_DXBC->SetLanguage( Lang_ASM );
 
-	// DXBC Shader Model 6.0
+	// DXIL - Shader Model 6.0+
 	m_pEditASM_DXIL = new CEditCtrl( pNotebook, wxID_ANY );
 	m_pEditASM_DXIL->SetLanguage( Lang_ASM );
 
@@ -275,7 +275,8 @@ void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 		// If user selected shader model 6.0+, go to this tab immediately.
 		if ( m_D3DOptions.shaderProfile == EShaderProfile::ShaderProfile_6_0 ||
 			 m_D3DOptions.shaderProfile == EShaderProfile::ShaderProfile_6_1 ||
-			 m_D3DOptions.shaderProfile == EShaderProfile::ShaderProfile_6_2 )
+			 m_D3DOptions.shaderProfile == EShaderProfile::ShaderProfile_6_2 ||
+			 m_D3DOptions.shaderProfile == EShaderProfile::ShaderProfile_6_3 )
 		{
 			m_pRightWindow->SetSelection( 1 );
 		}

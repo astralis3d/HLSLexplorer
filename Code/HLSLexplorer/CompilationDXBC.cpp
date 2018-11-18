@@ -99,6 +99,7 @@ std::string GetShaderTargetA( const SD3DOptions& options )
 		case ShaderProfile_6_0:	shaderTarget += std::string( "6_0" );	break;
 		case ShaderProfile_6_1:	shaderTarget += std::string( "6_1" );	break;
 		case ShaderProfile_6_2:	shaderTarget += std::string( "6_2" );	break;
+		case ShaderProfile_6_3:	shaderTarget += std::string( "6_3" );	break;
 	}
 
 	return shaderTarget;
