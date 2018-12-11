@@ -46,6 +46,7 @@
                   <selection>0</selection>
                   <content>
                     <item>4.0</item>
+                    <item>4.1</item>
                     <item>5.0</item>
                     <item>5.1</item>
                     <item>6.0</item>
@@ -53,7 +54,7 @@
                     <item>6.2</item>
                     <item>6.3</item>
                   </content>
-                  <dimension>1</dimension>
+                  <dimension>2</dimension>
                 </object>
               </object>
             </object>
@@ -260,7 +261,7 @@
                         <label>Flow Control</label>
                         <selection>0</selection>
                         <content>
-                          <item>Not Set</item>
+                          <item>(Not set)</item>
                           <item>Avoid</item>
                           <item>Prefer</item>
                         </content>
@@ -276,7 +277,7 @@
                         <label>Pack Matrix</label>
                         <selection>0</selection>
                         <content>
-                          <item>Not Set</item>
+                          <item>(Not set)</item>
                           <item>Row Major</item>
                           <item>Column Major</item>
                         </content>
@@ -292,7 +293,7 @@
                         <label>Optimization</label>
                         <selection>0</selection>
                         <content>
-                          <item>Not Set</item>
+                          <item>(Not set)</item>
                           <item>Level 0</item>
                           <item>Level 1</item>
                           <item>Level 2</item>

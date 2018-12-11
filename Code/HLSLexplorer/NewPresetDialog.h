@@ -1,6 +1,5 @@
 #pragma once
 
-
 class CNewPresetDialog : public wxDialog
 {
 public:

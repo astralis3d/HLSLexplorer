@@ -94,6 +94,7 @@ std::string GetShaderTargetA( const SD3DOptions& options )
 	switch (options.shaderProfile)
 	{
 		case ShaderProfile_4_0:	shaderTarget += std::string( "4_0" );	break;
+		case ShaderProfile_4_1:	shaderTarget += std::string( "4_1" );	break;
 		case ShaderProfile_5_0:	shaderTarget += std::string( "5_0" );	break;
 		case ShaderProfile_5_1:	shaderTarget += std::string( "5_1" );	break;
 		case ShaderProfile_6_0:	shaderTarget += std::string( "6_0" );	break;

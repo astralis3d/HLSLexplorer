@@ -18,6 +18,7 @@ enum EShaderType
 enum EShaderProfile
 {
 	ShaderProfile_4_0 = 0,
+	ShaderProfile_4_1,
 	ShaderProfile_5_0,
 	ShaderProfile_5_1,
 	ShaderProfile_6_0,
