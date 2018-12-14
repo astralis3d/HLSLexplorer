@@ -311,7 +311,7 @@ void CMyFrame::OnMenuFileShowPSPreview( wxCommandEvent& evt )
 //------------------------------------------------------------------------
 void CMyFrame::OnMenuFileOpenHLSLShader( wxCommandEvent& evt )
 {
-	wxFileDialog fileDlg( this, wxT( "Save HLSL source..." ), wxEmptyString, wxEmptyString, "HLSL files(*.hlsl)|*.hlsl", wxFD_OPEN | wxFD_FILE_MUST_EXIST );
+	wxFileDialog fileDlg( this, wxT( "Select HLSL file to open..." ), wxEmptyString, wxEmptyString, "HLSL files(*.hlsl)|*.hlsl", wxFD_OPEN | wxFD_FILE_MUST_EXIST );
 
 	if (fileDlg.ShowModal() == wxID_CANCEL)
 	{
