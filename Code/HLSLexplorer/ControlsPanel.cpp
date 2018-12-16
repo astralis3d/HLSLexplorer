@@ -60,6 +60,31 @@ BEGIN_EVENT_TABLE( CControlsPanel, wxPanel )
 
 END_EVENT_TABLE()
 
+
+namespace
+{
+	wxArrayString GetAllPresetsNamesInDirectory()
+	{
+		// Get path to exe's directory
+		const wxFileName f( wxStandardPaths::Get().GetExecutablePath() );
+		const wxString appPath( f.GetPath() );
+
+		// Find all files with *.preset extension
+		wxArrayString presets;
+		wxDir::GetAllFiles( appPath, &presets, wxT( "*.preset" ), wxDIR_FILES );
+
+		// Append all names to list
+		const size_t numPresets = presets.size();
+		for (size_t i = 0; i < numPresets; ++i)
+		{
+			wxFileName preset( presets[i] );
+			presets[i] = wxString( preset.GetName() );
+		}
+
+		return presets;
+	}
+}
+
 CControlsPanel::CControlsPanel( wxWindow* parent, SD3DOptions* D3DOptions )
 {
 	m_selectedAsic = AT_TAHITI;
@@ -282,6 +307,33 @@ void CControlsPanel::OnButtonSavePreset( wxCommandEvent& WXUNUSED(evt) )
 		const wxString presetName = dialog.GetPresetName();
 		const wxString presetPath = GetFullPresetPath( presetName );
 
+		// Check if there is already preset named the same
+		const wxArrayString presets = GetAllPresetsNamesInDirectory();
+
+		bool bIsSameNamedPresetPresent = false;
+		for (size_t i=0; i < presets.size(); i++)
+		{
+			if (presetName == presets[i])
+			{
+				bIsSameNamedPresetPresent = true;
+			}
+		}
+
+		// Ask if there is already a preset named the same
+		if (bIsSameNamedPresetPresent)
+		{
+			wxMessageDialog dlg( this,
+								 wxString::Format("There is already a preset named %s. Do you want to replace it?", presetName),
+								 "Question",
+								 wxCENTER | wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION );
+
+			const int answer = dlg.ShowModal();
+			if (answer == wxID_NO)
+			{
+				return;
+			}
+		}
+
 		// try to create file
 		FILE* pFile = nullptr;
 		fopen_s( &pFile, presetPath.c_str(), "wb" );
@@ -391,20 +443,7 @@ E_ASIC_TYPE CControlsPanel::GetSelectedAsicType() const
 //------------------------------------------------------------------------
 void CControlsPanel::InitializePresets()
 {
-	// Get path to exe's directory
-	const wxFileName f( wxStandardPaths::Get().GetExecutablePath() );
-	const wxString appPath( f.GetPath() );
-
-	// Find all files with *.preset extension
-	wxArrayString presets;
-	wxDir::GetAllFiles( appPath, &presets, wxT( "*.preset" ), wxDIR_FILES );
-
-	// Append all names to list
-	for (size_t i = 0; i < presets.size(); i++)
-	{
-		wxFileName preset( presets[i] );
-		presets[i] = wxString( preset.GetName() );
-	}
+	const wxArrayString presets = GetAllPresetsNamesInDirectory();
 
 	// Add presets to list
 	wxComboBox* pCombobox = XRCCTRL( *this, "comboboxPresets", wxComboBox );
