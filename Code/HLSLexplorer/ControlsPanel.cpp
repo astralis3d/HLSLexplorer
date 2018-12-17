@@ -316,6 +316,7 @@ void CControlsPanel::OnButtonSavePreset( wxCommandEvent& WXUNUSED(evt) )
 			if (presetName == presets[i])
 			{
 				bIsSameNamedPresetPresent = true;
+				break;
 			}
 		}
 
