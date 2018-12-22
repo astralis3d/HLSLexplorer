@@ -624,7 +624,7 @@
             <border>5</border>
             <object class="wxButton" name="btnOK">
               <label>_OK</label>
-              <default>0</default>
+              <default>1</default>
               <markup>0</markup>
               <bitmap />
             </object>
@@ -1087,6 +1087,69 @@
                   <style>wxTAB_TRAVERSAL</style>
                 </object>
               </object>
+            </object>
+          </object>
+        </object>
+      </object>
+    </object>
+  </object>
+  <object class="wxDialog" name="GoToLineDialog">
+    <style>wxDEFAULT_DIALOG_STYLE</style>
+    <title>Go To Line</title>
+    <centered>1</centered>
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <object class="sizeritem">
+        <option>0</option>
+        <flag>wxEXPAND</flag>
+        <border>5</border>
+        <object class="wxBoxSizer">
+          <orient>wxVERTICAL</orient>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxTOP|wxRIGHT|wxLEFT</flag>
+            <border>5</border>
+            <object class="wxStaticText" name="m_staticLineNumber">
+              <label>Line number:</label>
+              <wrap>-1</wrap>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxALL|wxEXPAND</flag>
+            <border>5</border>
+            <object class="wxTextCtrl" name="m_editLineNumber">
+              <value></value>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <option>0</option>
+        <flag>wxALIGN_CENTER_HORIZONTAL</flag>
+        <border>5</border>
+        <object class="wxBoxSizer">
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+            <border>5</border>
+            <object class="wxButton" name="OK">
+              <label>_OK</label>
+              <default>1</default>
+              <markup>0</markup>
+              <bitmap />
+            </object>
+          </object>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+            <border>5</border>
+            <object class="wxButton" name="Cancel">
+              <label>_Cancel</label>
+              <default>0</default>
+              <markup>0</markup>
+              <bitmap />
             </object>
           </object>
         </object>

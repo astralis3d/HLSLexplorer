@@ -32,6 +32,8 @@ enum
 	ID_SAVE_HLSL_SHADER,
 	ID_SAVE_DISASSEMBLED_SHADER,
 
+	ID_EDIT_GOTO_LINE,
+
 	ID_INSERT_DUMMY_VERTEX_SHADER,
 	ID_INSERT_DUMMY_PIXEL_SHADER,
 	ID_INSERT_DUMMY_COMPUTE_SHADER,
@@ -66,6 +68,8 @@ public:
 	void OnMenuFileSaveHLSLShader( wxCommandEvent& evt );
 	void OnMenuFileSaveDisassembledShader( wxCommandEvent& evt );
 
+	void OnMenuEditGoToLine( wxCommandEvent& evt );
+
 	void OnMenuInsertDummyVS( wxCommandEvent& evt );
 	void OnMenuInsertDummyPS( wxCommandEvent& evt );
 	void OnMenuInsertDummyCS( wxCommandEvent& evt );
@@ -76,7 +80,10 @@ public:
 	void OnSize( wxSizeEvent& event );
 
 	void OnMouseLeftWindowActive( wxMouseEvent& evt );
-	void OnMouseRightWindowActive( wxMouseEvent& evt );
+	void OnMouseRightWindowDXBCActive( wxMouseEvent& evt );
+	void OnMouseRightWindowDXILActive( wxMouseEvent& evt );
+	void OnMouseRightWindowGCNISAActive( wxMouseEvent& evt );
+
 
 private:
 	void InitializeUI();
@@ -86,11 +93,10 @@ private:
 
 private:
 	// main ui components
-	wxPanel * m_mainPanel = nullptr;
-	CControlsPanel*	m_pControlsPanel;
+	wxPanel *			m_mainPanel = nullptr;
+	CControlsPanel*		m_pControlsPanel;
 	wxSplitterWindow*	m_pSplitter = nullptr;
-	bool			m_bAutoWindowSplit = true;
-
+	bool				m_bAutoWindowSplit = true;
 
 	// left side (HLSL)
 	CEditCtrl*		m_pEditHLSL;
@@ -101,14 +107,14 @@ private:
 	CEditCtrl*		m_pEditASM_DXIL;
 	CEditCtrl*		m_pEditASM_GCNISA;
 
-	// Compilation
+
+	// Compilation support
 	CD3DCompilerLoader	m_compilerLoader;
 	CModernD3DLoader	m_modernCompierLoader;
 	CDisassemblerGCNISA	m_gcnisa;
 	SD3DOptions			m_D3DOptions;
 
-
-	// pixel shader preview
+	// Pixel shader preview
 	bool						m_bPSPreviewVisible = false;
 	CRealtimePSPreviewFrame*	m_pPSPreviewFrame = nullptr;
 
@@ -117,6 +123,7 @@ private:
 	// is active (left click)
 	bool			m_bHLSLWindowActive = true;
 	bool			m_bASMWindowActive = false;
+	CEditCtrl*		m_pEditSelected;
 
 	wxString		m_strHLSLPath = wxEmptyString;
 

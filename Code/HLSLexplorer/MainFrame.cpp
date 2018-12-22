@@ -3,6 +3,7 @@
 #include "Edit.h"
 #include "ControlsPanel.h"
 #include "AboutDialog.h"
+#include "GoToLineDialog.h"
 #include "RealtimePSPreviewFrame.h"
 #include "CompilationDX.h"
 
@@ -27,10 +28,15 @@ wxBEGIN_EVENT_TABLE( CMyFrame, wxFrame )
 	EVT_MENU( ID_SAVE_DISASSEMBLED_SHADER, CMyFrame::OnMenuFileSaveDisassembledShader )
 	EVT_MENU( ID_REALTIME_PIXEL_SHADER_PREVIEW, CMyFrame::OnMenuFileShowPSPreview )
 	EVT_MENU( ID_FILE_EXIT, CMyFrame::OnMenuFileExit )
+
+	EVT_MENU( ID_EDIT_GOTO_LINE, CMyFrame::OnMenuEditGoToLine )
+
 	EVT_MENU( ID_INSERT_DUMMY_VERTEX_SHADER, CMyFrame::OnMenuInsertDummyVS )
 	EVT_MENU( ID_INSERT_DUMMY_PIXEL_SHADER, CMyFrame::OnMenuInsertDummyPS )
 	EVT_MENU( ID_INSERT_DUMMY_COMPUTE_SHADER, CMyFrame::OnMenuInsertDummyCS )
+
 	EVT_MENU( ID_SETTINGS_AUTO_WINDOW_SPLIT, CMyFrame::OnMenuSettingsAutoWindowSplit )
+
 	EVT_MENU( ID_ABOUT, CMyFrame::OnAbout )
 
 	EVT_SIZE( CMyFrame::OnSize )
@@ -60,17 +66,18 @@ void CMyFrame::InitializeUI()
 	m_pEditHLSL->Bind( wxEVT_LEFT_DOWN, &CMyFrame::OnMouseLeftWindowActive, this );
 //	m_pEditHLSL->Bind( wxEVT_ENTER_WINDOW, &CMyFrame::OnMouseLeftWindowActive, this );
 	m_pEditHLSL->SetLanguage( Lang_HLSL );
+	m_pEditSelected = m_pEditHLSL;
 
 
 	//! Right window
 	m_pRightWindow = CreateDisassemblerOutputNotebook( m_pSplitter );
 
 	// right window is active (in this case Ctrl+S saves disassembled shader):
-	m_pRightWindow->Bind( wxEVT_ENTER_WINDOW, &CMyFrame::OnMouseRightWindowActive, this );
+	m_pRightWindow->Bind( wxEVT_ENTER_WINDOW, &CMyFrame::OnMouseRightWindowDXBCActive, this );
 
-	m_pEditASM_DXBC->Bind( wxEVT_LEFT_DOWN, &CMyFrame::OnMouseRightWindowActive, this );
-	m_pEditASM_DXIL->Bind( wxEVT_LEFT_DOWN, &CMyFrame::OnMouseRightWindowActive, this );
-	m_pEditASM_GCNISA->Bind( wxEVT_LEFT_DOWN, &CMyFrame::OnMouseRightWindowActive, this );
+	m_pEditASM_DXBC->Bind( wxEVT_LEFT_DOWN, &CMyFrame::OnMouseRightWindowDXBCActive, this );
+	m_pEditASM_DXIL->Bind( wxEVT_LEFT_DOWN, &CMyFrame::OnMouseRightWindowDXILActive, this );
+	m_pEditASM_GCNISA->Bind( wxEVT_LEFT_DOWN, &CMyFrame::OnMouseRightWindowGCNISAActive, this );
 
 	//m_pEditASM_DXBC->Bind( wxEVT_ENTER_WINDOW, &CMyFrame::OnMouseRightWindowActive, this );
 	//m_pEditASM_DXIL->Bind( wxEVT_ENTER_WINDOW, &CMyFrame::OnMouseRightWindowActive, this );
@@ -118,6 +125,10 @@ void CMyFrame::InitializeMenu()
 	fileMenu->AppendSeparator();
 	fileMenu->Append( ID_FILE_EXIT, "E&xit\tAlt+F4", "Quit this program" );
 
+	// edit
+	wxMenu* editMenu = new wxMenu;
+	editMenu->Append( ID_EDIT_GOTO_LINE, "Go To Line...\tCtrl+G" );
+
 	// insert
 	wxMenu* insertMenu = new wxMenu;
 	insertMenu->Append( ID_INSERT_DUMMY_VERTEX_SHADER, "Insert simple VS" );
@@ -138,6 +149,7 @@ void CMyFrame::InitializeMenu()
 	// now append the freshly created menu to the menu bar...
 	wxMenuBar *menuBar = new wxMenuBar();
 	menuBar->Append( fileMenu, "&File" );
+	menuBar->Append( editMenu, "&Edit" );
 	menuBar->Append( insertMenu, "&Insert" );
 	menuBar->Append( settingsMenu, "&Settings" );
 	menuBar->Append( helpMenu, "&Help" );
@@ -457,6 +469,29 @@ void CMyFrame::OnMenuFileSaveDisassembledShader( wxCommandEvent& evt )
 }
 
 //------------------------------------------------------------------------
+void CMyFrame::OnMenuEditGoToLine( wxCommandEvent& evt )
+{
+	if (!m_pEditSelected)
+		return;
+
+	const int totalLines = m_pEditSelected->GetLineCount();
+	const int currentLine = m_pEditSelected->GetCurrentLine() + 1;
+
+	CGoToLineDialog dialog(this, currentLine, totalLines);
+	if (dialog.ShowModal() == wxID_OK)
+	{
+		const int lineGoTo = dialog.GetLine();
+
+		if (lineGoTo > 0)
+		{
+			m_pEditSelected->GotoLine(lineGoTo-1);
+		}		
+	}
+
+	evt.Skip();
+}
+
+//------------------------------------------------------------------------
 void CMyFrame::OnMenuInsertDummyVS( wxCommandEvent& WXUNUSED( evt ) )
 {
 	wxTextCtrl* pEntrypoint = XRCCTRL(*this, "textEntrypoint", wxTextCtrl);
@@ -591,24 +626,45 @@ void CMyFrame::OnMenuSettingsAutoWindowSplit( wxCommandEvent& evt )
 }
 
 //------------------------------------------------------------------------
-
 void CMyFrame::OnMouseLeftWindowActive( wxMouseEvent& evt )
 {
 	m_bHLSLWindowActive = true;
 	m_bASMWindowActive = false;
 
-	//::OutputDebugStringA("left\n");
+	m_pEditSelected = m_pEditHLSL;
 
 	evt.Skip();
 }
 
 //------------------------------------------------------------------------
-void CMyFrame::OnMouseRightWindowActive( wxMouseEvent& evt )
+void CMyFrame::OnMouseRightWindowDXBCActive( wxMouseEvent& evt )
 {
 	m_bHLSLWindowActive = false;
 	m_bASMWindowActive = true;
 
-	//::OutputDebugStringA( "right\n" );
+	m_pEditSelected = m_pEditASM_DXBC;
+
+	evt.Skip();
+}
+
+//------------------------------------------------------------------------
+void CMyFrame::OnMouseRightWindowDXILActive( wxMouseEvent& evt )
+{
+	m_bHLSLWindowActive = false;
+	m_bASMWindowActive = true;
+
+	m_pEditSelected = m_pEditASM_DXIL;
+
+	evt.Skip();
+}
+
+//------------------------------------------------------------------------
+void CMyFrame::OnMouseRightWindowGCNISAActive( wxMouseEvent& evt )
+{
+	m_bHLSLWindowActive = false;
+	m_bASMWindowActive = true;
+
+	m_pEditSelected = m_pEditASM_GCNISA;
 
 	evt.Skip();
 }

@@ -48,6 +48,9 @@
     <ClCompile Include="CompilationDXIL.cpp">
       <Filter>Application\Compilation</Filter>
     </ClCompile>
+    <ClCompile Include="GoToLineDialog.cpp">
+      <Filter>Application\gui\Dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Edit.h">
@@ -110,6 +113,9 @@
     </ClInclude>
     <ClInclude Include="official\elf\elf32.h">
       <Filter>Application\Compilation\disassemblers\official\elf</Filter>
+    </ClInclude>
+    <ClInclude Include="GoToLineDialog.h">
+      <Filter>Application\gui\Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
