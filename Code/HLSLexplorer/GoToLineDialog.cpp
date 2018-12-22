@@ -13,7 +13,7 @@ END_EVENT_TABLE()
 
 //-----------------------------------------------------------------------------
 CGoToLineDialog::CGoToLineDialog( wxWindow* parent, int currentLine, int totalLines )
-	: m_value(0)
+	: m_value(currentLine)
 {
 	wxXmlResource::Get()->LoadDialog( this, parent, wxT("GoToLineDialog") );
 
@@ -23,14 +23,12 @@ CGoToLineDialog::CGoToLineDialog( wxWindow* parent, int currentLine, int totalLi
 	val.SetMin(1);
 	val.SetMax(totalLines);
 
-	// don't want to beep if invalid key is pressed
+	// don't want a beep if invalid key is pressed
 	wxValidator::SuppressBellOnError(true);
 		
 	// Assign validator to text control
 	wxTextCtrl* pEditLineNumber = XRCCTRL(*this, "m_editLineNumber", wxTextCtrl);
 	pEditLineNumber->SetValidator(val);
-
-	m_value = currentLine;
 
 	wxStaticText* hintText = XRCCTRL(*this, "m_staticLineNumber", wxStaticText);
 	hintText->SetLabel( wxString::Format("Line number (1 - %d):", totalLines) );
