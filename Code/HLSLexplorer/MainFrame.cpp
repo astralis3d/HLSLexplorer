@@ -474,17 +474,18 @@ void CMyFrame::OnMenuEditGoToLine( wxCommandEvent& evt )
 	if (!m_pEditSelected)
 		return;
 
-	const int totalLines = m_pEditSelected->GetLineCount();
+	// Scintilla starts numbering lines from 0.
 	const int currentLine = m_pEditSelected->GetCurrentLine() + 1;
+	const int totalLines = m_pEditSelected->GetLineCount();
 
 	CGoToLineDialog dialog(this, currentLine, totalLines);
 	if (dialog.ShowModal() == wxID_OK)
 	{
-		const int lineGoTo = dialog.GetLine();
+		const int lineGoTo = dialog.GetLine() - 1;
 
-		if (lineGoTo > 0)
+		if (lineGoTo >= 0)
 		{
-			m_pEditSelected->GotoLine(lineGoTo-1);
+			m_pEditSelected->GotoLine(lineGoTo);
 		}		
 	}
 

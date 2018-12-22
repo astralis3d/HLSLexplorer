@@ -8,7 +8,7 @@ public:
 	unsigned int GetLine() const;
 
 private:
-	unsigned int m_value = 0;
+	unsigned int m_value;
 	
 	void OnOK( wxCommandEvent& evt );
 	void OnCancel( wxCommandEvent& evt );

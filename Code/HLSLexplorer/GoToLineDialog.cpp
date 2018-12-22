@@ -13,6 +13,7 @@ END_EVENT_TABLE()
 
 //-----------------------------------------------------------------------------
 CGoToLineDialog::CGoToLineDialog( wxWindow* parent, int currentLine, int totalLines )
+	: m_value(0)
 {
 	wxXmlResource::Get()->LoadDialog( this, parent, wxT("GoToLineDialog") );
 
@@ -36,6 +37,8 @@ CGoToLineDialog::CGoToLineDialog( wxWindow* parent, int currentLine, int totalLi
 	
 	// What happens when user presses Esc
 	SetEscapeId(XRCID("Cancel"));
+
+	SetSize(300, -1);
 }
 
 //------------------------------------------------------------------------

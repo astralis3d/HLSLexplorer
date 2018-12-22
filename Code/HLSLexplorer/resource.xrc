@@ -1095,6 +1095,7 @@
   </object>
   <object class="wxDialog" name="GoToLineDialog">
     <style>wxDEFAULT_DIALOG_STYLE</style>
+    <size>300,-1</size>
     <title>Go To Line</title>
     <centered>1</centered>
     <object class="wxBoxSizer">
@@ -1126,7 +1127,7 @@
       </object>
       <object class="sizeritem">
         <option>0</option>
-        <flag>wxALIGN_CENTER_HORIZONTAL</flag>
+        <flag>wxALIGN_RIGHT</flag>
         <border>5</border>
         <object class="wxBoxSizer">
           <orient>wxHORIZONTAL</orient>
