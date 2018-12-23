@@ -87,13 +87,10 @@ void CMyFrame::InitializeUI()
 	m_pSplitter->SetMinimumPaneSize( 100 );
 	m_pSplitter->SetSashPosition( 500 );
 	m_pSplitter->SplitVertically( m_pEditHLSL, m_pRightWindow, 0 );
-	m_pSplitter->SetSize( GetClientSize() );
-
 
 	// Code windows sizer
 	wxBoxSizer* pSizerEditorsParent = new wxBoxSizer( wxVERTICAL );
 	pSizerEditorsParent->Add( m_pSplitter, 1, wxEXPAND | wxALL, 0 );
-
 
 	// Controls panel sizer.
 	m_pControlsPanel = new CControlsPanel( m_mainPanel, &m_D3DOptions );
@@ -244,6 +241,11 @@ void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 	wxString sourceHLSL = m_pEditHLSL->GetText();
 	const char* pszSourceHLSL = sourceHLSL.c_str();
 
+	// Keep track the current line in ASM textfields
+	const int currLineDXBCBefore = m_pEditASM_DXBC->GetCurrentLine();
+	const int currLineDXILBefore = m_pEditASM_DXIL->GetCurrentLine();
+	const int currLineGCNBefore = m_pEditASM_GCNISA->GetCurrentLine();
+
 	if ( m_compilerLoader.IsValid() )
 	{
 		m_pEditASM_DXBC->SetText(wxString("Please wait..."));
@@ -292,6 +294,27 @@ void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 		{
 			m_pRightWindow->SetSelection( 1 );
 		}
+	}
+
+	// How many lines in ASM textfields after compilation
+	const int totalLinesDXBCAfter = m_pEditASM_DXBC->GetLineCount();
+	const int totalLinesDXILAfter = m_pEditASM_DXIL->GetLineCount();
+	const int totalLinesGCNAfter = m_pEditASM_GCNISA->GetLineCount();
+
+	// Go to line where it was before, don't reset to 0.
+	if (currLineDXBCBefore <= totalLinesDXBCAfter)
+	{
+		m_pEditASM_DXBC->GotoLine(currLineDXBCBefore);
+	}
+
+	if (currLineDXILBefore <= totalLinesDXILAfter)
+	{
+		m_pEditASM_DXIL->GotoLine(currLineDXILBefore);
+	}
+
+	if (currLineGCNBefore <= totalLinesGCNAfter)
+	{
+		m_pEditASM_GCNISA->GotoLine(currLineGCNBefore);
 	}
 
 	evt.Skip();
