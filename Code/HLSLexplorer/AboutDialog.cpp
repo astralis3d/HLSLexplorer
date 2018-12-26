@@ -2,11 +2,11 @@
 #include "AboutDialog.h"
 #include <wx/xrc/xmlres.h>
 
-BEGIN_EVENT_TABLE(CAboutDlg, wxDialog )
-	EVT_BUTTON( XRCID( "btnOK" ), CAboutDlg::OnOK )
+BEGIN_EVENT_TABLE(CAboutDialog, wxDialog )
+	EVT_BUTTON( XRCID( "btnOK" ), CAboutDialog::OnOK )
 END_EVENT_TABLE()
 
-CAboutDlg::CAboutDlg( wxWindow* parent )
+CAboutDialog::CAboutDialog( wxWindow* parent )
 {
 	wxXmlResource::Get()->LoadDialog( this, parent, wxT( "AboutDlg" ) );
 	
@@ -37,9 +37,12 @@ CAboutDlg::CAboutDlg( wxWindow* parent )
 		pOKBtn->SetFocus();
 		pOKBtn->SetDefault();
 	}
+
+	// Exit with escape
+	SetEscapeId(XRCID("btnOK"));
 }
 
-void CAboutDlg::OnOK( wxCommandEvent& evt )
+void CAboutDialog::OnOK( wxCommandEvent& evt )
 {
 	if ( IsModal() )
 	{

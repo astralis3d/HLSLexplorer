@@ -13,6 +13,8 @@ END_EVENT_TABLE()
 CNewPresetDialog::CNewPresetDialog( wxWindow* parent )
 {
 	wxXmlResource::Get()->LoadDialog(this, parent, wxT("nameDialog") );
+
+	SetEscapeId(XRCID("btnCancel"));
 }
 
 //------------------------------------------------------------------------

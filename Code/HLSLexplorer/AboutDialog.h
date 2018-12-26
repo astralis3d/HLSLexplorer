@@ -1,9 +1,9 @@
 #pragma once
 
-class CAboutDlg : public wxDialog
+class CAboutDialog : public wxDialog
 {
 public:
-	CAboutDlg(wxWindow* parent);
+	CAboutDialog(wxWindow* parent);
 
 private:
 	void OnOK(wxCommandEvent& evt);

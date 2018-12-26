@@ -183,7 +183,7 @@ wxNotebook* CMyFrame::CreateDisassemblerOutputNotebook(wxWindow* parent)
 //------------------------------------------------------------------------
 void CMyFrame::OnAbout( wxCommandEvent& WXUNUSED( event ) )
 {
-	CAboutDlg aboutDlg(this);
+	CAboutDialog aboutDlg(this);
 	aboutDlg.ShowModal();
 }
 
