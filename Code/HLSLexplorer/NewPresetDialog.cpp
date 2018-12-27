@@ -15,6 +15,8 @@ CNewPresetDialog::CNewPresetDialog( wxWindow* parent )
 	wxXmlResource::Get()->LoadDialog(this, parent, wxT("nameDialog") );
 
 	SetEscapeId(XRCID("btnCancel"));
+
+	SetSize(300, -1);
 }
 
 //------------------------------------------------------------------------

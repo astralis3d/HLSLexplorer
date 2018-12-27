@@ -547,6 +547,7 @@
                 <flag>wxALL</flag>
                 <border>5</border>
                 <object class="wxComboBox" name="comboboxPresets">
+                  <style>wxCB_READONLY</style>
                   <size>200,-1</size>
                   <value></value>
                   <content />
@@ -587,14 +588,14 @@
     <object class="wxBoxSizer">
       <orient>wxVERTICAL</orient>
       <object class="sizeritem">
-        <option>1</option>
+        <option>0</option>
         <flag>wxEXPAND</flag>
         <border>5</border>
         <object class="wxBoxSizer">
-          <orient>wxHORIZONTAL</orient>
+          <orient>wxVERTICAL</orient>
           <object class="sizeritem">
             <option>0</option>
-            <flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+            <flag>wxLEFT|wxRIGHT|wxTOP</flag>
             <border>5</border>
             <object class="wxStaticText" name="m_staticText3">
               <label>Name</label>
@@ -602,8 +603,8 @@
             </object>
           </object>
           <object class="sizeritem">
-            <option>1</option>
-            <flag>wxALL</flag>
+            <option>0</option>
+            <flag>wxALL|wxEXPAND</flag>
             <border>5</border>
             <object class="wxTextCtrl" name="editPresetName">
               <value></value>
@@ -614,7 +615,7 @@
       </object>
       <object class="sizeritem">
         <option>1</option>
-        <flag>wxEXPAND</flag>
+        <flag>wxALIGN_CENTER_HORIZONTAL</flag>
         <border>5</border>
         <object class="wxBoxSizer">
           <orient>wxHORIZONTAL</orient>
@@ -1095,7 +1096,6 @@
   </object>
   <object class="wxDialog" name="GoToLineDialog">
     <style>wxDEFAULT_DIALOG_STYLE</style>
-    <size>300,-1</size>
     <title>Go To Line</title>
     <centered>1</centered>
     <object class="wxBoxSizer">
