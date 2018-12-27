@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <string>
-
 enum EShaderType
 {
 	ShaderType_VS = 0,
@@ -50,12 +48,14 @@ enum EPackMatrix
 	PM_ColumnMajor
 };
 
-
 struct SStrippingFlags
 {
-	SStrippingFlags() 
+	SStrippingFlags()
+		: m_EnableStripping(false)
+		, m_stripReflectionData(false)
+		, m_stripDebugInfo(false)
+		, m_stripTestBlobs(false)
 	{
-		memset(this, 0, sizeof(SStrippingFlags));
 	}
 
 	bool m_EnableStripping;
@@ -68,10 +68,16 @@ struct SStrippingFlags
 struct SDisassemblyFlags
 {
 	SDisassemblyFlags()
+		: m_enableColorCode(false)
+		, m_enableDefaultValuePrints(false)
+		, m_enableInstructionNumbering(false)
+		, m_disableDebugInfo(false)
+		, m_enableInstructionOffset(false)
+		, m_instructionOnly(false)
+		, m_printHexLiterals(false)
 	{
-		memset(this, 0, sizeof(SDisassemblyFlags));
 	}
-
+	
 	bool m_enableColorCode;
 	bool m_enableDefaultValuePrints;
 	bool m_enableInstructionNumbering;
@@ -81,12 +87,26 @@ struct SDisassemblyFlags
 	bool m_printHexLiterals;
 };
 
-
 struct SCompileFlags
 {
 	SCompileFlags()
+		: m_debug(false)
+		, m_skipValidation(false)
+		, m_skipOptimization(false)
+		, m_partialPrecision(false)
+		, m_forceVSSoftwareNoOpt(false)
+		, m_forcePSSoftwareNoOpt(false)
+		, m_noPreshader(false)
+		, m_enableStrictness(false)
+		, m_enableBackwardsCompatibility(false)
+		, m_IEEEStrictness(false)
+		, m_WarningsAreErrors(false)
+		, m_ResourcesMayAlias(false)
+		, m_AllResourcesBound(false)
+		, m_optimization(EOptimization::Opt_NotSet)
+		, m_flowControl(EFlowControl::FC_NotSet)
+		, m_packMatrix(EPackMatrix::PM_NotSet)
 	{
-		memset(this, 0, sizeof(SCompileFlags));
 	}
 
 
@@ -114,10 +134,13 @@ struct SCompileFlags
 struct SD3DOptions
 {
 	SD3DOptions()
+		: compileFlags()
+		, disassemblyFlags()
+		, strippingFlags()
+		, performPreprocess(false)
+		, shaderType(EShaderType::ShaderType_VS)
+		, shaderProfile(EShaderProfile::ShaderProfile_5_0)
 	{
-		memset(this, 0, sizeof(SD3DOptions));
-
-		shaderProfile = EShaderProfile::ShaderProfile_5_0;
 	}
 	
 	SCompileFlags		compileFlags;
