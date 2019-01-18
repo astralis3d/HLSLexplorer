@@ -22,16 +22,15 @@ public:
 
 	~CEditCtrl();
 
-
 	void SetLanguage(ELanguage lang);
 
+	bool IsSaved() const;
+	void SetSaved(bool val);
 
 	// Event handlers
 	void OnSize(wxSizeEvent& evt);
-	void OnKeyEventModifySaveState( wxKeyEvent& evt );
-
-	bool IsSaved() const;
-	void SetSaved( bool val );	
+	void OnKeyEventModifySaveState(wxKeyEvent& evt );
+	void OnCharAdded(wxStyledTextEvent& evt);
 
 private:
 	// File

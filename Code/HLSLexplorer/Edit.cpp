@@ -5,6 +5,8 @@
 BEGIN_EVENT_TABLE(CEditCtrl, wxStyledTextCtrl)
 	EVT_SIZE(CEditCtrl::OnSize)
 	EVT_KEY_DOWN(CEditCtrl::OnKeyEventModifySaveState )
+
+	EVT_STC_CHARADDED(wxID_ANY, CEditCtrl::OnCharAdded)
 END_EVENT_TABLE()
 
 CEditCtrl::CEditCtrl(wxWindow* parent, wxWindowID id /*= wxID_ANY*/,
@@ -85,12 +87,37 @@ void CEditCtrl::SetLanguage(ELanguage lang)
 	SetUseTabs(false);
 }
 
+//-----------------------------------------------------------------------------
+void CEditCtrl::OnCharAdded( wxStyledTextEvent & evt )
+{
+	const char chr = (char) evt.GetKey();
+	const int currLine = GetCurrentLine();
+
+	if (chr == '\n')
+	{
+		int lineInd = 0;
+		if (currLine > 0)
+		{
+			// Get indentation of previous line
+			lineInd = GetLineIndentation( currLine - 1 );
+		}
+		
+		if (lineInd == 0)
+			return;
+
+		// Set indentation from previous line for new one
+		SetLineIndentation( currLine, lineInd );
+		GotoPos( PositionFromLine(currLine) + lineInd );
+	}
+}
+
 //------------------------------------------------------------------------
 void CEditCtrl::OnSize(wxSizeEvent& evt)
 {
 	evt.Skip();
 }
 
+//-----------------------------------------------------------------------------
 void CEditCtrl::OnKeyEventModifySaveState( wxKeyEvent& evt )
 {
 	m_bSaved = false;
