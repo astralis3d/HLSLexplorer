@@ -331,7 +331,7 @@ void CControlsPanel::OnCheckboxPerformD3DPreprocess( wxCommandEvent& evt )
 //-----------------------------------------------------------------------------
 void CControlsPanel::OnButtonSavePreset( wxCommandEvent& WXUNUSED(evt) )
 {
-	CNewPresetDialog dialog( this );
+	CNewPresetDialog dialog( this->GetParent() );
 	if (dialog.ShowModal() == wxID_OK)
 	{
 		// Create new file
