@@ -187,6 +187,7 @@
     </ClCompile>
     <ClCompile Include="Prefs.cpp" />
     <ClCompile Include="RealtimePSPreviewFrame.cpp" />
+    <ClCompile Include="RecentFilesManager.cpp" />
     <ClCompile Include="resource.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -214,6 +215,7 @@
     <ClInclude Include="PCH.h" />
     <ClInclude Include="Prefs.h" />
     <ClInclude Include="RealtimePSPreviewFrame.h" />
+    <ClInclude Include="RecentFilesManager.h" />
     <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>

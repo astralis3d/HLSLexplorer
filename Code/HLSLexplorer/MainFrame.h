@@ -8,6 +8,7 @@
 #include "CompilerLoader.h"
 #include "CompilerModernDXLoader.h"
 #include "DisassemblerGCNISA.h"
+#include "RecentFilesManager.h"
 
 // IDs for the controls and the menu commands
 enum
@@ -27,6 +28,17 @@ enum
 	ID_LOAD_D3DCOMPILER_DLL,
 
 	ID_OPEN_HLSL,
+
+	ID_MENU_RECENT_FILES,
+	ID_OPEN_RECENT_0,
+	ID_OPEN_RECENT_1,
+	ID_OPEN_RECENT_2,
+	ID_OPEN_RECENT_3,
+	ID_OPEN_RECENT_4,
+	ID_OPEN_RECENT_5,
+	ID_OPEN_RECENT_6,
+	ID_OPEN_RECENT_7,
+	ID_CLEAR_RECENT,
 
 	ID_SAVE_AUTO,
 	ID_SAVE_HLSL_SHADER,
@@ -67,6 +79,8 @@ public:
 	void OnMenuFileSaveAuto( wxCommandEvent& evt );
 	void OnMenuFileSaveHLSLShader( wxCommandEvent& evt );
 	void OnMenuFileSaveDisassembledShader( wxCommandEvent& evt );
+	void OnMenuFileOpenRecent( wxCommandEvent& evt );
+	void OnMenuFileClearRecent( wxCommandEvent& evt );
 
 	void OnMenuEditGoToLine( wxCommandEvent& evt );
 
@@ -84,10 +98,14 @@ public:
 	void OnMouseRightWindowDXILActive( wxMouseEvent& evt );
 	void OnMouseRightWindowGCNISAActive( wxMouseEvent& evt );
 
-
 private:
 	void InitializeUI();
 	void InitializeMenu();
+
+	void UpdateRecentFiles();
+	void ClearRecentFiles();
+
+	void OpenShaderFile(const wxString& filepath);
 
 	wxNotebook* CreateDisassemblerOutputNotebook( wxWindow* parent );
 
@@ -106,6 +124,10 @@ private:
 	CEditCtrl*		m_pEditASM_DXBC;
 	CEditCtrl*		m_pEditASM_DXIL;
 	CEditCtrl*		m_pEditASM_GCNISA;
+
+	// Recent files
+	CRecentFilesManager	m_recentFilesManager;
+	wxMenu* m_submenuRecentFiles;
 
 
 	// Compilation support

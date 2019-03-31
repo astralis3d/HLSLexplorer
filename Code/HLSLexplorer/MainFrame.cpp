@@ -29,6 +29,16 @@ wxBEGIN_EVENT_TABLE( CMyFrame, wxFrame )
 	EVT_MENU( ID_REALTIME_PIXEL_SHADER_PREVIEW, CMyFrame::OnMenuFileShowPSPreview )
 	EVT_MENU( ID_FILE_EXIT, CMyFrame::OnMenuFileExit )
 
+	EVT_MENU( ID_OPEN_RECENT_0, CMyFrame::OnMenuFileOpenRecent )
+	EVT_MENU( ID_OPEN_RECENT_1, CMyFrame::OnMenuFileOpenRecent )
+	EVT_MENU( ID_OPEN_RECENT_2, CMyFrame::OnMenuFileOpenRecent )
+	EVT_MENU( ID_OPEN_RECENT_3, CMyFrame::OnMenuFileOpenRecent )
+	EVT_MENU( ID_OPEN_RECENT_4, CMyFrame::OnMenuFileOpenRecent )
+	EVT_MENU( ID_OPEN_RECENT_5, CMyFrame::OnMenuFileOpenRecent )
+	EVT_MENU( ID_OPEN_RECENT_6, CMyFrame::OnMenuFileOpenRecent )
+	EVT_MENU( ID_OPEN_RECENT_7, CMyFrame::OnMenuFileOpenRecent )
+	EVT_MENU( ID_CLEAR_RECENT,  CMyFrame::OnMenuFileClearRecent )
+
 	EVT_MENU( ID_EDIT_GOTO_LINE, CMyFrame::OnMenuEditGoToLine )
 
 	EVT_MENU( ID_INSERT_DUMMY_VERTEX_SHADER, CMyFrame::OnMenuInsertDummyVS )
@@ -48,6 +58,7 @@ CMyFrame::CMyFrame( const wxString& str )
 {
 	InitializeMenu();
 	InitializeUI();
+	UpdateRecentFiles();
 }
 
 //------------------------------------------------------------------------
@@ -120,6 +131,11 @@ void CMyFrame::InitializeMenu()
 	fileMenu->Append( ID_REALTIME_PIXEL_SHADER_PREVIEW, "Real-time PS preview...\tF7" );
 	fileMenu->Check( ID_TOGGLEPANELVISIBILITY, true );
 	fileMenu->AppendSeparator();
+
+	m_submenuRecentFiles = new wxMenu;
+	//fileMenu->AppendSubMenu(m_submenuRecentFiles, "Recent Files");
+	fileMenu->Append( ID_MENU_RECENT_FILES, "Recent files", m_submenuRecentFiles );
+	fileMenu->AppendSeparator();
 	fileMenu->Append( ID_FILE_EXIT, "E&xit\tAlt+F4", "Quit this program" );
 
 	// edit
@@ -153,6 +169,68 @@ void CMyFrame::InitializeMenu()
 
 	// ... and attach this menu bar to the frame
 	SetMenuBar( menuBar );
+}
+
+//-----------------------------------------------------------------------------
+void CMyFrame::UpdateRecentFiles()
+{
+	wxMenu* ri = m_submenuRecentFiles;
+	
+	// Clear everything from old menu
+	for (int i = ri->GetMenuItemCount() -1; i >= 0; --i)
+	{
+		wxMenuItem* recentItem = ri->FindItemByPosition(i);
+		ri->Destroy(recentItem);
+	}
+
+	// If there is no recent files on list, disable 'recent files' menu
+	if (m_recentFilesManager.Count() == 0)
+	{
+		// '0' menu => "file" menu
+		GetMenuBar()->GetMenu( 0 )->Enable(ID_MENU_RECENT_FILES, false);
+		return;
+	}
+	else
+	{
+		// There are recent files on list
+		// Enable 'recent files' submenu
+		GetMenuBar()->GetMenu( 0 )->Enable( ID_MENU_RECENT_FILES, true );
+
+		// populate with recent items
+		for (unsigned int i = 0; i < m_recentFilesManager.Count(); i++)
+		{
+			ri->Append( ID_OPEN_RECENT_0 + i, wxString::Format( "%d %s", (i + 1), m_recentFilesManager.m_recentFileList[i] ) );
+		}
+
+		// add bonus stuff
+		ri->AppendSeparator();
+		ri->Append( ID_CLEAR_RECENT, "Clear recent" );
+	}
+}
+
+//-----------------------------------------------------------------------------
+void CMyFrame::OpenShaderFile( const wxString& filepath )
+{
+	// Attempt to read file	
+	wxFileInputStream inStream( filepath );
+	if (!inStream.IsOk())
+	{
+		// todo: log error
+		return;
+	}
+
+	// Get path to opened HLSL shader
+	wxString fileFullPath = filepath;
+	const size_t x = fileFullPath.find_last_of( "\\/" );
+	m_strHLSLPath = fileFullPath.substr( 0, x );
+
+	wxStringOutputStream str;
+	inStream.Read( str );
+
+	m_pEditHLSL->SetText( str.GetString() );
+
+	m_recentFilesManager.AddRecent( fileFullPath.c_str().AsChar() );
+	UpdateRecentFiles();
 }
 
 //------------------------------------------------------------------------
@@ -353,23 +431,7 @@ void CMyFrame::OnMenuFileOpenHLSLShader( wxCommandEvent& evt )
 		return;
 	}
 
-	// Get path to opened HLSL shader
-	wxString fileFullPath =  fileDlg.GetPath();
-	const size_t x = fileFullPath.find_last_of("\\/");
-	m_strHLSLPath = fileFullPath.substr(0, x);
-	
-
-	wxFileInputStream inStream( fileDlg.GetPath() );
-	if (!inStream.IsOk())
-	{
-		// todo: log error
-		return;
-	}
-
-	wxStringOutputStream str;
-	inStream.Read(str);
-	
-	m_pEditHLSL->SetText( str.GetString() );
+	OpenShaderFile( fileDlg.GetPath() );
 
 	evt.Skip();
 }
@@ -487,6 +549,43 @@ void CMyFrame::OnMenuFileSaveHLSLShader( wxCommandEvent& evt )
 void CMyFrame::OnMenuFileSaveDisassembledShader( wxCommandEvent& evt )
 {
 	// not implemented yet...
+
+	evt.Skip();
+}
+
+//-----------------------------------------------------------------------------
+void CMyFrame::OnMenuFileOpenRecent( wxCommandEvent& evt )
+{
+	const int idFile = evt.GetId() - ID_OPEN_RECENT_0;
+	const std::string recentFilePath = m_recentFilesManager.m_recentFileList[idFile];
+
+	bool bExists = wxFile::Exists( recentFilePath );
+	if (!bExists)
+	{
+		const int answer = wxMessageBox( wxString::Format("File %s couldn't be found. Remove from recent list?", recentFilePath),
+										 "File not found",
+										 wxYES_NO,
+										 this );
+		if (answer == wxYES)
+		{
+			m_recentFilesManager.EraseByIndex(idFile);
+			UpdateRecentFiles();
+
+			return;
+		}
+	}
+	else
+	{
+		// Open file
+		OpenShaderFile( recentFilePath );
+	}
+}
+
+//-----------------------------------------------------------------------------
+void CMyFrame::OnMenuFileClearRecent( wxCommandEvent& evt )
+{
+	m_recentFilesManager.ClearAll();
+	UpdateRecentFiles();
 
 	evt.Skip();
 }
