@@ -6,6 +6,7 @@
 # HLSLexplorer
 art/
 BinTemp/
+Bin/recent.dat
 
 # User-specific files
 *.suo

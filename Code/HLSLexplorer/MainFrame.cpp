@@ -13,6 +13,7 @@
 #include <wx/notebook.h>
 #include <wx/wfstream.h>
 #include <wx/sstream.h>
+#include <wx/stdpaths.h>
 #include <wx/xrc/xmlres.h>
 
 wxBEGIN_EVENT_TABLE( CMyFrame, wxFrame )
@@ -58,6 +59,8 @@ CMyFrame::CMyFrame( const wxString& str )
 {
 	InitializeMenu();
 	InitializeUI();
+
+	m_recentFilesManager.LoadFromFile( GetRecentFilesPath() );
 	UpdateRecentFiles();
 }
 
@@ -199,13 +202,24 @@ void CMyFrame::UpdateRecentFiles()
 		// populate with recent items
 		for (unsigned int i = 0; i < m_recentFilesManager.Count(); i++)
 		{
-			ri->Append( ID_OPEN_RECENT_0 + i, wxString::Format( "%d %s", (i + 1), m_recentFilesManager.m_recentFileList[i] ) );
+			ri->Append( ID_OPEN_RECENT_0 + i, wxString::Format( "%d %s", (i + 1), m_recentFilesManager.RecentFiles()[i] ) );
 		}
 
 		// add bonus stuff
 		ri->AppendSeparator();
 		ri->Append( ID_CLEAR_RECENT, "Clear recent" );
 	}
+}
+
+//-----------------------------------------------------------------------------
+std::string CMyFrame::GetRecentFilesPath() const
+{
+	const wxFileName f( wxStandardPaths::Get().GetExecutablePath() );
+
+	wxString appPath( f.GetPath() );
+	appPath += wxString("\\recent.dat");
+
+	return appPath.ToStdString();
 }
 
 //-----------------------------------------------------------------------------
@@ -557,7 +571,7 @@ void CMyFrame::OnMenuFileSaveDisassembledShader( wxCommandEvent& evt )
 void CMyFrame::OnMenuFileOpenRecent( wxCommandEvent& evt )
 {
 	const int idFile = evt.GetId() - ID_OPEN_RECENT_0;
-	const std::string recentFilePath = m_recentFilesManager.m_recentFileList[idFile];
+	const std::string recentFilePath = m_recentFilesManager.RecentFiles()[idFile];
 
 	bool bExists = wxFile::Exists( recentFilePath );
 	if (!bExists)
@@ -698,6 +712,7 @@ void CMyFrame::OnCloseEvent( wxCloseEvent& evt )
 				case wxID_NO:
 				{
 					// Exit
+					m_recentFilesManager.SaveToFile( GetRecentFilesPath() );
 					Destroy();
 				}
 				break;
@@ -723,6 +738,7 @@ void CMyFrame::OnCloseEvent( wxCloseEvent& evt )
 						// save bytes
 						outStream.Write( (const void*)m_pEditHLSL->GetText().c_str(), m_pEditHLSL->GetText().size() );
 
+						m_recentFilesManager.SaveToFile( GetRecentFilesPath() );
 						Destroy();
 					}
 				}
@@ -731,11 +747,13 @@ void CMyFrame::OnCloseEvent( wxCloseEvent& evt )
 		}  // if ( !m_pEditHLSL->IsSaved() )
 		else
 		{
+			m_recentFilesManager.SaveToFile( GetRecentFilesPath() );
 			Destroy();
 		}
 	}
 	else
 	{
+		m_recentFilesManager.SaveToFile( GetRecentFilesPath() );
 		Destroy();
 	}
 }

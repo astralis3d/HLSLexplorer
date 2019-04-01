@@ -104,6 +104,7 @@ private:
 
 	void UpdateRecentFiles();
 	void ClearRecentFiles();
+	std::string GetRecentFilesPath() const;
 
 	void OpenShaderFile(const wxString& filepath);
 

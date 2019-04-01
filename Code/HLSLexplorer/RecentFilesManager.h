@@ -12,7 +12,8 @@ public:
 	CRecentFilesManager();
 	~CRecentFilesManager();
 
-	unsigned int Count() const { return m_nNumRecentFiles; }
+	const TVecString& RecentFiles() const;
+	unsigned int Count() const;
 	
 	bool Empty() const;
 	bool Contains(const std::string& name) const;
@@ -23,10 +24,9 @@ public:
 	void ClearAll();
 	
 	bool LoadFromFile(const std::string& file);
-	bool SaveToFile(const std::string& file);
-
-	TVecString m_recentFileList;
+	bool SaveToFile(const std::string& file) const;
 
 private:
+	TVecString m_recentFileList;
 	unsigned int m_nNumRecentFiles;
 };

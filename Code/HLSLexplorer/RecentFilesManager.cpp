@@ -11,7 +11,14 @@ CRecentFilesManager::CRecentFilesManager()
 //-----------------------------------------------------------------------------
 CRecentFilesManager::~CRecentFilesManager()
 {
+	m_recentFileList.clear();
+	m_nNumRecentFiles = 0;
+}
 
+//-----------------------------------------------------------------------------
+unsigned int CRecentFilesManager::Count() const
+{
+	return m_nNumRecentFiles;
 }
 
 //-----------------------------------------------------------------------------
@@ -52,7 +59,7 @@ void CRecentFilesManager::AddRecent( const std::string& recentFile )
 	}
 
 	// If too many elements, remove the last one.
-	if (Count() > MAX_RECENT_FILES)
+	if (m_nNumRecentFiles > MAX_RECENT_FILES)
 	{
 		m_recentFileList.erase( std::end(m_recentFileList) - 1 );
 		m_nNumRecentFiles = MAX_RECENT_FILES;
@@ -62,7 +69,7 @@ void CRecentFilesManager::AddRecent( const std::string& recentFile )
 //-----------------------------------------------------------------------------
 void CRecentFilesManager::EraseByIndex( unsigned int index )
 {
-	const unsigned int maxIndex = Count()-1;
+	const unsigned int maxIndex = m_nNumRecentFiles - 1;
 	if (index > maxIndex)
 	{
 		return;
@@ -82,16 +89,48 @@ void CRecentFilesManager::ClearAll()
 //-----------------------------------------------------------------------------
 bool CRecentFilesManager::LoadFromFile( const std::string& file )
 {
+	std::ifstream fin( file );
+	if (!fin.is_open())
+	{
+		return false;
+	}
 
-	return false;
+	std::string recentFilePath;
 
-	//std::ifstream fin(file, );
+	while ( std::getline(fin, recentFilePath) )
+	{
+		m_recentFileList.push_back(recentFilePath);
+		m_nNumRecentFiles++;
+	}
 
-	//if (!fin.is_open())
+	fin.close();
+
+	return true;
 }
 
 //-----------------------------------------------------------------------------
-bool CRecentFilesManager::SaveToFile( const std::string& file )
+bool CRecentFilesManager::SaveToFile( const std::string& file ) const
 {
+	std::ofstream fout;
+	fout.open(file, std::ofstream::out | std::ofstream::trunc);
+	if (!fout)
+	{
+		return false;
+	}
+
+	
+	for (const auto& x : m_recentFileList )
+	{
+		fout << x << std::endl;
+	}
+
+	fout.close();
+
 	return false;
+}
+
+//-----------------------------------------------------------------------------
+const CRecentFilesManager::TVecString& CRecentFilesManager::RecentFiles() const
+{
+	return m_recentFileList;
 }
