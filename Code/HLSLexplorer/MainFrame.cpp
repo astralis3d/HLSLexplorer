@@ -243,7 +243,7 @@ void CMyFrame::OpenShaderFile( const wxString& filepath )
 
 	m_pEditHLSL->SetText( str.GetString() );
 
-	m_recentFilesManager.AddRecent( fileFullPath.c_str().AsChar() );
+	m_recentFilesManager.AddRecent( fileFullPath.ToStdString() );
 	UpdateRecentFiles();
 }
 
@@ -479,6 +479,9 @@ void CMyFrame::OnMenuFileSaveAuto( wxCommandEvent& evt )
 			
 			// set hlsl state to saved
 			pCodeWindow->SetSaved( true );
+
+			m_recentFilesManager.AddRecent( fileDlg.GetPath().ToStdString() );
+			UpdateRecentFiles();
 		}
 	}
 	else if (m_bASMWindowActive)		// // Save disassembled output to file
@@ -573,7 +576,7 @@ void CMyFrame::OnMenuFileOpenRecent( wxCommandEvent& evt )
 	const int idFile = evt.GetId() - ID_OPEN_RECENT_0;
 	const std::string recentFilePath = m_recentFilesManager.RecentFiles()[idFile];
 
-	bool bExists = wxFile::Exists( recentFilePath );
+	const bool bExists = wxFile::Exists( recentFilePath );
 	if (!bExists)
 	{
 		const int answer = wxMessageBox( wxString::Format("File %s couldn't be found. Remove from recent list?", recentFilePath),

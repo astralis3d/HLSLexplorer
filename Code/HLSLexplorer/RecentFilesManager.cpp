@@ -126,7 +126,7 @@ bool CRecentFilesManager::SaveToFile( const std::string& file ) const
 
 	fout.close();
 
-	return false;
+	return true;
 }
 
 //-----------------------------------------------------------------------------
