@@ -15,7 +15,7 @@ bool CMyApp::OnInit()
 
 
 	// create the main application window
-	CMyFrame *frame = new CMyFrame("HLSLexplorer 1.0");
+	CMyFrame *frame = new CMyFrame("HLSLexplorer 1.01");
 
 	// and show it (the frames, unlike simple controls, are not shown when
 	// created initially)

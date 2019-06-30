@@ -12,7 +12,7 @@ CAboutDialog::CAboutDialog( wxWindow* parent )
 	
 	// assign other stuff
 	wxStaticText* pText = XRCCTRL(*this, "m_staticVersion", wxStaticText);
-	pText->SetLabel( wxT("Version: 1.0") );
+	pText->SetLabel( wxT("Version: 1.01") );
 
 	// license & legal stuff
 	{
