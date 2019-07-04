@@ -16,6 +16,7 @@ inline void ThrowIfFailed( HRESULT hr )
 	}
 }
 
+// todo: remove duplicates from other translation units (d3d11.cpp etc.)
 struct SRendererCreateParams
 {
 	HWND hwnd;
@@ -26,6 +27,7 @@ struct SRendererCreateParams
 
 CDriverD3D12::CDriverD3D12()
 	: m_device(nullptr)
+	, m_bDrawFullscreenTriangle(false)
 {
 
 }
@@ -33,7 +35,69 @@ CDriverD3D12::CDriverD3D12()
 //-----------------------------------------------------------------------------
 bool CDriverD3D12::Initialize( const SRendererCreateParams& createParams )
 {
-	return LoadPipeline( createParams.hwnd, createParams.width, createParams.height );
+	UINT dxgiFactoryFlags = 0;
+
+#if _DEBUG
+	ComPtr<ID3D12Debug> debugInterface;
+	if (SUCCEEDED( D3D12GetDebugInterface( IID_PPV_ARGS( &debugInterface ) ) ))
+	{
+		debugInterface->EnableDebugLayer();
+	}
+
+	dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+#endif
+
+	// Create DXGI factory.
+	ComPtr<IDXGIFactory4> factory;
+	ThrowIfFailed( CreateDXGIFactory2( dxgiFactoryFlags, IID_PPV_ARGS( &factory ) ) );
+
+	// Create hardware D3D12 device.
+	ComPtr<IDXGIAdapter1> hardwareAdapter;
+	GetHardwareAdapter( factory.Get(), &hardwareAdapter );
+
+	// Check if D3D12-compatible adapter was found.
+	if (!hardwareAdapter.Get())
+	{
+		OutputDebugString( L"CRITICAL: D3D12 adapter was not found!!!\n" );
+
+		return false;
+	}
+
+	// Create D3D12 device
+	m_device = CreateDevice( hardwareAdapter );
+
+	// Before creating the swapchain, the command queue must be created first
+	m_commandQueue = CreateCommandQueue( m_device, D3D12_COMMAND_LIST_TYPE_DIRECT );
+
+	// Create the swap chain
+	m_swapChain = CreateSwapChain( createParams.hwnd, factory, m_commandQueue, createParams.width, createParams.height, NUM_FRAMES );
+	m_nCurrentBackBufferIndex = m_swapChain->GetCurrentBackBufferIndex();
+
+	// To render to the swap chain's back buffers, a render target view (RTV) 
+	// needs to be created for each of the swap chain's back buffers. 
+	// A descriptor heap can be considered an array of resource views.
+	m_descriptorHeapRTV = CreateDescriptorHeap( m_device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, NUM_FRAMES, D3D12_DESCRIPTOR_HEAP_FLAG_NONE );
+	m_nDescriptorSizeRTV = m_device->GetDescriptorHandleIncrementSize( D3D12_DESCRIPTOR_HEAP_TYPE_RTV );
+
+	// Describe and create a constant buffer view (CBV) desciptor heap.
+	// Flags indicate that this descriptor heap can be bound to the pipeline
+	// and that desciptors containted in it can be referenced by a root table.
+	m_descriptorHeapCBV = CreateDescriptorHeap( m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE );
+
+	// Create frame resources (e.g. RTV for each frame/backbuffer)
+	UpdateRenderTargetViews( m_device, m_swapChain, m_descriptorHeapRTV );
+
+	for (UINT i = 0; i < NUM_FRAMES; i++)
+	{
+		m_commandAllocators[i] = CreateCommandAllocator( m_device, D3D12_COMMAND_LIST_TYPE_DIRECT );
+	}
+
+	m_commandList = CreateCommandList( m_device, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[m_nCurrentBackBufferIndex], true );
+
+	m_fence = CreateFence( m_device );
+	m_fenceEvent = CreateEventHandle();
+
+	return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -42,6 +106,7 @@ void CDriverD3D12::Update()
 	// TODO
 }
 
+//-----------------------------------------------------------------------------
 void CDriverD3D12::Render()
 {
 	PopulateCommandList();
@@ -69,71 +134,25 @@ void CDriverD3D12::Render()
 }
 
 //-----------------------------------------------------------------------------
-bool CDriverD3D12::LoadPipeline( HWND hwnd, unsigned int Width, unsigned int Height )
+void CDriverD3D12::CreatePixelShader( const void* dxbcData, unsigned int size )
 {
-	UINT dxgiFactoryFlags = 0;
+	m_pipelineState.Reset();
 
-#if _DEBUG
-	ComPtr<ID3D12Debug> debugInterface;
-	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface))))
-	{
-		debugInterface->EnableDebugLayer();
-	}
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = { };
 
-	dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
-#endif
+	psoDesc.PS = { dxbcData, size };
+	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	psoDesc.BlendState = CD3DX12_BLEND_DESC( D3D12_DEFAULT );
+	psoDesc.DepthStencilState.DepthEnable = FALSE;
+	psoDesc.DepthStencilState.StencilEnable = FALSE;
+	psoDesc.SampleMask = UINT_MAX;
+	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	psoDesc.NumRenderTargets = 1;
+	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	psoDesc.SampleDesc.Count = 1;
+	ThrowIfFailed(m_device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState)));
 
-	// Create DXGI factory.
-	ComPtr<IDXGIFactory4> factory;
-	ThrowIfFailed( CreateDXGIFactory2( dxgiFactoryFlags, IID_PPV_ARGS(&factory) ) );
-
-	// Create hardware D3D12 device.
-	ComPtr<IDXGIAdapter1> hardwareAdapter;
-	GetHardwareAdapter( factory.Get(), &hardwareAdapter );
-
-	// Check if D3D12-compatible adapter was found.
-	if (!hardwareAdapter.Get())
-	{
-		OutputDebugString(L"CRITICAL: D3D12 adapter was not found!!!\n");
-		
-		return false;
-	}
-
-	// Create D3D12 device
-	m_device = CreateDevice( hardwareAdapter );
-
-	// Before creating the swapchain, the command queue must be created first
-	m_commandQueue = CreateCommandQueue( m_device, D3D12_COMMAND_LIST_TYPE_DIRECT );
-
-	// Create the swap chain
-	m_swapChain = CreateSwapChain( hwnd, factory, m_commandQueue, Width, Height, NUM_FRAMES );
-	m_nCurrentBackBufferIndex = m_swapChain->GetCurrentBackBufferIndex();
-
-	// To render to the swap chain's back buffers, a render target view (RTV) 
-	// needs to be created for each of the swap chain's back buffers. 
-	// A descriptor heap can be considered an array of resource views.
-	m_descriptorHeapRTV = CreateDescriptorHeap(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, NUM_FRAMES, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
-	m_nDescriptorSizeRTV = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
-	// Describe and create a constant buffer view (CBV) desciptor heap.
-	// Flags indicate that this descriptor heap can be bound to the pipeline
-	// and that desciptors containted in it can be referenced by a root table.
-	m_descriptorHeapCBV = CreateDescriptorHeap( m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE );
-
-	// Create frame resources (e.g. RTV for each frame/backbuffer)
-	UpdateRenderTargetViews( m_device, m_swapChain, m_descriptorHeapRTV );
-
-	for ( UINT i=0; i < NUM_FRAMES; i++ )
-	{
-		m_commandAllocators[i] = CreateCommandAllocator( m_device, D3D12_COMMAND_LIST_TYPE_DIRECT );
-	}
-
-	m_commandList = CreateCommandList(m_device, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[m_nCurrentBackBufferIndex], true);
-
-	m_fence = CreateFence(m_device);
-	m_fenceEvent = CreateEventHandle();
-
-	return true;
+	m_bDrawFullscreenTriangle = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -324,7 +343,7 @@ void CDriverD3D12::PopulateCommandList()
 
 	// the command allocator and command list are reset. This prepares the command list for recording the next frame.
 	ThrowIfFailed( commandAllocator->Reset() );
-	m_commandList->Reset(commandAllocator, nullptr); // todo: set default PSO
+	m_commandList->Reset(commandAllocator, m_bDrawFullscreenTriangle ? m_pipelineState.Get() : nullptr); // todo: set default PSO
 
 	// Viewport and scissor test
 	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (FLOAT) m_vpWidth, (FLOAT) m_vpWidth, 0.0f, 1.0f);
@@ -347,7 +366,9 @@ void CDriverD3D12::PopulateCommandList()
 	// draw command
 	m_commandList->IASetVertexBuffers(0, 0, nullptr);
 	m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_commandList->DrawInstanced(3, 1, 0, 0);
+
+	if (m_bDrawFullscreenTriangle)
+		m_commandList->DrawInstanced(3, 1, 0, 0);
 
 	// Backbuffer transition
 	m_commandList->ResourceBarrier( 1, &CD3DX12_RESOURCE_BARRIER::Transition( backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT ) );

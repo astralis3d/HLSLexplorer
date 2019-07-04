@@ -47,7 +47,45 @@ namespace
 
 		return S_OK;
 	}
-}
+
+	ETextureType TranslateTextureTypeD3D11(D3D11_SRV_DIMENSION srvDimensionD3D11)
+	{
+		switch (srvDimensionD3D11)
+		{
+			case D3D11_SRV_DIMENSION_TEXTURE1D:	
+				return ETextureType::ETexType_1D;
+				break;
+
+			case D3D11_SRV_DIMENSION_TEXTURE1DARRAY:
+				return ETextureType::ETexType_1DArray;
+				break;
+
+			case D3D11_SRV_DIMENSION_TEXTURE2D:
+				return ETextureType::ETexType_2D;
+				break;
+
+			case D3D11_SRV_DIMENSION_TEXTURE2DARRAY:
+				return ETextureType::ETexType_2DArray;
+				break;
+
+			case D3D11_SRV_DIMENSION_TEXTURE3D:	
+				return ETextureType::ETexType_3D;
+				break;
+
+			case D3D11_SRV_DIMENSION_TEXTURECUBE:
+				return ETextureType::ETexType_Cube;
+				break;
+
+			case D3D11_SRV_DIMENSION_TEXTURECUBEARRAY:
+				return ETextureType::ETexType_CubeArray;
+				break;
+
+			default:
+				return ETextureType::ETexType_Invalid;
+				break;
+		}
+	}
+} // namespace
 
 
 CDriverD3D11::CDriverD3D11() 
@@ -100,22 +138,7 @@ ETextureType CDriverD3D11::GetTextureType( int index ) const
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 		m_pInputTextures[index]->GetDesc( &srvDesc );
 
-		ETextureType texType;
-		switch (srvDesc.ViewDimension)
-		{
-			case D3D11_SRV_DIMENSION_TEXTURE1D:			texType = ETextureType::ETexType_1D;		break;
-			case D3D11_SRV_DIMENSION_TEXTURE1DARRAY:	texType = ETextureType::ETexType_1DArray;	break;
-			case D3D11_SRV_DIMENSION_TEXTURE2D:			texType = ETextureType::ETexType_2D;		break;
-			case D3D11_SRV_DIMENSION_TEXTURE2DARRAY:	texType = ETextureType::ETexType_2DArray;	break;
-			case D3D11_SRV_DIMENSION_TEXTURE3D:			texType = ETextureType::ETexType_3D;		break;
-			case D3D11_SRV_DIMENSION_TEXTURECUBE:		texType = ETextureType::ETexType_Cube;		break;
-			case D3D11_SRV_DIMENSION_TEXTURECUBEARRAY:	texType = ETextureType::ETexType_CubeArray;	break;
-
-			default:
-				texType = ETextureType::ETexType_Invalid;	break;
-		}
-
-		return texType;
+		return TranslateTextureTypeD3D11(srvDesc.ViewDimension);
 	}
 }
 

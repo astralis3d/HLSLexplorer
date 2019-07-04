@@ -18,11 +18,9 @@ public:
 	virtual void Update();
 	virtual void Render();
 
-
+	virtual void CreatePixelShader(const void* dxbcData, unsigned int size);
 
 private:
-	bool LoadPipeline(HWND hwnd, unsigned int Width, unsigned int Height);
-
 	void GetHardwareAdapter( IDXGIFactory2* pFactory, IDXGIAdapter1** ppAdapter );
 	ComPtr<ID3D12Device> CreateDevice( ComPtr<IDXGIAdapter1> adapter );
 	ComPtr<ID3D12CommandQueue> CreateCommandQueue( ComPtr<ID3D12Device> device, D3D12_COMMAND_LIST_TYPE type );
@@ -55,6 +53,8 @@ private:
 	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapRTV;
 	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapCBV;
 
+	ComPtr<ID3D12PipelineState>	m_pipelineState;
+
 	UINT m_nCurrentBackBufferIndex;
 
 	UINT m_nDescriptorSizeRTV;
@@ -67,4 +67,6 @@ private:
 
 	unsigned int m_vpWidth;
 	unsigned int m_vpHeight;
+
+	bool m_bDrawFullscreenTriangle;
 };
