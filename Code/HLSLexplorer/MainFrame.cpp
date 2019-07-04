@@ -7,6 +7,8 @@
 #include "RealtimePSPreviewFrame.h"
 #include "CompilationDX.h"
 
+#include "IRenderer.h"
+
 #include "DummyShaders.h"
 
 #include <wx/splitter.h>
@@ -360,7 +362,7 @@ void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 			// If real-time Pixel Shader preview is visible, update it
 			if ( m_bPSPreviewVisible && m_D3DOptions.shaderType == EShaderType::ShaderType_PS )
 			{
-				m_pPSPreviewFrame->GetD3D11Driver()->CreatePixelShader( (const void*) compiledDXBC.data(), compiledDXBC.size() );
+				m_pPSPreviewFrame->GetRenderer()->CreatePixelShader( (const void*) compiledDXBC.data(), compiledDXBC.size() );
 			}
 		}
 

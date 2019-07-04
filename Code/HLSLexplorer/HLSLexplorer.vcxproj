@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{f22d858e-88a9-4f91-8ed8-99428b83b876}</ProjectGuid>
     <RootNamespace>ShaderDissasembler</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
     <ProjectName>HLSLexplorer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -105,7 +105,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(BOOST)\;$(WXWIN)\include\;$(WXWIN)\lib\vc_x64_lib\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -143,7 +143,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -174,6 +174,7 @@
     <ClCompile Include="ControlsPanel.cpp" />
     <ClCompile Include="DisassemblerGCNISA.cpp" />
     <ClCompile Include="DriverD3D11.cpp" />
+    <ClCompile Include="DriverD3D12.cpp" />
     <ClCompile Include="Edit.cpp" />
     <ClCompile Include="GoToLineDialog.cpp" />
     <ClCompile Include="main.cpp" />
@@ -188,6 +189,7 @@
     <ClCompile Include="Prefs.cpp" />
     <ClCompile Include="RealtimePSPreviewFrame.cpp" />
     <ClCompile Include="RecentFilesManager.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="resource.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -200,12 +202,15 @@
     <ClInclude Include="CompilerLoader.h" />
     <ClInclude Include="CompilerModernDXLoader.h" />
     <ClInclude Include="ControlsPanel.h" />
+    <ClInclude Include="d3dx12.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="DisassemblerGCNISA.h" />
     <ClInclude Include="DriverD3D11.h" />
+    <ClInclude Include="DriverD3D12.h" />
     <ClInclude Include="DummyShaders.h" />
     <ClInclude Include="Edit.h" />
     <ClInclude Include="GoToLineDialog.h" />
+    <ClInclude Include="IRenderer.h" />
     <ClInclude Include="MainFrame.h" />
     <ClInclude Include="NewPresetDialog.h" />
     <ClInclude Include="official\amd\AmdDxGsaCompile.h" />
@@ -216,6 +221,7 @@
     <ClInclude Include="Prefs.h" />
     <ClInclude Include="RealtimePSPreviewFrame.h" />
     <ClInclude Include="RecentFilesManager.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>

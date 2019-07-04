@@ -5,6 +5,9 @@
 #include <wx/filepicker.h>
 #include <wx/xrc/xmlres.h>
 
+#include "DriverD3D11.h"
+#include "DriverD3D12.h"
+
 BEGIN_EVENT_TABLE( CRealtimePSPreviewFrame, wxFrame )
 	EVT_FILEPICKER_CHANGED( XRCID( "m_pickerTexture0" ), CRealtimePSPreviewFrame::OnFilePickerTexture0 )
 	EVT_FILEPICKER_CHANGED( XRCID( "m_pickerTexture1" ), CRealtimePSPreviewFrame::OnFilePickerTexture1 )
@@ -23,7 +26,15 @@ BEGIN_EVENT_TABLE( CRealtimePSPreviewFrame, wxFrame )
 	EVT_BUTTON( XRCID( "m_btnResetAllTextures" ), CRealtimePSPreviewFrame::OnResetTextureAll )
 END_EVENT_TABLE()
 
+struct SRendererCreateParams
+{
+	HWND hwnd;
+	unsigned int width;
+	unsigned int height;
+};
+
 CRealtimePSPreviewFrame::CRealtimePSPreviewFrame( wxWindow* parent )
+	: m_pRenderer(nullptr)
 {
 	wxXmlResource::Get()->LoadFrame( this, parent, "RealtimePSPreview" );
 
@@ -43,20 +54,32 @@ CRealtimePSPreviewFrame::CRealtimePSPreviewFrame( wxWindow* parent )
 
 CRealtimePSPreviewFrame::~CRealtimePSPreviewFrame()
 {
-	m_driverD3D11.Cleanup();
+	m_pRenderer->Cleanup();
+
+	delete m_pRenderer;
+	m_pRenderer = nullptr;
 }
 
 void CRealtimePSPreviewFrame::InitD3D11()
 {
 	wxSplitterWindow* pSplitter = XRCCTRL( *this, "Splitter", wxSplitterWindow );
 	wxPanel* renderingPanel = (wxPanel*)pSplitter->GetWindow1();
+	
+	SRendererCreateParams createParams;
+	createParams.hwnd =  renderingPanel->GetHWND();
+	createParams.width = renderingPanel->GetClientSize().GetWidth();
+	createParams.height = renderingPanel->GetClientSize().GetHeight();
 
-	bool bSuccess = m_driverD3D11.Initialize( renderingPanel->GetHWND(), renderingPanel->GetClientSize().GetWidth(), renderingPanel->GetClientSize().GetHeight() );
+	m_pRenderer = new CDriverD3D11();
+	if (!m_pRenderer)
+		return;
+
+	bool bSuccess = m_pRenderer->Initialize( createParams );
 	if ( bSuccess )
 	{
 		// render the first time
-		m_driverD3D11.Update();
-		m_driverD3D11.Render();
+		m_pRenderer->Update();
+		m_pRenderer->Render();
 	}
 }
 
@@ -65,7 +88,7 @@ void CRealtimePSPreviewFrame::OnRenderingPanelSize( wxSizeEvent& evt )
 	const int width = m_renderingPanel->GetClientSize().x;
 	const int height = m_renderingPanel->GetClientSize().y;
 
-	m_driverD3D11.ResizeViewport(width, height);
+	m_pRenderer->ResizeViewport(width, height);
 
 	evt.Skip();
 }
@@ -74,8 +97,8 @@ void CRealtimePSPreviewFrame::OnIdleEvent( wxIdleEvent& evt )
 {
 	evt.RequestMore(true);
 
-	m_driverD3D11.Update();
-	m_driverD3D11.Render();
+	m_pRenderer->Update();
+	m_pRenderer->Render();
 }
 
 void CRealtimePSPreviewFrame::OnCloseEvent( wxCloseEvent& WXUNUSED(evt) )
@@ -97,13 +120,13 @@ wxString GetFilenameFromPath(const wxString& fullpath)
 //------------------------------------------------------------------------
 void CRealtimePSPreviewFrame::UpdateUIForTexture( const wchar_t* path, unsigned int index )
 {
-	const bool bResult = m_driverD3D11.LoadTextureFromFile( path, index );
+	const bool bResult = m_pRenderer->LoadTextureFromFile( path, index );
 	if (bResult)
 	{
 		wxStaticText* pStatic = XRCCTRL(*this, wxString::Format("m_textTexture%d", index), wxStaticText);
 
 		wxString texType;
-		const ETextureType type = m_driverD3D11.GetTextureType( index );
+		const ETextureType type = m_pRenderer->GetTextureType( index );
 		switch (type)
 		{
 			case ETextureType::ETexType_1D:			texType = "1D";			break;
@@ -177,43 +200,43 @@ void CRealtimePSPreviewFrame::OnFilePickerTexture5( wxFileDirPickerEvent& evt )
 
 void CRealtimePSPreviewFrame::OnResetTexture0( wxCommandEvent& WXUNUSED(evt) )
 {
-	m_driverD3D11.ResetTexture( 0 );
+	m_pRenderer->ResetTexture( 0 );
 	ResetUIForTexture( 0 );
 }
 
 void CRealtimePSPreviewFrame::OnResetTexture1( wxCommandEvent& WXUNUSED( evt ) )
 {
-	m_driverD3D11.ResetTexture( 1 );
+	m_pRenderer->ResetTexture( 1 );
 	ResetUIForTexture( 1 );
 }
 
 void CRealtimePSPreviewFrame::OnResetTexture2( wxCommandEvent& WXUNUSED( evt ) )
 {
-	m_driverD3D11.ResetTexture( 2 );
+	m_pRenderer->ResetTexture( 2 );
 	ResetUIForTexture( 2 );
 }
 
 void CRealtimePSPreviewFrame::OnResetTexture3( wxCommandEvent& WXUNUSED( evt ) )
 {
-	m_driverD3D11.ResetTexture( 3 );
+	m_pRenderer->ResetTexture( 3 );
 	ResetUIForTexture( 3 );
 }
 
 void CRealtimePSPreviewFrame::OnResetTexture4( wxCommandEvent& WXUNUSED( evt ) )
 {
-	m_driverD3D11.ResetTexture( 4 );
+	m_pRenderer->ResetTexture( 4 );
 	ResetUIForTexture( 4 );
 }
 
 void CRealtimePSPreviewFrame::OnResetTexture5( wxCommandEvent& WXUNUSED( evt ) )
 {
-	m_driverD3D11.ResetTexture( 5 );
+	m_pRenderer->ResetTexture( 5 );
 	ResetUIForTexture( 5 );
 }
 
 void CRealtimePSPreviewFrame::OnResetTexture6( wxCommandEvent& WXUNUSED( evt ) )
 {
-	m_driverD3D11.ResetTexture( 6 );
+	m_pRenderer->ResetTexture( 6 );
 	ResetUIForTexture( 6 );
 }
 
@@ -221,7 +244,7 @@ void CRealtimePSPreviewFrame::OnResetTextureAll( wxCommandEvent& WXUNUSED( evt )
 {
 	for ( int i=0; i < 6; i++ )
 	{
-		m_driverD3D11.ResetTexture( i );
+		m_pRenderer->ResetTexture( i );
 		ResetUIForTexture( i );
 	}
 }

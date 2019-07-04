@@ -1,10 +1,6 @@
 #include "PCH.h"
 #include "DriverD3D11.h"
 #include <d3dcompiler.h>
-#include <chrono>
-
-// Workaround for GetHwnd conflict between wxWidgets private.h and dxgi1_2.h
-#undef GetHwnd
 
 #include "../external/DirectXTK/Inc/WICTextureLoader.h"
 #include "../external/DirectXTK/Inc/DDSTextureLoader.h"
@@ -17,6 +13,13 @@
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
+
+struct SRendererCreateParams
+{
+	HWND hwnd;
+	unsigned int width;
+	unsigned int height;
+};
 
 
 // Compiles shader from file
@@ -116,10 +119,10 @@ ETextureType CDriverD3D11::GetTextureType( int index ) const
 	}
 }
 
-bool CDriverD3D11::Initialize( HWND hWnd, unsigned int Width, unsigned int Height )
+bool CDriverD3D11::Initialize(const SRendererCreateParams& createParams)
 {
-	m_vpWidth = Width;
-	m_vpHeight = Height;
+	m_vpWidth = createParams.width;
+	m_vpHeight = createParams.height;
 
 
 	// Init D3D11 device
@@ -190,14 +193,14 @@ bool CDriverD3D11::Initialize( HWND hWnd, unsigned int Width, unsigned int Heigh
 		DXGI_SWAP_CHAIN_DESC sd;
 		ZeroMemory(&sd, sizeof(sd));
 		sd.BufferCount = 1;
-		sd.BufferDesc.Width = Width;
-		sd.BufferDesc.Height = Height;
+		sd.BufferDesc.Width =  m_vpWidth;
+		sd.BufferDesc.Height = m_vpHeight;
 		sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		sd.BufferDesc.RefreshRate.Numerator = 0;
 		sd.BufferDesc.RefreshRate.Denominator = 0;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-		sd.OutputWindow = hWnd;
+		sd.OutputWindow = createParams.hwnd;
 		sd.Windowed = TRUE;
 		sd.SampleDesc.Count = 1;
 		sd.SampleDesc.Quality = 0;
@@ -210,7 +213,7 @@ bool CDriverD3D11::Initialize( HWND hWnd, unsigned int Width, unsigned int Heigh
 	}
 
 	// block alt+enter
-	dxgiFactory->MakeWindowAssociation( hWnd, DXGI_MWA_NO_ALT_ENTER );
+	dxgiFactory->MakeWindowAssociation( createParams.hwnd, DXGI_MWA_NO_ALT_ENTER );
 	dxgiFactory->Release();
 	
 	// Create render target view
@@ -257,23 +260,6 @@ bool CDriverD3D11::Initialize( HWND hWnd, unsigned int Width, unsigned int Heigh
 	CreateConstantBuffers();
 
 	return true;
-}
-
-//----------------------------------------------------------------------------
-void CDriverD3D11::Update()
-{
-	static std::chrono::high_resolution_clock clock;
-	static auto t0 = clock.now();
-	
-	m_PSConstantBufferData.numFrames++;
-
-	auto t1 = clock.now();
-	auto deltaTime = t1 - t0;
-
-	m_PSConstantBufferData.elapsedTime += deltaTime.count() * 1e-9;
-
-	// Update for next frame
-	t0 = t1;
 }
 
 //-----------------------------------------------------------------------------

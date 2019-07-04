@@ -54,6 +54,12 @@
     <ClCompile Include="RecentFilesManager.cpp">
       <Filter>Application\gui</Filter>
     </ClCompile>
+    <ClCompile Include="DriverD3D12.cpp">
+      <Filter>Application\gui\RealtimePixelShaderPreview\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Application\gui\RealtimePixelShaderPreview</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Edit.h">
@@ -123,6 +129,18 @@
     <ClInclude Include="RecentFilesManager.h">
       <Filter>Application\gui</Filter>
     </ClInclude>
+    <ClInclude Include="DriverD3D12.h">
+      <Filter>Application\gui\RealtimePixelShaderPreview\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dx12.h">
+      <Filter>Application\gui\RealtimePixelShaderPreview\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderer.h">
+      <Filter>Application\gui\RealtimePixelShaderPreview</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Application\gui\RealtimePixelShaderPreview</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Application">
@@ -172,6 +190,9 @@
     </Filter>
     <Filter Include="Application\Compilation\disassemblers\official\elf">
       <UniqueIdentifier>{91458cf4-2c59-4c22-b7ee-9e671b8014e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\gui\RealtimePixelShaderPreview\D3D12">
+      <UniqueIdentifier>{fe6f1712-c6c0-485c-8753-0e621e8a2676}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

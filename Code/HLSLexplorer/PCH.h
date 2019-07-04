@@ -10,6 +10,10 @@
 // wxWidgets
 #include <wx/wxprec.h>
 
+#ifdef GetHwnd
+# undef GetHwnd
+#endif
+
 enum class ETextureType
 {
 	ETexType_Invalid,

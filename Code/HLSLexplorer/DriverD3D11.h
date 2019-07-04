@@ -2,24 +2,29 @@
 
 // Basic D3D11 component
 #include <d3d11.h>
+#include "Renderer.h"
 
-class CDriverD3D11
+struct SRendererCreateParams;
+
+class CDriverD3D11 : public CRenderer
 {
 public:
 	CDriverD3D11();
+	virtual ~CDriverD3D11() {}
 
-	bool Initialize( HWND hWnd, unsigned int Width, unsigned int Height );
-	void Cleanup();
+	virtual bool Initialize(const SRendererCreateParams& createParams);
+	virtual void Cleanup();
 
-	void Update();
-	void Render();
+	/*virtual void Update(); */
+	virtual void Render();
 
-	bool LoadTextureFromFile(const WCHAR* path, int index);
-	void CreatePixelShader(const void* dxbcData, unsigned int size);
-	ETextureType GetTextureType(int index) const;
+	virtual bool LoadTextureFromFile(const WCHAR* path, int index);
+	virtual void CreatePixelShader(const void* dxbcData, unsigned int size);
+	
+	virtual ETextureType GetTextureType(int index) const;
+	virtual void ResetTexture( int index );
 
-	void ResizeViewport(unsigned int newWidth, unsigned int newHeight);
-	void ResetTexture( int index );
+	virtual void ResizeViewport(unsigned int newWidth, unsigned int newHeight);
 
 private:
 	void CreateSamplers();
@@ -39,26 +44,6 @@ private:
 
 	ID3D11PixelShader*		m_pPS;
 	ID3D11VertexShader*		m_pVS;
-
-
-	// constant buffer
-	struct SConstantBuffer
-	{
-		SConstantBuffer()
-		{
-			elapsedTime = 0.0f;
-			numFrames = 0;
-		}
-
-		float elapsedTime;
-		std::uint32_t numFrames;
-		float pad[2];
-
-		float viewportX;
-		float viewportY;
-		float viewportInvX;
-		float viewportInvY;
-	};
 
 	ID3D11Buffer* m_pPSConstantBuffer;
 	SConstantBuffer m_PSConstantBufferData;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DriverD3D11.h"
+class IRenderer;
 
 class wxFileDirPickerEvent;
 
@@ -14,7 +14,8 @@ public:
 
 	void SetVisibilityPtr(bool* p) {  m_bVisibility = p;}
 
-	CDriverD3D11* GetD3D11Driver() { return &m_driverD3D11; } 
+	//CDriverD3D11* GetD3D11Driver() { return &m_driverD3D11; } 
+	IRenderer* GetRenderer() { return m_pRenderer; }
 
 private:
 	void OnRenderingPanelSize( wxSizeEvent& evt );
@@ -44,7 +45,8 @@ private:
 	wxPanel* m_renderingPanel;
 
 private:
-	CDriverD3D11 m_driverD3D11;
+	//CDriverD3D11 m_driverD3D11;
+	IRenderer* m_pRenderer;
 
 	DECLARE_EVENT_TABLE();
 };
