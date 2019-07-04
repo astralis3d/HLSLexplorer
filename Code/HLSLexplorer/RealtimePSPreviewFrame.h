@@ -11,6 +11,7 @@ public:
 	virtual ~CRealtimePSPreviewFrame();
 
 	void InitD3D11();
+	void InitD3D12();
 
 	void SetVisibilityPtr(bool* p) {  m_bVisibility = p;}
 

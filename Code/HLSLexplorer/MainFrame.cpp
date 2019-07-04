@@ -29,7 +29,8 @@ wxBEGIN_EVENT_TABLE( CMyFrame, wxFrame )
 	EVT_MENU( ID_SAVE_AUTO, CMyFrame::OnMenuFileSaveAuto )
 	EVT_MENU( ID_SAVE_HLSL_SHADER, CMyFrame::OnMenuFileSaveHLSLShader )
 	EVT_MENU( ID_SAVE_DISASSEMBLED_SHADER, CMyFrame::OnMenuFileSaveDisassembledShader )
-	EVT_MENU( ID_REALTIME_PIXEL_SHADER_PREVIEW, CMyFrame::OnMenuFileShowPSPreview )
+	EVT_MENU( ID_REALTIME_PIXEL_SHADER_PREVIEW_D3D11, CMyFrame::OnMenuFileShowPSPreviewD3D11 )
+	EVT_MENU( ID_REALTIME_PIXEL_SHADER_PREVIEW_D3D12, CMyFrame::OnMenuFileShowPSPreviewD3D12 )
 	EVT_MENU( ID_FILE_EXIT, CMyFrame::OnMenuFileExit )
 
 	EVT_MENU( ID_OPEN_RECENT_0, CMyFrame::OnMenuFileOpenRecent )
@@ -133,7 +134,8 @@ void CMyFrame::InitializeMenu()
 	fileMenu->AppendSeparator();
 	fileMenu->Append( ID_COMPILE, "Compile\tF5" );
 	fileMenu->AppendCheckItem( ID_TOGGLEPANELVISIBILITY, "Show panel\tF6" );
-	fileMenu->Append( ID_REALTIME_PIXEL_SHADER_PREVIEW, "Real-time PS preview...\tF7" );
+	fileMenu->Append( ID_REALTIME_PIXEL_SHADER_PREVIEW_D3D11, "Real-time PS preview (D3D11)...\tF7" );
+	fileMenu->Append( ID_REALTIME_PIXEL_SHADER_PREVIEW_D3D12, "Real-time PS preview (D3D12)...\tF8" );
 	fileMenu->Check( ID_TOGGLEPANELVISIBILITY, true );
 	fileMenu->AppendSeparator();
 
@@ -415,7 +417,7 @@ void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 }
 
 //------------------------------------------------------------------------
-void CMyFrame::OnMenuFileShowPSPreview( wxCommandEvent& evt )
+void CMyFrame::OnMenuFileShowPSPreviewD3D11( wxCommandEvent& evt )
 {
 	// Do nothing if PS preview is already active
 	if (m_bPSPreviewVisible)
@@ -429,8 +431,30 @@ void CMyFrame::OnMenuFileShowPSPreview( wxCommandEvent& evt )
 
 	m_pPSPreviewFrame = new CRealtimePSPreviewFrame( this );
 	m_pPSPreviewFrame->SetVisibilityPtr( &m_bPSPreviewVisible );
-	m_pPSPreviewFrame->InitD3D11();
 	m_pPSPreviewFrame->Show( true );
+	m_pPSPreviewFrame->InitD3D11();
+	m_pPSPreviewFrame->SetFocus();
+	m_bPSPreviewVisible = true;
+
+	evt.Skip();
+}
+
+void CMyFrame::OnMenuFileShowPSPreviewD3D12( wxCommandEvent& evt )
+{
+	// Do nothing if PS preview is already active
+	if (m_bPSPreviewVisible)
+	{
+		//OutputDebugStringA("No2 previews\n");
+
+		m_pPSPreviewFrame->SetFocus();
+
+		return;
+	}
+
+	m_pPSPreviewFrame = new CRealtimePSPreviewFrame( this );
+	m_pPSPreviewFrame->SetVisibilityPtr( &m_bPSPreviewVisible );
+	m_pPSPreviewFrame->Show( true );
+	m_pPSPreviewFrame->InitD3D12();
 	m_pPSPreviewFrame->SetFocus();
 	m_bPSPreviewVisible = true;
 

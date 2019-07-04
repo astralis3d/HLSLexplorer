@@ -23,7 +23,8 @@ enum
 
 	ID_TOGGLEPANELVISIBILITY = wxID_HIGHEST + 1,
 	ID_COMPILE,
-	ID_REALTIME_PIXEL_SHADER_PREVIEW,
+	ID_REALTIME_PIXEL_SHADER_PREVIEW_D3D11,
+	ID_REALTIME_PIXEL_SHADER_PREVIEW_D3D12,
 
 	ID_LOAD_D3DCOMPILER_DLL,
 
@@ -74,7 +75,8 @@ public:
 	void OnMenuFileLoadD3DCompilerDLL( wxCommandEvent& evt );
 	void OnMenuFileTogglePanelVisiblity( wxCommandEvent& evt );
 	void OnMenuFileCompile( wxCommandEvent& evt );
-	void OnMenuFileShowPSPreview( wxCommandEvent& evt );
+	void OnMenuFileShowPSPreviewD3D11( wxCommandEvent& evt );
+	void OnMenuFileShowPSPreviewD3D12( wxCommandEvent& evt );
 	void OnMenuFileOpenHLSLShader( wxCommandEvent& evt );
 	void OnMenuFileSaveAuto( wxCommandEvent& evt );
 	void OnMenuFileSaveHLSLShader( wxCommandEvent& evt );

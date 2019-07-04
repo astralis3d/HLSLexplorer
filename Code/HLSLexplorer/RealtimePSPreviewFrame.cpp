@@ -83,12 +83,36 @@ void CRealtimePSPreviewFrame::InitD3D11()
 	}
 }
 
+void CRealtimePSPreviewFrame::InitD3D12()
+{
+	wxSplitterWindow* pSplitter = XRCCTRL( *this, "Splitter", wxSplitterWindow );
+	wxPanel* renderingPanel = (wxPanel*)pSplitter->GetWindow1();
+
+	SRendererCreateParams createParams;
+	createParams.hwnd = renderingPanel->GetHWND();
+	createParams.width = renderingPanel->GetClientSize().GetWidth();
+	createParams.height = renderingPanel->GetClientSize().GetHeight();
+
+	m_pRenderer = new CDriverD3D12();
+	if (!m_pRenderer)
+		return;
+
+	bool bSuccess = m_pRenderer->Initialize( createParams );
+	if (bSuccess)
+	{
+		// render the first time
+		m_pRenderer->Update();
+		m_pRenderer->Render();
+	}
+}
+
 void CRealtimePSPreviewFrame::OnRenderingPanelSize( wxSizeEvent& evt )
 {
 	const int width = m_renderingPanel->GetClientSize().x;
 	const int height = m_renderingPanel->GetClientSize().y;
 
-	m_pRenderer->ResizeViewport(width, height);
+	if (m_pRenderer)
+		m_pRenderer->ResizeViewport(width, height);
 
 	evt.Skip();
 }

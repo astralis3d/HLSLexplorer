@@ -14,11 +14,17 @@ class CDriverD3D12 : public CRenderer
 public:
 	CDriverD3D12();
 	virtual bool Initialize(const SRendererCreateParams& createParams);
+	virtual void Cleanup();
 
 	virtual void Update();
 	virtual void Render();
 
 	virtual void CreatePixelShader(const void* dxbcData, unsigned int size);
+	virtual void ResetTexture( int index );
+	virtual bool LoadTextureFromFile(const wchar_t* path, int index);
+	virtual ETextureType GetTextureType(int index) const;
+
+	virtual void ResizeViewport(unsigned int newWidth, unsigned int newHeight);
 
 private:
 	void GetHardwareAdapter( IDXGIFactory2* pFactory, IDXGIAdapter1** ppAdapter );

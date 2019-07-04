@@ -100,6 +100,11 @@ bool CDriverD3D12::Initialize( const SRendererCreateParams& createParams )
 	return true;
 }
 
+void CDriverD3D12::Cleanup()
+{
+	Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
+}
+
 //-----------------------------------------------------------------------------
 void CDriverD3D12::Update()
 {
@@ -153,6 +158,26 @@ void CDriverD3D12::CreatePixelShader( const void* dxbcData, unsigned int size )
 	ThrowIfFailed(m_device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState)));
 
 	m_bDrawFullscreenTriangle = true;
+}
+
+void CDriverD3D12::ResetTexture( int index )
+{
+
+}
+
+bool CDriverD3D12::LoadTextureFromFile( const wchar_t* path, int index )
+{
+	return false; // todo
+}
+
+ETextureType CDriverD3D12::GetTextureType( int index ) const
+{
+	return ETextureType::ETexType_Invalid; // todo
+}
+
+void CDriverD3D12::ResizeViewport( unsigned int newWidth, unsigned int newHeight )
+{
+
 }
 
 //-----------------------------------------------------------------------------
@@ -330,7 +355,7 @@ void CDriverD3D12::UpdateRenderTargetViews( ComPtr<ID3D12Device> device, ComPtr<
 
 		// Place the backbuffer RTV in place pointed by rtvHandle (I guess)
 		device->CreateRenderTargetView( m_backBuffers[i].Get(), nullptr, rtvHandle );
-		rtvHandle.Offset( m_nDescriptorSizeRTV );
+		rtvHandle.Offset( 1, m_nDescriptorSizeRTV );
 	}
 }
 
@@ -346,7 +371,7 @@ void CDriverD3D12::PopulateCommandList()
 	m_commandList->Reset(commandAllocator, m_bDrawFullscreenTriangle ? m_pipelineState.Get() : nullptr); // todo: set default PSO
 
 	// Viewport and scissor test
-	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (FLOAT) m_vpWidth, (FLOAT) m_vpWidth, 0.0f, 1.0f);
+	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (FLOAT) m_vpWidth, (FLOAT) m_vpHeight, 0.0f, 1.0f);
 	CD3DX12_RECT scissorRect(0, 0, (LONG) m_vpWidth, (LONG) m_vpHeight);
 
 	m_commandList->RSSetViewports(1, &viewport);
@@ -355,7 +380,7 @@ void CDriverD3D12::PopulateCommandList()
 	// Before the render target can be cleared, it must be transitioned to the RENDER_TARGET state.
 	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET) );
 
-	static const float ClearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	static const float ClearColor[4] = { 0.0f, 0.0f, 0.8f, 0.0f };
 
 	// Clear RTV
 	CD3DX12_CPU_DESCRIPTOR_HANDLE backBufferRTV( m_descriptorHeapRTV->GetCPUDescriptorHandleForHeapStart(), m_nCurrentBackBufferIndex, m_nDescriptorSizeRTV );
