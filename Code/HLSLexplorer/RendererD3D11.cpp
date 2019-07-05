@@ -372,6 +372,12 @@ void CRendererD3D11::Cleanup()
 }
 
 //-----------------------------------------------------------------------------
+void CRendererD3D11::Update()
+{
+	CRenderer::Update();
+}
+
+//-----------------------------------------------------------------------------
 void CRendererD3D11::ResizeViewport( unsigned int newWidth, unsigned int newHeight )
 {
 	m_vpWidth = newWidth;

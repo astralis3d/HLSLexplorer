@@ -84,6 +84,11 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 	// and that desciptors containted in it can be referenced by a root table.
 	m_descriptorHeapCBV = CreateDescriptorHeap( m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE );
 
+	// Describe and create a samplers descriptor heap
+	m_descriptorHeapSamplers = CreateDescriptorHeap(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 6, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE );
+	m_nDescriptorSizeSampler = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+	CreateSamplers();
+
 	// Create frame resources (e.g. RTV for each frame/backbuffer)
 	UpdateRenderTargetViews( m_device, m_swapChain, m_descriptorHeapRTV );
 
@@ -97,9 +102,37 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 	m_fence = CreateFence( m_device );
 	m_fenceEvent = CreateEventHandle();
 
+	//-----------------------------------------------------------------------------
+	// LoadAssets
+	//-----------------------------------------------------------------------------
+
+	// Create constant buffer
+	{
+		ThrowIfFailed( m_device->CreateCommittedResource(
+			&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+			D3D12_HEAP_FLAG_NONE,
+			&CD3DX12_RESOURCE_DESC::Buffer(1024 * 64),
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(&m_sceneConstantBuffer)) );
+
+		// Describe and create a constant buffer view
+		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+		cbvDesc.SizeInBytes = (sizeof(CRenderer::SConstantBuffer) + 255) & ~255; // CB size is required to be 256-byte aligned
+		cbvDesc.BufferLocation = m_sceneConstantBuffer->GetGPUVirtualAddress();
+		m_device->CreateConstantBufferView(&cbvDesc, m_descriptorHeapCBV->GetCPUDescriptorHandleForHeapStart());
+
+		// Map and init constant buffer. We don't unmap this until app closes.
+		// Keeping thins mapped for the lifetime of the resource is okay.
+		CD3DX12_RANGE readRange(0, 0);	// we don't intend to read from this resource on the CPU
+		ThrowIfFailed( m_sceneConstantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&m_pCbvDataBegin)) );
+		memcpy((void*)&m_pCbvDataBegin, &m_PSConstantBufferData, sizeof(m_PSConstantBufferData));
+	}
+
 	return true;
 }
 
+//-----------------------------------------------------------------------------
 void CRendererD3D12::Cleanup()
 {
 	Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
@@ -108,7 +141,9 @@ void CRendererD3D12::Cleanup()
 //-----------------------------------------------------------------------------
 void CRendererD3D12::Update()
 {
-	// TODO
+	CRenderer::Update();
+
+	memcpy((void*)&m_pCbvDataBegin, &m_PSConstantBufferData, sizeof(m_PSConstantBufferData));
 }
 
 //-----------------------------------------------------------------------------
@@ -275,6 +310,9 @@ ComPtr<IDXGISwapChain4> CRendererD3D12::CreateSwapChain( HWND hwnd, ComPtr<IDXGI
 
 	ThrowIfFailed( dxgiSwapChain1.As( &dxgiSwapChain4 ) );
 
+	m_vpWidth = width;
+	m_vpHeight = height;
+
 	return dxgiSwapChain4;
 }
 
@@ -370,6 +408,12 @@ void CRendererD3D12::PopulateCommandList()
 	ThrowIfFailed( commandAllocator->Reset() );
 	m_commandList->Reset(commandAllocator, m_bDrawFullscreenTriangle ? m_pipelineState.Get() : nullptr); // todo: set default PSO
 
+
+	ID3D12DescriptorHeap* ppHeaps[] = { m_descriptorHeapCBV.Get() };
+	m_commandList->SetDescriptorHeaps( _countof(ppHeaps), ppHeaps );
+
+	m_commandList->SetGraphicsRootDescriptorTable(0, m_descriptorHeapCBV->GetGPUDescriptorHandleForHeapStart());
+
 	// Viewport and scissor test
 	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (FLOAT) m_vpWidth, (FLOAT) m_vpHeight, 0.0f, 1.0f);
 	CD3DX12_RECT scissorRect(0, 0, (LONG) m_vpWidth, (LONG) m_vpHeight);
@@ -399,6 +443,81 @@ void CRendererD3D12::PopulateCommandList()
 	m_commandList->ResourceBarrier( 1, &CD3DX12_RESOURCE_BARRIER::Transition( backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT ) );
 
 	ThrowIfFailed( m_commandList->Close() );
+}
+
+//-----------------------------------------------------------------------------
+void CRendererD3D12::CreateSamplers()
+{
+	// Get a handle to the start of the descriptor heap.
+	CD3DX12_CPU_DESCRIPTOR_HANDLE samplerHandle(m_descriptorHeapSamplers->GetCPUDescriptorHandleForHeapStart());
+
+	// At first, set common stuff for all samplers
+	D3D12_SAMPLER_DESC samplerDesc = {};
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+	samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0.0f;
+
+
+	// Point Clamp
+	samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+
+	m_device->CreateSampler(&samplerDesc, samplerHandle);
+	samplerHandle.Offset(m_nDescriptorSizeSampler);
+
+
+	// Point Wrap
+	samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+
+	m_device->CreateSampler( &samplerDesc, samplerHandle );
+	samplerHandle.Offset( m_nDescriptorSizeSampler );
+
+
+	// Linear Clamp
+	samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+
+	m_device->CreateSampler( &samplerDesc, samplerHandle );
+	samplerHandle.Offset( m_nDescriptorSizeSampler );
+
+
+	// Linear Wrap
+	samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+
+	m_device->CreateSampler( &samplerDesc, samplerHandle );
+	samplerHandle.Offset( m_nDescriptorSizeSampler );
+
+
+	// Aniso Clamp
+	samplerDesc.Filter = D3D12_FILTER_ANISOTROPIC;
+	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	samplerDesc.MaxAnisotropy = 16;
+
+	m_device->CreateSampler( &samplerDesc, samplerHandle );
+	samplerHandle.Offset( m_nDescriptorSizeSampler );
+
+
+	// Aniso Wrap
+	samplerDesc.Filter = D3D12_FILTER_ANISOTROPIC;
+	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+
+	m_device->CreateSampler( &samplerDesc, samplerHandle );
 }
 
 //-----------------------------------------------------------------------------

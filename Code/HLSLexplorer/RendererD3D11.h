@@ -15,7 +15,7 @@ public:
 	virtual bool Initialize(const SRendererCreateParams& createParams);
 	virtual void Cleanup();
 
-	/*virtual void Update(); */
+	virtual void Update();
 	virtual void Render();
 
 	virtual bool LoadTextureFromFile(const wchar_t* path, int index);

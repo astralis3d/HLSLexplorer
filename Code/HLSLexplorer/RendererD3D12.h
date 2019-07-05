@@ -27,6 +27,8 @@ public:
 	virtual void ResizeViewport(unsigned int newWidth, unsigned int newHeight);
 
 private:
+	static const UINT NUM_FRAMES = 2;
+
 	void GetHardwareAdapter( IDXGIFactory2* pFactory, IDXGIAdapter1** ppAdapter );
 	ComPtr<ID3D12Device> CreateDevice( ComPtr<IDXGIAdapter1> adapter );
 	ComPtr<ID3D12CommandQueue> CreateCommandQueue( ComPtr<ID3D12Device> device, D3D12_COMMAND_LIST_TYPE type );
@@ -40,12 +42,13 @@ private:
 	HANDLE CreateEventHandle();
 
 	void PopulateCommandList();
+	void CreateSamplers();
+
 
 	uint64_t Signal( ComPtr<ID3D12CommandQueue> commandQueue, ComPtr<ID3D12Fence> fence, uint64_t& fenceValue );
 	void WaitForFenceValue( ComPtr<ID3D12Fence> fence, uint64_t fenceValue, HANDLE fenceEvent );
 	void Flush( ComPtr<ID3D12CommandQueue> commandQueue, ComPtr<ID3D12Fence> fence, uint64_t& fenceValue, HANDLE fenceEvent );
 
-	static const UINT NUM_FRAMES = 2;
 
 private:
 	ComPtr<ID3D12Device>		m_device;
@@ -58,13 +61,17 @@ private:
 
 	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapRTV;
 	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapCBV;
+	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapSamplers;
+
+	ComPtr<ID3D12Resource>		m_sceneConstantBuffer;
+	unsigned char*				m_pCbvDataBegin;
 
 	ComPtr<ID3D12PipelineState>	m_pipelineState;
 
 	UINT m_nCurrentBackBufferIndex;
 
 	UINT m_nDescriptorSizeRTV;
-	//UINT m_nDescriptorSizeCBV;
+	UINT m_nDescriptorSizeSampler;
 
 	ComPtr<ID3D12Fence> m_fence;
 	uint64_t m_fenceValue = 0;
