@@ -30,9 +30,6 @@
     <ClCompile Include="MainFrame.cpp">
       <Filter>Application\gui</Filter>
     </ClCompile>
-    <ClCompile Include="DriverD3D11.cpp">
-      <Filter>Application\gui\RealtimePixelShaderPreview\D3D11</Filter>
-    </ClCompile>
     <ClCompile Include="CompilerLoader.cpp">
       <Filter>Application\Compilation\Loaders</Filter>
     </ClCompile>
@@ -54,11 +51,14 @@
     <ClCompile Include="RecentFilesManager.cpp">
       <Filter>Application\gui</Filter>
     </ClCompile>
-    <ClCompile Include="DriverD3D12.cpp">
-      <Filter>Application\gui\RealtimePixelShaderPreview\D3D12</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>Application\gui\RealtimePixelShaderPreview</Filter>
+    </ClCompile>
+    <ClCompile Include="RendererD3D12.cpp">
+      <Filter>Application\gui\RealtimePixelShaderPreview\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="RendererD3D11.cpp">
+      <Filter>Application\gui\RealtimePixelShaderPreview\D3D11</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -96,9 +96,6 @@
     <ClInclude Include="MainFrame.h">
       <Filter>Application\gui</Filter>
     </ClInclude>
-    <ClInclude Include="DriverD3D11.h">
-      <Filter>Application\gui\RealtimePixelShaderPreview\D3D11</Filter>
-    </ClInclude>
     <ClInclude Include="CompilerLoader.h">
       <Filter>Application\Compilation\Loaders</Filter>
     </ClInclude>
@@ -129,9 +126,6 @@
     <ClInclude Include="RecentFilesManager.h">
       <Filter>Application\gui</Filter>
     </ClInclude>
-    <ClInclude Include="DriverD3D12.h">
-      <Filter>Application\gui\RealtimePixelShaderPreview\D3D12</Filter>
-    </ClInclude>
     <ClInclude Include="d3dx12.h">
       <Filter>Application\gui\RealtimePixelShaderPreview\D3D12</Filter>
     </ClInclude>
@@ -140,6 +134,12 @@
     </ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>Application\gui\RealtimePixelShaderPreview</Filter>
+    </ClInclude>
+    <ClInclude Include="RendererD3D12.h">
+      <Filter>Application\gui\RealtimePixelShaderPreview\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="RendererD3D11.h">
+      <Filter>Application\gui\RealtimePixelShaderPreview\D3D11</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

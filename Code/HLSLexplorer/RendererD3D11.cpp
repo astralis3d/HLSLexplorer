@@ -1,5 +1,5 @@
 #include "PCH.h"
-#include "DriverD3D11.h"
+#include "RendererD3D11.h"
 #include <d3dcompiler.h>
 
 #include "../external/DirectXTK/Inc/WICTextureLoader.h"
@@ -88,7 +88,7 @@ namespace
 } // namespace
 
 
-CDriverD3D11::CDriverD3D11() 
+CRendererD3D11::CRendererD3D11() 
 	: m_pD3DDevice(nullptr)
 	, m_pD3DDeviceContext(nullptr)
 	, m_pDXIGSwapChain(nullptr)
@@ -106,7 +106,7 @@ CDriverD3D11::CDriverD3D11()
 	}
 }
 
-bool CDriverD3D11::LoadTextureFromFile( const WCHAR* path, int index )
+bool CRendererD3D11::LoadTextureFromFile( const WCHAR* path, int index )
 {
 	SAFE_RELEASE( m_pInputTextures[index] );
 
@@ -127,7 +127,7 @@ bool CDriverD3D11::LoadTextureFromFile( const WCHAR* path, int index )
 	return true;
 }
 
-ETextureType CDriverD3D11::GetTextureType( int index ) const
+ETextureType CRendererD3D11::GetTextureType( int index ) const
 {
 	if (!m_pInputTextures[index])
 	{
@@ -142,7 +142,7 @@ ETextureType CDriverD3D11::GetTextureType( int index ) const
 	}
 }
 
-bool CDriverD3D11::Initialize(const SRendererCreateParams& createParams)
+bool CRendererD3D11::Initialize(const SRendererCreateParams& createParams)
 {
 	m_vpWidth = createParams.width;
 	m_vpHeight = createParams.height;
@@ -287,7 +287,7 @@ bool CDriverD3D11::Initialize(const SRendererCreateParams& createParams)
 
 //-----------------------------------------------------------------------------
 // simple rendering
-void CDriverD3D11::Render()
+void CRendererD3D11::Render()
 {
 	ID3D11DeviceContext* pDevCon = m_pD3DDeviceContext;
 
@@ -334,7 +334,7 @@ void CDriverD3D11::Render()
 }
 
 //-----------------------------------------------------------------------------
-void CDriverD3D11::CreatePixelShader( const void* dxbcData, unsigned int size )
+void CRendererD3D11::CreatePixelShader( const void* dxbcData, unsigned int size )
 {
 	SAFE_RELEASE( m_pPS );
 
@@ -347,7 +347,7 @@ void CDriverD3D11::CreatePixelShader( const void* dxbcData, unsigned int size )
 }
 
 //-----------------------------------------------------------------------------
-void CDriverD3D11::Cleanup()
+void CRendererD3D11::Cleanup()
 {
 	SAFE_RELEASE( m_pD3DDevice );
 	SAFE_RELEASE( m_pD3DDeviceContext );
@@ -372,7 +372,7 @@ void CDriverD3D11::Cleanup()
 }
 
 //-----------------------------------------------------------------------------
-void CDriverD3D11::ResizeViewport( unsigned int newWidth, unsigned int newHeight )
+void CRendererD3D11::ResizeViewport( unsigned int newWidth, unsigned int newHeight )
 {
 	m_vpWidth = newWidth;
 	m_vpHeight = newHeight;
@@ -411,7 +411,7 @@ void CDriverD3D11::ResizeViewport( unsigned int newWidth, unsigned int newHeight
 	m_PSConstantBufferData.viewportInvY = 1.0f / (float) m_vpHeight;
 }
 
-void CDriverD3D11::ResetTexture( int index )
+void CRendererD3D11::ResetTexture( int index )
 {
 	SAFE_RELEASE( m_pInputTextures[index] );
 
@@ -419,7 +419,7 @@ void CDriverD3D11::ResetTexture( int index )
 	m_pD3DDeviceContext->PSSetShaderResources(index, 1, pSRV);
 }
 
-void CDriverD3D11::CreateConstantBuffers()
+void CRendererD3D11::CreateConstantBuffers()
 {
 	D3D11_BUFFER_DESC bufDesc;
 	bufDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -435,7 +435,7 @@ void CDriverD3D11::CreateConstantBuffers()
 	}
 }
 
-void CDriverD3D11::CreateSamplers()
+void CRendererD3D11::CreateSamplers()
 {
 	HRESULT hr;
 

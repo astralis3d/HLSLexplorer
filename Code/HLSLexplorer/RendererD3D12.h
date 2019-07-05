@@ -9,10 +9,10 @@ struct SRendererCreateParams;
 
 using Microsoft::WRL::ComPtr;
 
-class CDriverD3D12 : public CRenderer
+class CRendererD3D12 : public CRenderer
 {
 public:
-	CDriverD3D12();
+	CRendererD3D12();
 	virtual bool Initialize(const SRendererCreateParams& createParams);
 	virtual void Cleanup();
 

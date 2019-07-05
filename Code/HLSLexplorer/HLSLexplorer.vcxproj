@@ -173,8 +173,8 @@
     <ClCompile Include="CompilerModernDXLoader.cpp" />
     <ClCompile Include="ControlsPanel.cpp" />
     <ClCompile Include="DisassemblerGCNISA.cpp" />
-    <ClCompile Include="DriverD3D11.cpp" />
-    <ClCompile Include="DriverD3D12.cpp" />
+    <ClCompile Include="RendererD3D11.cpp" />
+    <ClCompile Include="RendererD3D12.cpp" />
     <ClCompile Include="Edit.cpp" />
     <ClCompile Include="GoToLineDialog.cpp" />
     <ClCompile Include="main.cpp" />
@@ -205,8 +205,8 @@
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="DisassemblerGCNISA.h" />
-    <ClInclude Include="DriverD3D11.h" />
-    <ClInclude Include="DriverD3D12.h" />
+    <ClInclude Include="RendererD3D11.h" />
+    <ClInclude Include="RendererD3D12.h" />
     <ClInclude Include="DummyShaders.h" />
     <ClInclude Include="Edit.h" />
     <ClInclude Include="GoToLineDialog.h" />

@@ -5,8 +5,8 @@
 #include <wx/filepicker.h>
 #include <wx/xrc/xmlres.h>
 
-#include "DriverD3D11.h"
-#include "DriverD3D12.h"
+#include "RendererD3D11.h"
+#include "RendererD3D12.h"
 
 BEGIN_EVENT_TABLE( CRealtimePSPreviewFrame, wxFrame )
 	EVT_FILEPICKER_CHANGED( XRCID( "m_pickerTexture0" ), CRealtimePSPreviewFrame::OnFilePickerTexture0 )
@@ -70,7 +70,7 @@ void CRealtimePSPreviewFrame::InitD3D11()
 	createParams.width = renderingPanel->GetClientSize().GetWidth();
 	createParams.height = renderingPanel->GetClientSize().GetHeight();
 
-	m_pRenderer = new CDriverD3D11();
+	m_pRenderer = new CRendererD3D11();
 	if (!m_pRenderer)
 		return;
 
@@ -93,7 +93,7 @@ void CRealtimePSPreviewFrame::InitD3D12()
 	createParams.width = renderingPanel->GetClientSize().GetWidth();
 	createParams.height = renderingPanel->GetClientSize().GetHeight();
 
-	m_pRenderer = new CDriverD3D12();
+	m_pRenderer = new CRendererD3D12();
 	if (!m_pRenderer)
 		return;
 

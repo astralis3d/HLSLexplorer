@@ -6,11 +6,11 @@
 
 struct SRendererCreateParams;
 
-class CDriverD3D11 : public CRenderer
+class CRendererD3D11 : public CRenderer
 {
 public:
-	CDriverD3D11();
-	virtual ~CDriverD3D11() {}
+	CRendererD3D11();
+	virtual ~CRendererD3D11() {}
 
 	virtual bool Initialize(const SRendererCreateParams& createParams);
 	virtual void Cleanup();
