@@ -334,7 +334,7 @@ void CRendererD3D11::Render()
 }
 
 //-----------------------------------------------------------------------------
-void CRendererD3D11::CreatePixelShader( const void* dxbcData, unsigned int size )
+void CRendererD3D11::UpdatePixelShader( const void* dxbcData, unsigned int size )
 {
 	SAFE_RELEASE( m_pPS );
 

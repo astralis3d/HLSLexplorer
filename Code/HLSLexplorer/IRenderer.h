@@ -5,7 +5,7 @@ struct SRendererCreateParams;
 class IRenderer
 {
 public:
-	virtual ~IRenderer() = 0 {}
+	virtual ~IRenderer() {}
 
 	virtual bool Initialize(const SRendererCreateParams& createParams) = 0;
 	virtual void Cleanup() = 0;
@@ -14,7 +14,7 @@ public:
 	virtual void Render() = 0;
 
 	virtual bool LoadTextureFromFile( const wchar_t* path, int index ) = 0;
-	virtual void CreatePixelShader( const void* dxbcData, unsigned int size ) = 0;
+	virtual void UpdatePixelShader( const void* dxbcData, unsigned int size ) = 0;
 
 	virtual ETextureType GetTextureType( int index ) const = 0;
 	virtual void ResetTexture( int index ) = 0;

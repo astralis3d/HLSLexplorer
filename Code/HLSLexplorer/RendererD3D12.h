@@ -19,7 +19,7 @@ public:
 	virtual void Update();
 	virtual void Render();
 
-	virtual void CreatePixelShader(const void* dxbcData, unsigned int size);
+	virtual void UpdatePixelShader(const void* dxbcData, unsigned int size);
 	virtual void ResetTexture( int index );
 	virtual bool LoadTextureFromFile(const wchar_t* path, int index);
 	virtual ETextureType GetTextureType(int index) const;

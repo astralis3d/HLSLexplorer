@@ -139,7 +139,7 @@ void CRendererD3D12::Render()
 }
 
 //-----------------------------------------------------------------------------
-void CRendererD3D12::CreatePixelShader( const void* dxbcData, unsigned int size )
+void CRendererD3D12::UpdatePixelShader( const void* dxbcData, unsigned int size )
 {
 	m_pipelineState.Reset();
 
