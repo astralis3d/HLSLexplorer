@@ -4,9 +4,19 @@
 #include "d3dx12.h"
 #include <chrono>
 
+#include "../external/DirectXTK12/Inc/WICTextureLoader.h"
+#include "../external/DirectXTK12/Inc/DDSTextureLoader.h"
+
 // TODO: move to project's linker properties
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
+
+#ifdef _DEBUG
+# pragma comment(lib, "../external/DirectXTK12/Bin/Desktop_2019_Win10/x64/Debug/DirectXTK12.lib")
+#else
+# pragma comment(lib, "../external/DirectXTK12/Bin/Desktop_2019_Win10/x64/Release/DirectXTK12.lib")
+#endif
+
 
 inline void ThrowIfFailed( HRESULT hr )
 {
@@ -212,7 +222,20 @@ ETextureType CRendererD3D12::GetTextureType( int index ) const
 
 void CRendererD3D12::ResizeViewport( unsigned int newWidth, unsigned int newHeight )
 {
+	/*	
+	if ( (newWidth != m_vpWidth) || (newHeight != m_vpHeight) )
+	{
+		// Flush all current GPU commands
+		Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
 
+
+		DXGI_SWAP_CHAIN_DESC1 scDesc = {};
+		m_swapChain->GetDesc1( &scDesc );
+
+		m_swapChain->ResizeBuffers( NUM_FRAMES,
+	}
+	*/
+	
 }
 
 //-----------------------------------------------------------------------------
