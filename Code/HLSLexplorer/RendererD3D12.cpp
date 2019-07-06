@@ -495,20 +495,33 @@ ETextureType CRendererD3D12::GetTextureType( int index ) const
 //-----------------------------------------------------------------------------
 void CRendererD3D12::ResizeViewport( unsigned int newWidth, unsigned int newHeight )
 {
-	/*	
+	// Performing resizing swap buffers in the proper way.
+	// See https://github.com/microsoft/DirectX-Graphics-Samples/blob/master/Samples/Desktop/D3D12Fullscreen/src/D3D12Fullscreen.cpp
 	if ( (newWidth != m_vpWidth) || (newHeight != m_vpHeight) )
 	{
 		// Flush all current GPU commands
 		Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
 
+		// Release the resources holding references to the swap chain (requirement of
+		// IDXGISwapChain::ResizeBuffers) and reset the frame fence values to the
+		// current fence value.
+		for (UINT n = 0; n < NUM_FRAMES; n++)
+		{
+			m_backBuffers[n].Reset();
+			m_frameFenceValue[n] = m_frameFenceValue[m_nCurrentBackBufferIndex];
+		}
 
 		DXGI_SWAP_CHAIN_DESC1 scDesc = {};
-		m_swapChain->GetDesc1( &scDesc );
+		ThrowIfFailed( m_swapChain->GetDesc1(&scDesc) );
+		ThrowIfFailed( m_swapChain->ResizeBuffers( NUM_FRAMES, newWidth, newHeight, scDesc.Format, scDesc.Flags) );
 
-		m_swapChain->ResizeBuffers( NUM_FRAMES,
-	}
-	*/
-	
+		m_nCurrentBackBufferIndex = m_swapChain->GetCurrentBackBufferIndex();
+		m_vpWidth = newWidth;
+		m_vpHeight = newHeight;
+
+		// Here - update all size-dependent resources
+		UpdateRenderTargetViews( m_device, m_swapChain, m_descriptorHeapRTV );
+	}	
 }
 
 //-----------------------------------------------------------------------------
