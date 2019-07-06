@@ -2,14 +2,8 @@
 #include "RendererD3D11.h"
 #include <d3dcompiler.h>
 
-#include "../external/DirectXTK/Inc/WICTextureLoader.h"
-#include "../external/DirectXTK/Inc/DDSTextureLoader.h"
-
-#ifdef _DEBUG
-# pragma comment(lib, "../external/DirectXTK/Bin/DirectXTK.Debug.lib")
-#else
-# pragma comment(lib, "../external/DirectXTK/Bin/DirectXTK.Release.lib")
-#endif
+#include "DDSTextureLoader.h"
+#include "WICTextureLoader.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")

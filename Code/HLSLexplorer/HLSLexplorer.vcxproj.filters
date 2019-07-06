@@ -60,6 +60,18 @@
     <ClCompile Include="RendererD3D11.cpp">
       <Filter>Application\gui\RealtimePixelShaderPreview\D3D11</Filter>
     </ClCompile>
+    <ClCompile Include="DDSTextureLoader.cpp">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="DDSTextureLoader12.cpp">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="WICTextureLoader.cpp">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="WICTextureLoader12.cpp">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Edit.h">
@@ -141,6 +153,18 @@
     <ClInclude Include="RendererD3D11.h">
       <Filter>Application\gui\RealtimePixelShaderPreview\D3D11</Filter>
     </ClInclude>
+    <ClInclude Include="DDSTextureLoader.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="DDSTextureLoader12.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="WICTextureLoader.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="WICTextureLoader12.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Application">
@@ -193,6 +217,9 @@
     </Filter>
     <Filter Include="Application\gui\RealtimePixelShaderPreview\D3D12">
       <UniqueIdentifier>{fe6f1712-c6c0-485c-8753-0e621e8a2676}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{4c7042d8-ec7a-4cab-bd58-00487f3b58f6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -66,6 +66,9 @@ private:
 	ComPtr<ID3D12Resource>		m_sceneConstantBuffer;
 	unsigned char*				m_pCbvDataBegin;
 
+	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapSRVs;
+	ComPtr<ID3D12Resource>		m_textures;
+
 	ComPtr<ID3D12PipelineState>	m_pipelineState;
 
 	UINT m_nCurrentBackBufferIndex;

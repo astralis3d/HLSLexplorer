@@ -4,19 +4,12 @@
 #include "d3dx12.h"
 #include <chrono>
 
-#include "../external/DirectXTK12/Inc/WICTextureLoader.h"
-#include "../external/DirectXTK12/Inc/DDSTextureLoader.h"
+#include "DDSTextureLoader12.h"
+#include "WICTextureLoader12.h"
 
 // TODO: move to project's linker properties
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
-
-#ifdef _DEBUG
-# pragma comment(lib, "../external/DirectXTK12/Bin/Desktop_2019_Win10/x64/Debug/DirectXTK12.lib")
-#else
-# pragma comment(lib, "../external/DirectXTK12/Bin/Desktop_2019_Win10/x64/Release/DirectXTK12.lib")
-#endif
-
 
 inline void ThrowIfFailed( HRESULT hr )
 {
@@ -98,6 +91,9 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 	m_descriptorHeapSamplers = CreateDescriptorHeap(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 6, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE );
 	m_nDescriptorSizeSampler = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 	CreateSamplers();
+
+	// Describe and create a shader resource view (SRV) heap for textures
+	m_descriptorHeapSRVs = CreateDescriptorHeap(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 8, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE );
 
 	// Create frame resources (e.g. RTV for each frame/backbuffer)
 	UpdateRenderTargetViews( m_device, m_swapChain, m_descriptorHeapRTV );
@@ -205,21 +201,39 @@ void CRendererD3D12::UpdatePixelShader( const void* dxbcData, unsigned int size 
 	m_bDrawFullscreenTriangle = true;
 }
 
+//-----------------------------------------------------------------------------
 void CRendererD3D12::ResetTexture( int index )
 {
 
 }
 
+//-----------------------------------------------------------------------------
 bool CRendererD3D12::LoadTextureFromFile( const wchar_t* path, int index )
 {
+	std::wstring fileName( path );
+	
+	/*
+	if (!fileName.substr(fileName.length() - 4).compare(std::wstring(L".dds")))
+	{
+		ThrowIfFailed( DirectX::LoadDDSTextureFromFile(m_device.Get(), path,
+	}
+	else
+	{
+		
+	}
+	
+	*/
+
 	return false; // todo
 }
 
+//-----------------------------------------------------------------------------
 ETextureType CRendererD3D12::GetTextureType( int index ) const
 {
 	return ETextureType::ETexType_Invalid; // todo
 }
 
+//-----------------------------------------------------------------------------
 void CRendererD3D12::ResizeViewport( unsigned int newWidth, unsigned int newHeight )
 {
 	/*	
