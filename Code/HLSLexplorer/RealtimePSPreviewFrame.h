@@ -7,7 +7,7 @@ class wxFileDirPickerEvent;
 class CRealtimePSPreviewFrame : public wxFrame
 {
 public:
-	CRealtimePSPreviewFrame(wxWindow* parent, const char* title);
+	CRealtimePSPreviewFrame(wxWindow* parent);
 	virtual ~CRealtimePSPreviewFrame();
 
 	void InitD3D11();
@@ -21,6 +21,8 @@ private:
 	void OnRenderingPanelSize( wxSizeEvent& evt );
 	void OnIdleEvent( wxIdleEvent& evt );
 	void OnCloseEvent( wxCloseEvent& evt );
+
+	void UpdateWindowTitle();
 
 	void OnFilePickerTexture0( wxFileDirPickerEvent& evt );
 	void OnFilePickerTexture1( wxFileDirPickerEvent& evt );

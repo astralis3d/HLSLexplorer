@@ -33,12 +33,10 @@ struct SRendererCreateParams
 	unsigned int height;
 };
 
-CRealtimePSPreviewFrame::CRealtimePSPreviewFrame( wxWindow* parent, const char* title )
+CRealtimePSPreviewFrame::CRealtimePSPreviewFrame( wxWindow* parent )
 	: m_pRenderer(nullptr)
 {
 	wxXmlResource::Get()->LoadFrame( this, parent, "RealtimePSPreview" );
-
-	SetTitle(title);
 
 	// Width of rendering panel changes its size while options panel remains the same.
 	wxSplitterWindow* pSplitter = XRCCTRL( *this, "Splitter", wxSplitterWindow );
@@ -66,19 +64,21 @@ void CRealtimePSPreviewFrame::InitD3D11()
 {
 	wxSplitterWindow* pSplitter = XRCCTRL( *this, "Splitter", wxSplitterWindow );
 	wxPanel* renderingPanel = (wxPanel*)pSplitter->GetWindow1();
-	
-	SRendererCreateParams createParams;
-	createParams.hwnd =  renderingPanel->GetHWND();
-	createParams.width = renderingPanel->GetClientSize().GetWidth();
-	createParams.height = renderingPanel->GetClientSize().GetHeight();
 
 	m_pRenderer = new CRendererD3D11();
 	if (!m_pRenderer)
 		return;
 
-	bool bSuccess = m_pRenderer->Initialize( createParams );
+	SRendererCreateParams createParams;
+	createParams.hwnd = renderingPanel->GetHWND();
+	createParams.width = renderingPanel->GetClientSize().GetWidth();
+	createParams.height = renderingPanel->GetClientSize().GetHeight();
+
+	const bool bSuccess = m_pRenderer->Initialize( createParams );
 	if ( bSuccess )
 	{
+		UpdateWindowTitle();
+
 		// render the first time
 		m_pRenderer->Update();
 		m_pRenderer->Render();
@@ -90,18 +90,20 @@ void CRealtimePSPreviewFrame::InitD3D12()
 	wxSplitterWindow* pSplitter = XRCCTRL( *this, "Splitter", wxSplitterWindow );
 	wxPanel* renderingPanel = (wxPanel*)pSplitter->GetWindow1();
 
+	m_pRenderer = new CRendererD3D12();
+	if (!m_pRenderer)
+		return;
+
 	SRendererCreateParams createParams;
 	createParams.hwnd = renderingPanel->GetHWND();
 	createParams.width = renderingPanel->GetClientSize().GetWidth();
 	createParams.height = renderingPanel->GetClientSize().GetHeight();
 
-	m_pRenderer = new CRendererD3D12();
-	if (!m_pRenderer)
-		return;
-
-	bool bSuccess = m_pRenderer->Initialize( createParams );
+	const bool bSuccess = m_pRenderer->Initialize( createParams );
 	if (bSuccess)
 	{
+		UpdateWindowTitle();
+
 		// render the first time
 		m_pRenderer->Update();
 		m_pRenderer->Render();
@@ -114,7 +116,10 @@ void CRealtimePSPreviewFrame::OnRenderingPanelSize( wxSizeEvent& evt )
 	const int height = m_renderingPanel->GetClientSize().y;
 
 	if (m_pRenderer)
+	{
 		m_pRenderer->ResizeViewport(width, height);
+		UpdateWindowTitle();
+	}
 
 	evt.Skip();
 }
@@ -132,6 +137,15 @@ void CRealtimePSPreviewFrame::OnCloseEvent( wxCloseEvent& WXUNUSED(evt) )
 	*m_bVisibility = false;
 
 	Destroy();
+}
+
+//-----------------------------------------------------------------------------
+void CRealtimePSPreviewFrame::UpdateWindowTitle()
+{
+	SetTitle( wxString::Format("Real-Time Pixel Shader Preview (%s) - %dx%d",
+								GetRenderer()->GetRendererAPI() == RENDERER_API_D3D11 ? "D3D11" : "D3D12",
+								m_renderingPanel->GetClientSize().x,
+								m_renderingPanel->GetClientSize().y) );
 }
 
 // helper for getting filename from path.
