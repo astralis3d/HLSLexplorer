@@ -346,13 +346,13 @@ void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 	const int currLineDXILBefore = m_pEditASM_DXIL->GetCurrentLine();
 	const int currLineGCNBefore = m_pEditASM_GCNISA->GetCurrentLine();
 
+	// This is out DXBC data
+	std::vector<unsigned char> compiledDXBC;
+
 	if ( m_compilerLoader.IsValid() )
 	{
 		m_pEditASM_DXBC->SetText(wxString("Please wait..."));
 
-		// This is out DXBC data
-		std::vector<unsigned char> compiledDXBC;
-			
 		const std::string strCompiledASM = nmCompile::Compile( m_D3DOptions, pszSourceHLSL, strEntrypoint.c_str(), m_strHLSLPath.c_str(), &m_compilerLoader, compiledDXBC );
 		const wxString wstrCompiledASM = wxString( strCompiledASM );
 
@@ -397,7 +397,10 @@ void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 
 			if (m_bPSPreviewVisible && m_D3DOptions.shaderType == ShaderType_PS && rendererAPI == RENDERER_API_D3D12)
 			{
-				pRenderer->UpdatePixelShader( (const void*)DXIL_bytecode.data(), DXIL_bytecode.size(), m_D3DOptions.shaderProfile );
+				if (isShaderProfile6)
+					pRenderer->UpdatePixelShader( (const void*)DXIL_bytecode.data(), DXIL_bytecode.size(), m_D3DOptions.shaderProfile );
+				else
+					pRenderer->UpdatePixelShader( (const void*) compiledDXBC.data(), compiledDXBC.size(), m_D3DOptions.shaderProfile );
 			}
 		}
 		

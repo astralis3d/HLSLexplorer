@@ -379,7 +379,19 @@ void CRendererD3D12::UpdatePixelShader( const void* dxbcData, unsigned int size,
 //-----------------------------------------------------------------------------
 void CRendererD3D12::ResetTexture( int index )
 {
+	// Wait to complete draw calls
+	Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
 
+	// Reset texture - set null descriptor.
+	CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(m_descriptorHeapCBVandSRVs->GetCPUDescriptorHandleForHeapStart(), 1 + index, m_nDescriptorSizeCBV_SRV_UAV);
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+	m_device->CreateShaderResourceView( nullptr, &srvDesc, srvHandle );
+
+	m_textures[index].Reset();
 }
 
 //-----------------------------------------------------------------------------
@@ -475,6 +487,7 @@ ETextureType CRendererD3D12::GetTextureType( int index ) const
 	srvHandle.Offset(1, m_nDescriptorSizeCBV_SRV_UAV);
 	srvHandle.Offset(index, m_nDescriptorSizeCBV_SRV_UAV);
 
+	D3D12_RESOURCE_DESC resDesc = m_textures[index]->GetDesc();
 
 	return ETextureType::ETexType_Invalid; // todo
 }
