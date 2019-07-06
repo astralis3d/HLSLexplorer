@@ -92,6 +92,9 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 	m_nDescriptorSizeSampler = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 	CreateSamplers();
 
+	// Get size of descriptor for cbv/srv/uav
+	m_nDescriptorSizeCBV_SRV_UAV = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
 	// Describe and create a shader resource view (SRV) heap for textures
 	m_descriptorHeapSRVs = CreateDescriptorHeap(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 8, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE );
 
@@ -132,7 +135,7 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 		// Keeping thins mapped for the lifetime of the resource is okay.
 		CD3DX12_RANGE readRange(0, 0);	// we don't intend to read from this resource on the CPU
 		ThrowIfFailed( m_sceneConstantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&m_pCbvDataBegin)) );
-		memcpy((void*)&m_pCbvDataBegin, &m_PSConstantBufferData, sizeof(m_PSConstantBufferData));
+		memcpy((void*)m_pCbvDataBegin, &m_PSConstantBufferData, sizeof(m_PSConstantBufferData));
 	}
 
 	return true;
@@ -149,7 +152,7 @@ void CRendererD3D12::Update()
 {
 	CRenderer::Update();
 
-	memcpy((void*)&m_pCbvDataBegin, &m_PSConstantBufferData, sizeof(m_PSConstantBufferData));
+	memcpy((void*)m_pCbvDataBegin, &m_PSConstantBufferData, sizeof(m_PSConstantBufferData));
 }
 
 //-----------------------------------------------------------------------------
@@ -212,19 +215,39 @@ bool CRendererD3D12::LoadTextureFromFile( const wchar_t* path, int index )
 {
 	std::wstring fileName( path );
 	
-	/*
+	ComPtr<ID3D12Resource> testTexture;
+	std::unique_ptr<uint8_t[]> imageData;
+	std::vector<D3D12_SUBRESOURCE_DATA> subresources;
+
 	if (!fileName.substr(fileName.length() - 4).compare(std::wstring(L".dds")))
 	{
-		ThrowIfFailed( DirectX::LoadDDSTextureFromFile(m_device.Get(), path,
+		ThrowIfFailed( DirectX::LoadDDSTextureFromFile(m_device.Get(), path, &testTexture, imageData, subresources) );
 	}
 	else
 	{
-		
+		subresources.push_back( {} );
+		ThrowIfFailed( DirectX::LoadWICTextureFromFile(m_device.Get(), path, &testTexture, imageData, subresources[0]) );
 	}
-	
-	*/
 
-	return false; // todo
+	D3D12_RESOURCE_DESC resDesc = testTexture->GetDesc();
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = resDesc.Format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = -1;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle( m_descriptorHeapSRVs->GetCPUDescriptorHandleForHeapStart() );
+	
+	if (index > 0)
+		srvHandle.Offset(index, m_nDescriptorSizeCBV_SRV_UAV);
+
+	m_device->CreateShaderResourceView(testTexture.Get(), &srvDesc, srvHandle);
+
+
+	return true; // todo
 }
 
 //-----------------------------------------------------------------------------
@@ -447,9 +470,9 @@ void CRendererD3D12::PopulateCommandList()
 
 
 	ID3D12DescriptorHeap* ppHeaps[] = { m_descriptorHeapCBV.Get() };
-	m_commandList->SetDescriptorHeaps( _countof(ppHeaps), ppHeaps );
+	//m_commandList->SetDescriptorHeaps( _countof(ppHeaps), ppHeaps );
 
-	m_commandList->SetGraphicsRootDescriptorTable(0, m_descriptorHeapCBV->GetGPUDescriptorHandleForHeapStart());
+	//m_commandList->SetGraphicsRootDescriptorTable(0, m_descriptorHeapCBV->GetGPUDescriptorHandleForHeapStart());
 
 	// Viewport and scissor test
 	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (FLOAT) m_vpWidth, (FLOAT) m_vpHeight, 0.0f, 1.0f);

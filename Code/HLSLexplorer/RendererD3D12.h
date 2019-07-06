@@ -73,6 +73,7 @@ private:
 
 	UINT m_nCurrentBackBufferIndex;
 
+	UINT m_nDescriptorSizeCBV_SRV_UAV;
 	UINT m_nDescriptorSizeRTV;
 	UINT m_nDescriptorSizeSampler;
 
