@@ -7,7 +7,7 @@ class wxFileDirPickerEvent;
 class CRealtimePSPreviewFrame : public wxFrame
 {
 public:
-	CRealtimePSPreviewFrame(wxWindow* parent);
+	CRealtimePSPreviewFrame(wxWindow* parent, const char* title);
 	virtual ~CRealtimePSPreviewFrame();
 
 	void InitD3D11();
@@ -15,7 +15,6 @@ public:
 
 	void SetVisibilityPtr(bool* p) {  m_bVisibility = p;}
 
-	//CDriverD3D11* GetD3D11Driver() { return &m_driverD3D11; } 
 	IRenderer* GetRenderer() { return m_pRenderer; }
 
 private:

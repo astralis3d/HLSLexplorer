@@ -51,14 +51,11 @@
     <ClCompile Include="RecentFilesManager.cpp">
       <Filter>Application\gui</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Application\gui\RealtimePixelShaderPreview</Filter>
-    </ClCompile>
     <ClCompile Include="RendererD3D12.cpp">
-      <Filter>Application\gui\RealtimePixelShaderPreview\D3D12</Filter>
+      <Filter>Application\gui\RealtimePixelShaderPreview\Renderer\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="RendererD3D11.cpp">
-      <Filter>Application\gui\RealtimePixelShaderPreview\D3D11</Filter>
+      <Filter>Application\gui\RealtimePixelShaderPreview\Renderer\D3D11</Filter>
     </ClCompile>
     <ClCompile Include="DDSTextureLoader.cpp">
       <Filter>ThirdParty</Filter>
@@ -71,6 +68,9 @@
     </ClCompile>
     <ClCompile Include="WICTextureLoader12.cpp">
       <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Application\gui\RealtimePixelShaderPreview\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -139,19 +139,13 @@
       <Filter>Application\gui</Filter>
     </ClInclude>
     <ClInclude Include="d3dx12.h">
-      <Filter>Application\gui\RealtimePixelShaderPreview\D3D12</Filter>
-    </ClInclude>
-    <ClInclude Include="IRenderer.h">
-      <Filter>Application\gui\RealtimePixelShaderPreview</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>Application\gui\RealtimePixelShaderPreview</Filter>
+      <Filter>Application\gui\RealtimePixelShaderPreview\Renderer\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="RendererD3D12.h">
-      <Filter>Application\gui\RealtimePixelShaderPreview\D3D12</Filter>
+      <Filter>Application\gui\RealtimePixelShaderPreview\Renderer\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="RendererD3D11.h">
-      <Filter>Application\gui\RealtimePixelShaderPreview\D3D11</Filter>
+      <Filter>Application\gui\RealtimePixelShaderPreview\Renderer\D3D11</Filter>
     </ClInclude>
     <ClInclude Include="DDSTextureLoader.h">
       <Filter>ThirdParty</Filter>
@@ -164,6 +158,12 @@
     </ClInclude>
     <ClInclude Include="WICTextureLoader12.h">
       <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Application\gui\RealtimePixelShaderPreview\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderer.h">
+      <Filter>Application\gui\RealtimePixelShaderPreview\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -194,9 +194,6 @@
     <Filter Include="Application\gui\RealtimePixelShaderPreview">
       <UniqueIdentifier>{5e2b5c97-f826-44c8-b6d1-f4be9b920809}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Application\gui\RealtimePixelShaderPreview\D3D11">
-      <UniqueIdentifier>{cc0f4467-b7d2-4764-9920-d02c90d27d60}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Application\gui\Dialogs">
       <UniqueIdentifier>{6db2a285-94cf-4f0b-9e8b-d17dc7a98ff0}</UniqueIdentifier>
     </Filter>
@@ -215,16 +212,22 @@
     <Filter Include="Application\Compilation\disassemblers\official\elf">
       <UniqueIdentifier>{91458cf4-2c59-4c22-b7ee-9e671b8014e8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Application\gui\RealtimePixelShaderPreview\D3D12">
-      <UniqueIdentifier>{fe6f1712-c6c0-485c-8753-0e621e8a2676}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ThirdParty">
       <UniqueIdentifier>{4c7042d8-ec7a-4cab-bd58-00487f3b58f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\gui\RealtimePixelShaderPreview\Renderer">
+      <UniqueIdentifier>{cb7247dc-0f61-47d8-b89a-7ab320c7bb57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\gui\RealtimePixelShaderPreview\Renderer\D3D12">
+      <UniqueIdentifier>{fe6f1712-c6c0-485c-8753-0e621e8a2676}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\gui\RealtimePixelShaderPreview\Renderer\D3D11">
+      <UniqueIdentifier>{cc0f4467-b7d2-4764-9920-d02c90d27d60}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="FullscreenVS.hlsl">
-      <Filter>Application\gui\RealtimePixelShaderPreview\D3D11</Filter>
+      <Filter>Application\gui\RealtimePixelShaderPreview\Renderer\D3D11</Filter>
     </None>
     <None Include="resource.xrc">
       <Filter>Application\gui\Resources\wxWidgets</Filter>

@@ -422,14 +422,11 @@ void CMyFrame::OnMenuFileShowPSPreviewD3D11( wxCommandEvent& evt )
 	// Do nothing if PS preview is already active
 	if (m_bPSPreviewVisible)
 	{
-		//OutputDebugStringA("No2 previews\n");
-
 		m_pPSPreviewFrame->SetFocus();
-
 		return;
 	}
 
-	m_pPSPreviewFrame = new CRealtimePSPreviewFrame( this );
+	m_pPSPreviewFrame = new CRealtimePSPreviewFrame( this, "Real-time Pixel Shader Preview (D3D11)" );
 	m_pPSPreviewFrame->SetVisibilityPtr( &m_bPSPreviewVisible );
 	m_pPSPreviewFrame->Show( true );
 	m_pPSPreviewFrame->InitD3D11();
@@ -444,14 +441,11 @@ void CMyFrame::OnMenuFileShowPSPreviewD3D12( wxCommandEvent& evt )
 	// Do nothing if PS preview is already active
 	if (m_bPSPreviewVisible)
 	{
-		//OutputDebugStringA("No2 previews\n");
-
 		m_pPSPreviewFrame->SetFocus();
-
 		return;
 	}
 
-	m_pPSPreviewFrame = new CRealtimePSPreviewFrame( this );
+	m_pPSPreviewFrame = new CRealtimePSPreviewFrame( this, "Real-time Pixel Shader Preview (D3D12)" );
 	m_pPSPreviewFrame->SetVisibilityPtr( &m_bPSPreviewVisible );
 	m_pPSPreviewFrame->Show( true );
 	m_pPSPreviewFrame->InitD3D12();

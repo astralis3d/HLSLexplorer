@@ -118,6 +118,26 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 	// * layout: 1 cbv + 8 srv
 	m_descriptorHeapCBVandSRVs = CreateDescriptorHeap( m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1 + 8, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE );
 	
+	// Create multiple of null descriptors for SRVs.
+	// This allows to avoid of [ EXECUTION ERROR #646: INVALID_DESCRIPTOR_HANDLE]
+	// See https://docs.microsoft.com/en-us/windows/win32/direct3d12/descriptors-overview#null-descriptors
+	{
+		// We start from index[1] - beginning of SRVs
+		CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle( m_descriptorHeapCBVandSRVs->GetCPUDescriptorHandleForHeapStart(), 1, m_nDescriptorSizeCBV_SRV_UAV );
+		for (int i=0; i < 8; i++)
+		{
+			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+
+			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+			srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+			m_device->CreateShaderResourceView(nullptr, &srvDesc, srvHandle);
+
+			srvHandle.Offset(1, m_nDescriptorSizeCBV_SRV_UAV);
+		}
+	}
+
 	// Describe and create a samplers descriptor heap
 	m_descriptorHeapSamplers = CreateDescriptorHeap(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 6, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE );
 	m_nDescriptorSizeSampler = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
@@ -281,6 +301,7 @@ void CRendererD3D12::ResetTexture( int index )
 bool CRendererD3D12::LoadTextureFromFile( const wchar_t* path, int index )
 {
 	// Take care of proper sync. Make sure to finish all currently processed tasks
+	// (Apparently this is not needed here!)
 	//Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
 
 
@@ -355,11 +376,10 @@ bool CRendererD3D12::LoadTextureFromFile( const wchar_t* path, int index )
 
 	// Synchronize
 	{
-		//ComPtr<ID3D12Fence> tempFence = CreateFence(m_device);
 		Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
 	}
 
-	return true; // todo
+	return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -579,7 +599,6 @@ void CRendererD3D12::PopulateCommandList()
 	// the command allocator and command list are reset. This prepares the command list for recording the next frame.
 	ThrowIfFailed( commandAllocator->Reset() );
 	m_commandList->Reset(commandAllocator, m_bDrawFullscreenTriangle ? m_pipelineState.Get() : nullptr); // todo: set default PSO
-
 
 	m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
 

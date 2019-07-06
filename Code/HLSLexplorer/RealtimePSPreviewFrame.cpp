@@ -33,10 +33,12 @@ struct SRendererCreateParams
 	unsigned int height;
 };
 
-CRealtimePSPreviewFrame::CRealtimePSPreviewFrame( wxWindow* parent )
+CRealtimePSPreviewFrame::CRealtimePSPreviewFrame( wxWindow* parent, const char* title )
 	: m_pRenderer(nullptr)
 {
 	wxXmlResource::Get()->LoadFrame( this, parent, "RealtimePSPreview" );
+
+	SetTitle(title);
 
 	// Width of rendering panel changes its size while options panel remains the same.
 	wxSplitterWindow* pSplitter = XRCCTRL( *this, "Splitter", wxSplitterWindow );
