@@ -482,6 +482,8 @@ bool CRendererD3D12::LoadTextureFromFile( const wchar_t* path, int index )
 //-----------------------------------------------------------------------------
 ETextureType CRendererD3D12::GetTextureType( int index ) const
 {
+	// TODO: Investigate if there is a way of getting D3D12_SHADER_RESOURCE_DESC somehow.
+
 	// Locate proper SRV
 	CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle;
 	srvHandle.Offset(1, m_nDescriptorSizeCBV_SRV_UAV);
@@ -489,7 +491,16 @@ ETextureType CRendererD3D12::GetTextureType( int index ) const
 
 	D3D12_RESOURCE_DESC resDesc = m_textures[index]->GetDesc();
 
-	return ETextureType::ETexType_Invalid; // todo
+	switch (resDesc.Dimension)
+	{
+		case D3D12_RESOURCE_DIMENSION_TEXTURE2D:
+			return ETextureType::ETexType_2D;
+
+		default:
+			return ETextureType::ETexType_Invalid;
+	}
+
+	return ETextureType::ETexType_2D;
 }
 
 //-----------------------------------------------------------------------------
@@ -722,6 +733,7 @@ void CRendererD3D12::PopulateCommandList()
 	ID3D12DescriptorHeap* ppHeaps[] = { m_descriptorHeapCBVandSRVs.Get(), m_descriptorHeapSamplers.Get() };
 	m_commandList->SetDescriptorHeaps( _countof(ppHeaps), ppHeaps );
 
+	// set Root Descriptor Tables
 	m_commandList->SetGraphicsRootDescriptorTable(0, m_descriptorHeapCBVandSRVs->GetGPUDescriptorHandleForHeapStart());
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle( m_descriptorHeapCBVandSRVs->GetGPUDescriptorHandleForHeapStart(), 1, m_nDescriptorSizeCBV_SRV_UAV);
@@ -735,6 +747,7 @@ void CRendererD3D12::PopulateCommandList()
 
 	m_commandList->RSSetViewports(1, &viewport);
 	m_commandList->RSSetScissorRects(1, &scissorRect);
+
 
 	// Before the render target can be cleared, it must be transitioned to the RENDER_TARGET state.
 	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET) );
@@ -831,6 +844,7 @@ void CRendererD3D12::CreateSamplers()
 	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDesc.MaxAnisotropy = 16;
 
 	m_device->CreateSampler( &samplerDesc, samplerHandle );
 }
