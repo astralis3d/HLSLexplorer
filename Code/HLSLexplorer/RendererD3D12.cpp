@@ -45,6 +45,44 @@ namespace
 
 		return S_OK;
 	}
+
+	ETextureType TranslateTextureTypeD3D12( D3D12_SRV_DIMENSION srvDimensionD3D12 )
+	{
+		switch (srvDimensionD3D12)
+		{
+			case D3D12_SRV_DIMENSION_TEXTURE1D:
+				return ETextureType::ETexType_1D;
+				break;
+
+			case D3D12_SRV_DIMENSION_TEXTURE1DARRAY:
+				return ETextureType::ETexType_1DArray;
+				break;
+
+			case D3D12_SRV_DIMENSION_TEXTURE2D:
+				return ETextureType::ETexType_2D;
+				break;
+
+			case D3D12_SRV_DIMENSION_TEXTURE2DARRAY:
+				return ETextureType::ETexType_2DArray;
+				break;
+
+			case D3D12_SRV_DIMENSION_TEXTURE3D:
+				return ETextureType::ETexType_3D;
+				break;
+
+			case D3D12_SRV_DIMENSION_TEXTURECUBE:
+				return ETextureType::ETexType_Cube;
+				break;
+
+			case D3D12_SRV_DIMENSION_TEXTURECUBEARRAY:
+				return ETextureType::ETexType_CubeArray;
+				break;
+
+			default:
+				return ETextureType::ETexType_Invalid;
+				break;
+		}
+	}
 } // namespace
 
 
@@ -135,7 +173,6 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 		for (int i=0; i < 8; i++)
 		{
 			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-
 			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 			srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -224,7 +261,7 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 	}
 
 	return true;
-}
+}  
 
 //-----------------------------------------------------------------------------
 void CRendererD3D12::Cleanup()
@@ -433,6 +470,12 @@ bool CRendererD3D12::LoadTextureFromFile( const wchar_t* path, int index )
 //-----------------------------------------------------------------------------
 ETextureType CRendererD3D12::GetTextureType( int index ) const
 {
+	// Locate proper SRV
+	CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle;
+	srvHandle.Offset(1, m_nDescriptorSizeCBV_SRV_UAV);
+	srvHandle.Offset(index, m_nDescriptorSizeCBV_SRV_UAV);
+
+
 	return ETextureType::ETexType_Invalid; // todo
 }
 
