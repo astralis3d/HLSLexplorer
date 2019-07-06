@@ -603,7 +603,7 @@ void CRendererD3D12::PopulateCommandList()
 	// Before the render target can be cleared, it must be transitioned to the RENDER_TARGET state.
 	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET) );
 
-	static const float ClearColor[4] = { 0.0f, 0.0f, 0.8f, 0.0f };
+	static const float ClearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 	// Clear RTV
 	CD3DX12_CPU_DESCRIPTOR_HANDLE backBufferRTV( m_descriptorHeapRTV->GetCPUDescriptorHandleForHeapStart(), m_nCurrentBackBufferIndex, m_nDescriptorSizeRTV );
