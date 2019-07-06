@@ -319,11 +319,11 @@ void CRendererD3D12::UpdatePixelShader( const void* dxbcData, unsigned int size,
 	ComPtr<ID3DBlob> blobVS;
 	if ( IsShaderProfile6(shaderProfile) )
 	{
-		std::vector<unsigned char> vs_60_blob;
-
+		// TODO: I'm pretty sure I can do better than... this.
 		FILE* f = fopen("FullscreenVS.hlsl", "r");
 		if (!f)
 		{
+			m_bDrawFullscreenTriangle = false;
 			return;
 		}
 
@@ -331,31 +331,24 @@ void CRendererD3D12::UpdatePixelShader( const void* dxbcData, unsigned int size,
 		int file_size = ftell(f);
 		fseek(f, 0, SEEK_SET);
 
-		char* data = new char[file_size + 1];
+		char* data = new char[file_size];
 		memset(data, 0, sizeof(char) * file_size);
 		fread(data, 1, file_size, f);
-		data[file_size] = '\0';
+		fclose(f);
 		
+		std::vector<unsigned char> vs_60_blob;
 		nmCompile::CompileModern_Simple( data, L"QuadVS", L"vs_6_0", vs_60_blob);
 		
 		delete [] data;
 
-		fclose(f);
-
-		D3DCreateBlob( vs_60_blob.size(), &blobVS );
-		memcpy(blobVS->GetBufferPointer(), vs_60_blob.data(), vs_60_blob.size() );
-
-		
+		ThrowIfFailed( D3DCreateBlob(vs_60_blob.size(), &blobVS) );
+		memcpy(blobVS->GetBufferPointer(), vs_60_blob.data(), vs_60_blob.size() );		
 	}
 	else
 	{
 		// Shader model 4, 5.
-		
 		ThrowIfFailed( CompileShaderFromFile( L"FullscreenVS.hlsl", "QuadVS", "vs_5_0", &blobVS ) );
 	}
-
-	
-
 
 	// Create new Pipeline State Object
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = { };
@@ -433,13 +426,10 @@ bool CRendererD3D12::LoadTextureFromFile( const wchar_t* path, int index )
 		nullptr,
 		IID_PPV_ARGS(&textureUploadHeap)) );
 
-	// temp commandlist
+	// temp commandlist, make sure it's OPEN after creation
 	ComPtr<ID3D12GraphicsCommandList> tempCommandlist = CreateCommandList( m_device, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[m_nCurrentBackBufferIndex], false );
 
-
 	UpdateSubresources( tempCommandlist.Get(), m_textures[index].Get(), textureUploadHeap.Get(), 0, 0, subresourceSize, subresources.data() );
-
-
 
 	tempCommandlist->ResourceBarrier(1,
 							&CD3DX12_RESOURCE_BARRIER::Transition(
@@ -461,7 +451,9 @@ bool CRendererD3D12::LoadTextureFromFile( const wchar_t* path, int index )
 	srvHandle.Offset(1, m_nDescriptorSizeCBV_SRV_UAV);	// Need to offset here since the first object in heap in constant buffer
 	
 	if (index > 0)
+	{
 		srvHandle.Offset(index, m_nDescriptorSizeCBV_SRV_UAV);
+	}
 
 	m_device->CreateShaderResourceView(m_textures[index].Get(), &srvDesc, srvHandle);
 
@@ -472,9 +464,8 @@ bool CRendererD3D12::LoadTextureFromFile( const wchar_t* path, int index )
 	m_commandQueue->ExecuteCommandLists( _countof( ppCommandLists ), ppCommandLists );
 
 	// Synchronize
-	{
-		Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
-	}
+	Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
+
 
 	return true;
 }
