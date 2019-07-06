@@ -11,13 +11,40 @@
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 
-inline void ThrowIfFailed( HRESULT hr )
+namespace
 {
-	if (FAILED( hr ))
+	inline void ThrowIfFailed( HRESULT hr )
 	{
-		throw std::exception();
+		if (FAILED( hr ))
+		{
+			throw std::exception();
+		}
 	}
-}
+
+	HRESULT CompileShaderFromFile( const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderTarget, ID3DBlob** ppOutBlob )
+	{
+		HRESULT hr = S_OK;
+		DWORD dwFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+
+		ID3DBlob* pErrorBlob = nullptr;
+
+		hr = D3DCompileFromFile( szFileName, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, szEntryPoint, szShaderTarget,
+								 dwFlags, 0, ppOutBlob, &pErrorBlob );
+
+		if (FAILED( hr ))
+		{
+			OutputDebugStringA( reinterpret_cast<const char*>(pErrorBlob->GetBufferPointer()) );
+			SAFE_RELEASE( pErrorBlob );
+
+			return hr;
+		}
+
+		SAFE_RELEASE( pErrorBlob );
+
+		return S_OK;
+	}
+} // namespace
+
 
 // todo: remove duplicates from other translation units (d3d11.cpp etc.)
 struct SRendererCreateParams
@@ -82,21 +109,19 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 	m_descriptorHeapRTV = CreateDescriptorHeap( m_device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, NUM_FRAMES, D3D12_DESCRIPTOR_HEAP_FLAG_NONE );
 	m_nDescriptorSizeRTV = m_device->GetDescriptorHandleIncrementSize( D3D12_DESCRIPTOR_HEAP_TYPE_RTV );
 
-	// Describe and create a constant buffer view (CBV) desciptor heap.
+	// Get size of descriptor for cbv/srv/uav
+	m_nDescriptorSizeCBV_SRV_UAV = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	
+	// Describe and create a constant buffer view (CBV) and shader resource view (SRV) desciptor heap.
 	// Flags indicate that this descriptor heap can be bound to the pipeline
 	// and that desciptors containted in it can be referenced by a root table.
-	m_descriptorHeapCBV = CreateDescriptorHeap( m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE );
-
+	// * layout: 1 cbv + 8 srv
+	m_descriptorHeapCBVandSRVs = CreateDescriptorHeap( m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1 + 8, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE );
+	
 	// Describe and create a samplers descriptor heap
 	m_descriptorHeapSamplers = CreateDescriptorHeap(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 6, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE );
 	m_nDescriptorSizeSampler = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 	CreateSamplers();
-
-	// Get size of descriptor for cbv/srv/uav
-	m_nDescriptorSizeCBV_SRV_UAV = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-	// Describe and create a shader resource view (SRV) heap for textures
-	m_descriptorHeapSRVs = CreateDescriptorHeap(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 8, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE );
 
 	// Create frame resources (e.g. RTV for each frame/backbuffer)
 	UpdateRenderTargetViews( m_device, m_swapChain, m_descriptorHeapRTV );
@@ -129,13 +154,45 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
 		cbvDesc.SizeInBytes = (sizeof(CRenderer::SConstantBuffer) + 255) & ~255; // CB size is required to be 256-byte aligned
 		cbvDesc.BufferLocation = m_sceneConstantBuffer->GetGPUVirtualAddress();
-		m_device->CreateConstantBufferView(&cbvDesc, m_descriptorHeapCBV->GetCPUDescriptorHandleForHeapStart());
+		m_device->CreateConstantBufferView(&cbvDesc, m_descriptorHeapCBVandSRVs->GetCPUDescriptorHandleForHeapStart());
 
 		// Map and init constant buffer. We don't unmap this until app closes.
 		// Keeping thins mapped for the lifetime of the resource is okay.
 		CD3DX12_RANGE readRange(0, 0);	// we don't intend to read from this resource on the CPU
 		ThrowIfFailed( m_sceneConstantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&m_pCbvDataBegin)) );
 		memcpy((void*)m_pCbvDataBegin, &m_PSConstantBufferData, sizeof(m_PSConstantBufferData));
+	}
+
+	// Create the root signature
+	{
+		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
+
+		// The highest version. If CheckFeatureSupport succeeds, the HighestVersion returned will not be greater than this.
+		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+
+		if (FAILED(m_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
+		{
+			featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+		}
+
+		CD3DX12_DESCRIPTOR_RANGE1 ranges[3]; // Perf tip: order from the most frequent to least frequent.
+		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 12);			// 1 per-frame cbuffer, starting as b12
+		ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 8, 0);			// 8 infrequently changed textures
+		ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 6, 0);		// 6 constant samplers
+
+		CD3DX12_ROOT_PARAMETER1 rootParameters[3];
+		rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
+		rootParameters[1].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
+		rootParameters[2].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
+
+		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+		rootSignatureDesc.Init_1_1( _countof(rootParameters), rootParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT );
+
+		ComPtr<ID3DBlob> signature;
+		ComPtr<ID3DBlob> error;
+
+		ThrowIfFailed( D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error) );
+		ThrowIfFailed( m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)) );
 	}
 
 	return true;
@@ -185,15 +242,25 @@ void CRendererD3D12::Render()
 //-----------------------------------------------------------------------------
 void CRendererD3D12::UpdatePixelShader( const void* dxbcData, unsigned int size )
 {
+	// First of all, make sure that everything can be finished before reseting current pipeline state.
+	Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
+
 	m_pipelineState.Reset();
 
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = { };
+	// vertex shader (maybe move it somewhere else?)
+	ComPtr<ID3DBlob> blobVS;
+	ThrowIfFailed( CompileShaderFromFile( L"FullscreenVS.hlsl", "QuadVS", "vs_5_0", &blobVS ) );
 
+
+	// Create new Pipeline State Object
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = { };
+	psoDesc.VS = { blobVS->GetBufferPointer(), blobVS->GetBufferSize() };
 	psoDesc.PS = { dxbcData, size };
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.BlendState = CD3DX12_BLEND_DESC( D3D12_DEFAULT );
 	psoDesc.DepthStencilState.DepthEnable = FALSE;
 	psoDesc.DepthStencilState.StencilEnable = FALSE;
+	psoDesc.pRootSignature = m_rootSignature.Get();
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
@@ -213,39 +280,84 @@ void CRendererD3D12::ResetTexture( int index )
 //-----------------------------------------------------------------------------
 bool CRendererD3D12::LoadTextureFromFile( const wchar_t* path, int index )
 {
+	// Take care of proper sync. Make sure to finish all currently processed tasks
+	//Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
+
+
 	std::wstring fileName( path );
-	
-	ComPtr<ID3D12Resource> testTexture;
+
 	std::unique_ptr<uint8_t[]> imageData;
 	std::vector<D3D12_SUBRESOURCE_DATA> subresources;
 
+	ComPtr<ID3D12Resource> textureUploadHeap;
+
 	if (!fileName.substr(fileName.length() - 4).compare(std::wstring(L".dds")))
 	{
-		ThrowIfFailed( DirectX::LoadDDSTextureFromFile(m_device.Get(), path, &testTexture, imageData, subresources) );
+		ThrowIfFailed( DirectX::LoadDDSTextureFromFile(m_device.Get(), path, &m_textures[index], imageData, subresources) );
 	}
 	else
 	{
 		subresources.push_back( {} );
-		ThrowIfFailed( DirectX::LoadWICTextureFromFile(m_device.Get(), path, &testTexture, imageData, subresources[0]) );
+		ThrowIfFailed( DirectX::LoadWICTextureFromFile(m_device.Get(), path, &m_textures[index], imageData, subresources[0]) );
 	}
 
-	D3D12_RESOURCE_DESC resDesc = testTexture->GetDesc();
+	D3D12_RESOURCE_DESC resDesc = m_textures[index]->GetDesc();
+
+	const UINT64 subresourceSize = static_cast<UINT>( subresources.size() );
+	const UINT64 uploadBufferSize = GetRequiredIntermediateSize(m_textures[index].Get(), 0, subresourceSize);
+
+	// Create the GPU upload buffer.
+	ThrowIfFailed( m_device->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+		D3D12_HEAP_FLAG_NONE,
+		&CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize),
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&textureUploadHeap)) );
+
+	// temp commandlist
+	ComPtr<ID3D12GraphicsCommandList> tempCommandlist = CreateCommandList( m_device, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[m_nCurrentBackBufferIndex], false );
+
+
+	UpdateSubresources( tempCommandlist.Get(), m_textures[index].Get(), textureUploadHeap.Get(), 0, 0, subresourceSize, subresources.data() );
+
+
+
+	tempCommandlist->ResourceBarrier(1,
+							&CD3DX12_RESOURCE_BARRIER::Transition(
+							m_textures[index].Get(), 
+							D3D12_RESOURCE_STATE_COPY_DEST,
+							D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE ) );
+
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = resDesc.Format;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = -1;
+	srvDesc.Texture2D.MipLevels = subresourceSize;
 	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.ResourceMinLODClamp = -1;
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle( m_descriptorHeapSRVs->GetCPUDescriptorHandleForHeapStart() );
+	CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle( m_descriptorHeapCBVandSRVs->GetCPUDescriptorHandleForHeapStart() );
+	srvHandle.Offset(1, m_nDescriptorSizeCBV_SRV_UAV);	// Need to offset here since the first object in heap in constant buffer
 	
 	if (index > 0)
 		srvHandle.Offset(index, m_nDescriptorSizeCBV_SRV_UAV);
 
-	m_device->CreateShaderResourceView(testTexture.Get(), &srvDesc, srvHandle);
+	m_device->CreateShaderResourceView(m_textures[index].Get(), &srvDesc, srvHandle);
 
+	tempCommandlist->DiscardResource( textureUploadHeap.Get(), nullptr );
+
+	ThrowIfFailed( tempCommandlist->Close() );
+	ID3D12CommandList* ppCommandLists[] = { tempCommandlist.Get() };
+	m_commandQueue->ExecuteCommandLists( _countof( ppCommandLists ), ppCommandLists );
+
+	// Synchronize
+	{
+		//ComPtr<ID3D12Fence> tempFence = CreateFence(m_device);
+		Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
+	}
 
 	return true; // todo
 }
@@ -469,10 +581,17 @@ void CRendererD3D12::PopulateCommandList()
 	m_commandList->Reset(commandAllocator, m_bDrawFullscreenTriangle ? m_pipelineState.Get() : nullptr); // todo: set default PSO
 
 
-	ID3D12DescriptorHeap* ppHeaps[] = { m_descriptorHeapCBV.Get() };
-	//m_commandList->SetDescriptorHeaps( _countof(ppHeaps), ppHeaps );
+	m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
 
-	//m_commandList->SetGraphicsRootDescriptorTable(0, m_descriptorHeapCBV->GetGPUDescriptorHandleForHeapStart());
+	ID3D12DescriptorHeap* ppHeaps[] = { m_descriptorHeapCBVandSRVs.Get(), m_descriptorHeapSamplers.Get() };
+	m_commandList->SetDescriptorHeaps( _countof(ppHeaps), ppHeaps );
+
+	m_commandList->SetGraphicsRootDescriptorTable(0, m_descriptorHeapCBVandSRVs->GetGPUDescriptorHandleForHeapStart());
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle( m_descriptorHeapCBVandSRVs->GetGPUDescriptorHandleForHeapStart(), 1, m_nDescriptorSizeCBV_SRV_UAV);
+	m_commandList->SetGraphicsRootDescriptorTable(1, srvHandle);
+
+	m_commandList->SetGraphicsRootDescriptorTable(2, m_descriptorHeapSamplers->GetGPUDescriptorHandleForHeapStart());
 
 	// Viewport and scissor test
 	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (FLOAT) m_vpWidth, (FLOAT) m_vpHeight, 0.0f, 1.0f);

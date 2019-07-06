@@ -60,15 +60,15 @@ private:
 	ComPtr<ID3D12CommandAllocator> m_commandAllocators[NUM_FRAMES];
 
 	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapRTV;
-	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapCBV;
+	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapCBVandSRVs;
 	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapSamplers;
 
 	ComPtr<ID3D12Resource>		m_sceneConstantBuffer;
 	unsigned char*				m_pCbvDataBegin;
 
-	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapSRVs;
-	ComPtr<ID3D12Resource>		m_textures;
+	ComPtr<ID3D12Resource>		m_textures[8];
 
+	ComPtr<ID3D12RootSignature> m_rootSignature;
 	ComPtr<ID3D12PipelineState>	m_pipelineState;
 
 	UINT m_nCurrentBackBufferIndex;
