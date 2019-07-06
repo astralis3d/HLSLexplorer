@@ -31,5 +31,4 @@ public:
 
 protected:
 	SConstantBuffer m_PSConstantBufferData;
-
 };

@@ -100,6 +100,12 @@ CRendererD3D11::CRendererD3D11()
 	}
 }
 
+//-----------------------------------------------------------------------------
+ERendererAPI CRendererD3D11::GetRendererAPI()
+{
+	return RENDERER_API_D3D11;
+}
+
 bool CRendererD3D11::LoadTextureFromFile( const WCHAR* path, int index )
 {
 	SAFE_RELEASE( m_pInputTextures[index] );
@@ -328,7 +334,7 @@ void CRendererD3D11::Render()
 }
 
 //-----------------------------------------------------------------------------
-void CRendererD3D11::UpdatePixelShader( const void* dxbcData, unsigned int size )
+void CRendererD3D11::UpdatePixelShader( const void* dxbcData, unsigned int size, EShaderProfile shaderProfile )
 {
 	SAFE_RELEASE( m_pPS );
 

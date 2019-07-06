@@ -4,6 +4,8 @@
 #include "d3dx12.h"
 #include <chrono>
 
+#include "CompilationDX.h"
+
 #include "DDSTextureLoader12.h"
 #include "WICTextureLoader12.h"
 
@@ -60,6 +62,12 @@ CRendererD3D12::CRendererD3D12()
 	, m_bDrawFullscreenTriangle(false)
 {
 
+}
+
+//-----------------------------------------------------------------------------
+ERendererAPI CRendererD3D12::GetRendererAPI()
+{
+	return RENDERER_API_D3D12;
 }
 
 //-----------------------------------------------------------------------------
@@ -260,16 +268,56 @@ void CRendererD3D12::Render()
 }
 
 //-----------------------------------------------------------------------------
-void CRendererD3D12::UpdatePixelShader( const void* dxbcData, unsigned int size )
+void CRendererD3D12::UpdatePixelShader( const void* dxbcData, unsigned int size, EShaderProfile shaderProfile )
 {
 	// First of all, make sure that everything can be finished before reseting current pipeline state.
 	Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
 
 	m_pipelineState.Reset();
 
-	// vertex shader (maybe move it somewhere else?)
+	// We need to be consistent with used Shader Model throughout whole PSO.
+	// We would like to support both Shader Model 5.0 and 6.0 in real-time pixel shader preview, so we want
+	// to have access  to both versions of VS.
+
 	ComPtr<ID3DBlob> blobVS;
-	ThrowIfFailed( CompileShaderFromFile( L"FullscreenVS.hlsl", "QuadVS", "vs_5_0", &blobVS ) );
+	if ( IsShaderProfile6(shaderProfile) )
+	{
+		std::vector<unsigned char> vs_60_blob;
+
+		FILE* f = fopen("FullscreenVS.hlsl", "r");
+		if (!f)
+		{
+			return;
+		}
+
+		fseek(f, 0, SEEK_END);
+		int file_size = ftell(f);
+		fseek(f, 0, SEEK_SET);
+
+		char* data = new char[file_size + 1];
+		memset(data, 0, sizeof(char) * file_size);
+		fread(data, 1, file_size, f);
+		data[file_size] = '\0';
+		
+		nmCompile::CompileModern_Simple( data, L"QuadVS", L"vs_6_0", vs_60_blob);
+		
+		delete [] data;
+
+		fclose(f);
+
+		D3DCreateBlob( vs_60_blob.size(), &blobVS );
+		memcpy(blobVS->GetBufferPointer(), vs_60_blob.data(), vs_60_blob.size() );
+
+		
+	}
+	else
+	{
+		// Shader model 4, 5.
+		
+		ThrowIfFailed( CompileShaderFromFile( L"FullscreenVS.hlsl", "QuadVS", "vs_5_0", &blobVS ) );
+	}
+
+	
 
 
 	// Create new Pipeline State Object

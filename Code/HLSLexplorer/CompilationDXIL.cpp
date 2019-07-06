@@ -117,7 +117,7 @@ std::wstring GetShaderTargetW( const SD3DOptions& options )
 
 }
 
-std::string nmCompile::CompileModern( const SD3DOptions& options, const char* pData, const wchar_t* pEntrypoint, const char* pHLSLDirectory )
+std::string nmCompile::CompileModern( const SD3DOptions& options, const char* pData, const wchar_t* pEntrypoint, const char* pHLSLDirectory, TByteBuffer& outBlob )
 {
 	// Modern DX shader compiler can perform only on Shader Model 6.0+
 	const std::wstring shaderTarget = GetShaderTargetW( options );
@@ -228,6 +228,10 @@ std::string nmCompile::CompileModern( const SD3DOptions& options, const char* pD
 			//__debugbreak();
 		}
 
+		outBlob.clear();
+		outBlob.resize( pBlob->GetBufferSize() );
+		memcpy( outBlob.data(), pBlob->GetBufferPointer(), pBlob->GetBufferSize() );
+
 		pBlob->Release();
 		pResult->Release();
 	}
@@ -253,4 +257,98 @@ std::string nmCompile::CompileModern( const SD3DOptions& options, const char* pD
 
 
 	return strOut;
+}
+
+//-----------------------------------------------------------------------------
+void nmCompile::CompileModern_Simple( const char* pData, const wchar_t* pEntrypoint, const wchar_t* target, TByteBuffer& outBlob )
+{
+	// Modern DX shader compiler can perform only on Shader Model 6.0+
+	const std::wstring shaderTarget(target);
+	const size_t result = shaderTarget.find( L"s_6_" );
+	if (result == std::string::npos)
+	{
+		// Modern DX compiler is supported only on Shader Model 6.0+
+		return; 
+	}
+
+	IDxcLibrary* pLibrary = nullptr;
+	IDxcBlobEncoding* pSource = nullptr;
+
+	HRESULT hr = S_OK;
+	hr = DxcCreateInstance( CLSID_DxcLibrary, __uuidof(IDxcLibrary), reinterpret_cast<void**>(&pLibrary) );
+	if (FAILED( hr ))
+	{
+		return; // std::string( "DxcCreateInstance failed\n" );
+	}
+
+	hr = pLibrary->CreateBlobWithEncodingFromPinned( (LPBYTE)pData, strlen( pData ), CP_UTF8, &pSource );
+	if (FAILED( hr ))
+	{
+		return; // std::string( "CreateBlobWithEncodingFromPinned failed\n" );
+	}
+
+	// Create compiler object
+	IDxcCompiler* pCompiler = nullptr;
+	hr = DxcCreateInstance( CLSID_DxcCompiler, __uuidof(IDxcCompiler), reinterpret_cast<void**>(&pCompiler) );
+	if (FAILED( hr ))
+	{
+		return; // std::string( "DxcCreateInstance for IDxcCompiler failed\n" );
+	}
+
+
+	// params
+	TParams paramsAll; //no params
+	
+
+	// We need to use c_str().
+	std::vector<const wchar_t*> paramsAllCstr;
+	for (const auto& p : paramsAll)
+	{
+		paramsAllCstr.push_back( p.c_str() );
+	}
+
+	IDxcOperationResult* pResult = nullptr;
+	hr = pCompiler->Compile( pSource,
+							 L"shader.hlsl",
+							 pEntrypoint,
+							 shaderTarget.c_str(),
+							 paramsAllCstr.data(),
+							 paramsAllCstr.size(),
+							 nullptr,
+							 0,
+							 nullptr,
+							 &pResult );
+
+	HRESULT hrCompilation = E_FAIL;
+	if (SUCCEEDED( hr ) && pResult)
+	{
+		pResult->GetStatus( &hrCompilation );
+	}
+
+	if (SUCCEEDED( hrCompilation ))
+	{
+		IDxcBlob* pBlob = nullptr;
+		pResult->GetResult( &pBlob );
+
+		outBlob.clear();
+		outBlob.resize( pBlob->GetBufferSize() );
+		memcpy( outBlob.data(), pBlob->GetBufferPointer(), pBlob->GetBufferSize() );
+
+		pBlob->Release();
+		pResult->Release();
+	}
+	else
+	{
+		// Something went wrong.
+		IDxcBlobEncoding *pPrintBlob, *pPrintBlob16;
+		pResult->GetErrorBuffer( &pPrintBlob );
+		// We can use the library to get our preferred encoding.
+		pLibrary->GetBlobAsUtf16( pPrintBlob, &pPrintBlob16 );
+		//wprintf( L"%*s", (int)pPrintBlob16->GetBufferSize() / 2, (LPCWSTR)pPrintBlob16->GetBufferPointer() );
+
+		OutputDebugStringA( (const char*)pPrintBlob->GetBufferPointer() );
+
+		pPrintBlob->Release();
+		pPrintBlob16->Release();
+	}
 }

@@ -12,5 +12,16 @@ namespace nmCompile
 						 const CD3DCompilerLoader* pCompilerLoader, TByteBuffer& outDXBC );
 
 	std::string CompileModern( const SD3DOptions& options, const char* pData, const wchar_t* pEntrypoint, 
-							   const char* pHLSLDirectory );
+							   const char* pHLSLDirectory, TByteBuffer& outBlob );
+
+	// This is a simpler version which is used to compile only given shader and get Shader Model 6.0 blob
+	void CompileModern_Simple( const char* pData, const wchar_t* pEntrypoint, const wchar_t* target, TByteBuffer& outBlob );
+}
+
+inline bool IsShaderProfile6(EShaderProfile shaderProfile)
+{
+	return	(shaderProfile == EShaderProfile::ShaderProfile_6_0) ||
+			(shaderProfile == EShaderProfile::ShaderProfile_6_1) ||
+			(shaderProfile == EShaderProfile::ShaderProfile_6_2) ||
+			(shaderProfile == EShaderProfile::ShaderProfile_6_3);
 }

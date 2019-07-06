@@ -2,6 +2,7 @@
 
 // Basic D3D11 component
 #include <d3d11.h>
+#include "Defines.h"
 #include "Renderer.h"
 
 struct SRendererCreateParams;
@@ -18,8 +19,10 @@ public:
 	virtual void Update();
 	virtual void Render();
 
+	virtual ERendererAPI GetRendererAPI();
+
 	virtual bool LoadTextureFromFile(const wchar_t* path, int index);
-	virtual void UpdatePixelShader(const void* dxbcData, unsigned int size);
+	virtual void UpdatePixelShader(const void* dxbcData, unsigned int size, EShaderProfile shaderProfile);
 	
 	virtual ETextureType GetTextureType(int index) const;
 	virtual void ResetTexture( int index );

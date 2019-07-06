@@ -19,7 +19,9 @@ public:
 	virtual void Update();
 	virtual void Render();
 
-	virtual void UpdatePixelShader(const void* dxbcData, unsigned int size);
+	virtual ERendererAPI GetRendererAPI();
+
+	virtual void UpdatePixelShader(const void* dxbcData, unsigned int size, EShaderProfile shaderProfile);
 	virtual void ResetTexture( int index );
 	virtual bool LoadTextureFromFile(const wchar_t* path, int index);
 	virtual ETextureType GetTextureType(int index) const;

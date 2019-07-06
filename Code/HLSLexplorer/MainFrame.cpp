@@ -337,6 +337,10 @@ void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 	wxString sourceHLSL = m_pEditHLSL->GetText();
 	const char* pszSourceHLSL = sourceHLSL.c_str();
 
+	// Current status
+	const bool isShaderProfile6 = IsShaderProfile6(m_D3DOptions.shaderProfile);
+	IRenderer* pRenderer = m_pPSPreviewFrame->GetRenderer();
+
 	// Keep track the current line in ASM textfields
 	const int currLineDXBCBefore = m_pEditASM_DXBC->GetCurrentLine();
 	const int currLineDXILBefore = m_pEditASM_DXIL->GetCurrentLine();
@@ -362,9 +366,12 @@ void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 			strCompiledGCNISA = m_gcnisa.Compile( compiledDXBC.data(), compiledDXBC.size(), asicType );
 
 			// If real-time Pixel Shader preview is visible, update it
-			if ( m_bPSPreviewVisible && m_D3DOptions.shaderType == EShaderType::ShaderType_PS )
+			if ( m_bPSPreviewVisible && m_D3DOptions.shaderType == EShaderType::ShaderType_PS && pRenderer)
 			{
-				m_pPSPreviewFrame->GetRenderer()->UpdatePixelShader( (const void*) compiledDXBC.data(), compiledDXBC.size() );
+				const ERendererAPI rendererAPI = pRenderer->GetRendererAPI();
+
+				if (rendererAPI == RENDERER_API_D3D11)
+					pRenderer->UpdatePixelShader( (const void*) compiledDXBC.data(), compiledDXBC.size(), m_D3DOptions.shaderProfile );
 			}
 		}
 
@@ -378,15 +385,25 @@ void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 	// For modern compiler SM6.0+
 	if ( m_modernCompierLoader.IsValid() )
 	{
+		std::vector<unsigned char> DXIL_bytecode;
+
 		// Compiled ASM for Modern DXBC
-		const std::string strCompiledASM = nmCompile::CompileModern( m_D3DOptions, pszSourceHLSL, strEntrypoint.wc_str(), m_strHLSLPath.c_str());
+		const std::string strCompiledASM = nmCompile::CompileModern( m_D3DOptions, pszSourceHLSL, strEntrypoint.wc_str(), m_strHLSLPath.c_str(), DXIL_bytecode);
 		m_pEditASM_DXIL->SetText( strCompiledASM );
 
+		if (pRenderer)
+		{
+			const ERendererAPI rendererAPI = pRenderer->GetRendererAPI();
+
+			if (m_bPSPreviewVisible && m_D3DOptions.shaderType == ShaderType_PS && rendererAPI == RENDERER_API_D3D12)
+			{
+				pRenderer->UpdatePixelShader( (const void*)DXIL_bytecode.data(), DXIL_bytecode.size(), m_D3DOptions.shaderProfile );
+			}
+		}
+		
+
 		// If user selected shader model 6.0+, go to this tab immediately.
-		if ( m_D3DOptions.shaderProfile == EShaderProfile::ShaderProfile_6_0 ||
-			 m_D3DOptions.shaderProfile == EShaderProfile::ShaderProfile_6_1 ||
-			 m_D3DOptions.shaderProfile == EShaderProfile::ShaderProfile_6_2 ||
-			 m_D3DOptions.shaderProfile == EShaderProfile::ShaderProfile_6_3 )
+		if (isShaderProfile6)
 		{
 			m_pRightWindow->SetSelection( 1 );
 		}
