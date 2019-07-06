@@ -127,7 +127,6 @@ std::string nmCompile::CompileModern( const SD3DOptions& options, const char* pD
 		return std::string( "Modern DX compiler is supported only on Shader Model 6.0+" );
 	}
 
-
 	// Before compilation, set current working directory (CWD) for that with opened HLSL shader
 	TCHAR previousCWD[MAX_PATH];
 	::GetCurrentDirectory( MAX_PATH, previousCWD );

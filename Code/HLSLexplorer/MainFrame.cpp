@@ -339,7 +339,12 @@ void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 
 	// Current status
 	const bool isShaderProfile6 = IsShaderProfile6(m_D3DOptions.shaderProfile);
-	IRenderer* pRenderer = m_pPSPreviewFrame->GetRenderer();
+	const bool isShaderProfile5 = !isShaderProfile6;
+
+	IRenderer* pRenderer = nullptr;
+	
+	if (m_bPSPreviewVisible)
+		pRenderer = m_pPSPreviewFrame->GetRenderer();
 
 	// Keep track the current line in ASM textfields
 	const int currLineDXBCBefore = m_pEditASM_DXBC->GetCurrentLine();
@@ -351,31 +356,39 @@ void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 
 	if ( m_compilerLoader.IsValid() )
 	{
-		m_pEditASM_DXBC->SetText(wxString("Please wait..."));
-
-		const std::string strCompiledASM = nmCompile::Compile( m_D3DOptions, pszSourceHLSL, strEntrypoint.c_str(), m_strHLSLPath.c_str(), &m_compilerLoader, compiledDXBC );
-		const wxString wstrCompiledASM = wxString( strCompiledASM );
-
-		m_pEditASM_DXBC->SetText( wstrCompiledASM );
-
-		std::string strCompiledGCNISA;	
-		if (compiledDXBC.size() > 0)
+		if (isShaderProfile5)
 		{
-			// Send to AMD GCN ISA to get assembly
-			const E_ASIC_TYPE asicType = m_pControlsPanel->GetSelectedAsicType();
-			strCompiledGCNISA = m_gcnisa.Compile( compiledDXBC.data(), compiledDXBC.size(), asicType );
+			m_pEditASM_DXBC->SetText( wxString( "Please wait..." ) );
 
-			// If real-time Pixel Shader preview is visible, update it
-			if ( m_bPSPreviewVisible && m_D3DOptions.shaderType == EShaderType::ShaderType_PS && pRenderer)
+			const std::string strCompiledASM = nmCompile::Compile( m_D3DOptions, pszSourceHLSL, strEntrypoint.c_str(), m_strHLSLPath.c_str(), &m_compilerLoader, compiledDXBC );
+			const wxString wstrCompiledASM = wxString( strCompiledASM );
+
+			m_pEditASM_DXBC->SetText( wstrCompiledASM );
+
+			std::string strCompiledGCNISA;
+			if (compiledDXBC.size() > 0)
 			{
-				const ERendererAPI rendererAPI = pRenderer->GetRendererAPI();
+				// Send to AMD GCN ISA to get assembly
+				const E_ASIC_TYPE asicType = m_pControlsPanel->GetSelectedAsicType();
+				strCompiledGCNISA = m_gcnisa.Compile( compiledDXBC.data(), compiledDXBC.size(), asicType );
 
-				if (rendererAPI == RENDERER_API_D3D11)
-					pRenderer->UpdatePixelShader( (const void*) compiledDXBC.data(), compiledDXBC.size(), m_D3DOptions.shaderProfile );
-			}
+				// If real-time Pixel Shader preview is visible, update it
+				if (m_bPSPreviewVisible && m_D3DOptions.shaderType == EShaderType::ShaderType_PS && pRenderer)
+				{
+					const ERendererAPI rendererAPI = pRenderer->GetRendererAPI();
+
+					if (rendererAPI == RENDERER_API_D3D11)
+						pRenderer->UpdatePixelShader( (const void*)compiledDXBC.data(), compiledDXBC.size(), m_D3DOptions.shaderProfile );
+				}
+			}		
+			m_pEditASM_GCNISA->SetText( strCompiledGCNISA );
 		}
-
-		m_pEditASM_GCNISA->SetText( strCompiledGCNISA );
+		else
+		{
+			// User has selected Shader Model 6.0+
+			m_pEditASM_DXBC->SetText(wxT("An old DirectX Shader Compiler does not support Shader Model 6.0+"));
+			m_pEditASM_GCNISA->SetText(wxT("AMD GCN ISA is supported only for Shader Model 4.0/5.0 shaders"));
+		}
 	}	
 	else
 	{	
@@ -388,9 +401,9 @@ void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 		std::vector<unsigned char> DXIL_bytecode;
 
 		// Compiled ASM for Modern DXBC
-		const std::string strCompiledASM = nmCompile::CompileModern( m_D3DOptions, pszSourceHLSL, strEntrypoint.wc_str(), m_strHLSLPath.c_str(), DXIL_bytecode);
+		const std::string strCompiledASM = nmCompile::CompileModern( m_D3DOptions, pszSourceHLSL, strEntrypoint.wc_str(), m_strHLSLPath.c_str(), DXIL_bytecode );
 		m_pEditASM_DXIL->SetText( strCompiledASM );
-
+		
 		if (pRenderer)
 		{
 			const ERendererAPI rendererAPI = pRenderer->GetRendererAPI();
@@ -398,7 +411,7 @@ void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 			if (m_bPSPreviewVisible && m_D3DOptions.shaderType == ShaderType_PS && rendererAPI == RENDERER_API_D3D12)
 			{
 				if (isShaderProfile6)
-					pRenderer->UpdatePixelShader( (const void*)DXIL_bytecode.data(), DXIL_bytecode.size(), m_D3DOptions.shaderProfile );
+					pRenderer->UpdatePixelShader( (const void*) DXIL_bytecode.data(), DXIL_bytecode.size(), m_D3DOptions.shaderProfile );
 				else
 					pRenderer->UpdatePixelShader( (const void*) compiledDXBC.data(), compiledDXBC.size(), m_D3DOptions.shaderProfile );
 			}
