@@ -19,7 +19,7 @@ public:
 	virtual void Update();
 	virtual void Render();
 
-	virtual ERendererAPI GetRendererAPI();
+	virtual ERendererAPI GetRendererAPI() const;
 
 	virtual void UpdatePixelShader(const void* dxbcData, unsigned int size, EShaderProfile shaderProfile);
 	virtual void ResetTexture( int index );
@@ -46,11 +46,12 @@ private:
 	void PopulateCommandList();
 	void CreateSamplers();
 
+	void CheckTearingSupport();
 
 	uint64_t Signal( ComPtr<ID3D12CommandQueue> commandQueue, ComPtr<ID3D12Fence> fence, uint64_t& fenceValue );
 	void WaitForFenceValue( ComPtr<ID3D12Fence> fence, uint64_t fenceValue, HANDLE fenceEvent );
 	void Flush( ComPtr<ID3D12CommandQueue> commandQueue, ComPtr<ID3D12Fence> fence, uint64_t& fenceValue, HANDLE fenceEvent );
-
+	void Flush();
 
 private:
 	ComPtr<ID3D12Device>		m_device;
@@ -63,7 +64,6 @@ private:
 
 	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapRTV;
 	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapCBVandSRVs;
-	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapSamplers;
 
 	ComPtr<ID3D12Resource>		m_sceneConstantBuffer;
 	unsigned char*				m_pCbvDataBegin;
@@ -77,7 +77,6 @@ private:
 
 	UINT m_nDescriptorSizeCBV_SRV_UAV;
 	UINT m_nDescriptorSizeRTV;
-	UINT m_nDescriptorSizeSampler;
 
 	ComPtr<ID3D12Fence> m_fence;
 	uint64_t m_fenceValue = 0;
@@ -86,6 +85,8 @@ private:
 
 	unsigned int m_vpWidth;
 	unsigned int m_vpHeight;
+
+	bool	m_bTearingSupport;
 
 	bool m_bDrawFullscreenTriangle;
 };

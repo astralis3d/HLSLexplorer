@@ -101,7 +101,7 @@ CRendererD3D11::CRendererD3D11()
 }
 
 //-----------------------------------------------------------------------------
-ERendererAPI CRendererD3D11::GetRendererAPI()
+ERendererAPI CRendererD3D11::GetRendererAPI() const
 {
 	return RENDERER_API_D3D11;
 }

@@ -2,7 +2,6 @@
 #include "RendererD3D12.h"
 #include <d3dcompiler.h>
 #include "d3dx12.h"
-#include <chrono>
 
 #include "CompilationDX.h"
 
@@ -103,7 +102,7 @@ CRendererD3D12::CRendererD3D12()
 }
 
 //-----------------------------------------------------------------------------
-ERendererAPI CRendererD3D12::GetRendererAPI()
+ERendererAPI CRendererD3D12::GetRendererAPI() const
 {
 	return RENDERER_API_D3D12;
 }
@@ -170,23 +169,18 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 	{
 		// We start from index[1] - beginning of SRVs
 		CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle( m_descriptorHeapCBVandSRVs->GetCPUDescriptorHandleForHeapStart(), 1, m_nDescriptorSizeCBV_SRV_UAV );
+
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
 		for (int i=0; i < 8; i++)
 		{
-			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-			srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-
 			m_device->CreateShaderResourceView(nullptr, &srvDesc, srvHandle);
-
 			srvHandle.Offset(1, m_nDescriptorSizeCBV_SRV_UAV);
 		}
 	}
-
-	// Describe and create a samplers descriptor heap
-	m_descriptorHeapSamplers = CreateDescriptorHeap(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 6, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE );
-	m_nDescriptorSizeSampler = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
-	CreateSamplers();
 
 	// Create frame resources (e.g. RTV for each frame/backbuffer)
 	UpdateRenderTargetViews( m_device, m_swapChain, m_descriptorHeapRTV );
@@ -240,18 +234,72 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 			featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
 		}
 
-		CD3DX12_DESCRIPTOR_RANGE1 ranges[3]; // Perf tip: order from the most frequent to least frequent.
+		CD3DX12_DESCRIPTOR_RANGE1 ranges[2]; // Perf tip: order from the most frequent to least frequent.
 		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 12);			// 1 per-frame cbuffer, starting as b12
-		ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 8, 0);			// 8 infrequently changed textures
-		ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 6, 0);		// 6 constant samplers
+		ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 8, 0);			// 8 infrequently changed textures, starting as t0
 
-		CD3DX12_ROOT_PARAMETER1 rootParameters[3];
+		CD3DX12_ROOT_PARAMETER1 rootParameters[2];
 		rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 		rootParameters[1].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
-		rootParameters[2].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
+
+		// Set static samplers
+		D3D12_STATIC_SAMPLER_DESC staticSamplers[6] = {};
+		{
+			// At first, set common stuff for all samplers
+			for (int i=0; i < 6; i++)
+			{
+				staticSamplers[i].BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
+				staticSamplers[i].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+				staticSamplers[i].MinLOD = 0.0f;
+				staticSamplers[i].MaxLOD = D3D12_FLOAT32_MAX;
+				staticSamplers[i].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+				staticSamplers[i].MipLODBias = 0.0f;
+
+				staticSamplers[i].ShaderRegister = i;
+				staticSamplers[i].RegisterSpace = 0.0f;
+			}
+			
+			// Point Clamp
+			staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+			staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+			staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+			staticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+
+			// Point Wrap
+			staticSamplers[1].Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+			staticSamplers[1].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+			staticSamplers[1].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+			staticSamplers[1].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+
+			// Linear Clamp
+			staticSamplers[2].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+			staticSamplers[2].AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+			staticSamplers[2].AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+			staticSamplers[2].AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+
+			// Linear Wrap
+			staticSamplers[3].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+			staticSamplers[3].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+			staticSamplers[3].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+			staticSamplers[3].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+
+			// Aniso Clamp
+			staticSamplers[4].Filter = D3D12_FILTER_ANISOTROPIC;
+			staticSamplers[4].AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+			staticSamplers[4].AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+			staticSamplers[4].AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+			staticSamplers[4].MaxAnisotropy = 16;
+
+			// Aniso Wrap
+			staticSamplers[5].Filter = D3D12_FILTER_ANISOTROPIC;
+			staticSamplers[5].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+			staticSamplers[5].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+			staticSamplers[5].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+			staticSamplers[5].MaxAnisotropy = 16;
+		}
 
 		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-		rootSignatureDesc.Init_1_1( _countof(rootParameters), rootParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT );
+		rootSignatureDesc.Init_1_1( _countof(rootParameters), rootParameters, 6, staticSamplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT );
 
 		ComPtr<ID3DBlob> signature;
 		ComPtr<ID3DBlob> error;
@@ -266,7 +314,7 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 //-----------------------------------------------------------------------------
 void CRendererD3D12::Cleanup()
 {
-	Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
+	Flush();
 }
 
 //-----------------------------------------------------------------------------
@@ -289,8 +337,10 @@ void CRendererD3D12::Render()
 	m_commandQueue->ExecuteCommandLists( _countof( commandLists ), commandLists );
 
 	// Present to backbuffer
+	// For DXGI_PRESENT flags, see: https://docs.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-present
+
 	const UINT syncInterval = 1; // vsync on
-	const UINT presentFlags = 0;
+	const UINT presentFlags = (syncInterval == 0 && m_bTearingSupport) ? DXGI_PRESENT_ALLOW_TEARING : 0;
 	ThrowIfFailed( m_swapChain->Present( syncInterval, presentFlags ) );
 
 	// Immediately after presenting the rendered frame to the screen, a signal is inserted into the queue.
@@ -308,7 +358,7 @@ void CRendererD3D12::Render()
 void CRendererD3D12::UpdatePixelShader( const void* dxbcData, unsigned int size, EShaderProfile shaderProfile )
 {
 	// First of all, make sure that everything can be finished before reseting current pipeline state.
-	Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
+	Flush();
 
 	m_pipelineState.Reset();
 
@@ -373,7 +423,7 @@ void CRendererD3D12::UpdatePixelShader( const void* dxbcData, unsigned int size,
 void CRendererD3D12::ResetTexture( int index )
 {
 	// Wait to complete draw calls
-	Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
+	Flush();
 
 	// Reset texture - set null descriptor.
 	CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(m_descriptorHeapCBVandSRVs->GetCPUDescriptorHandleForHeapStart(), 1 + index, m_nDescriptorSizeCBV_SRV_UAV);
@@ -464,7 +514,7 @@ bool CRendererD3D12::LoadTextureFromFile( const wchar_t* path, int index )
 	m_commandQueue->ExecuteCommandLists( _countof( ppCommandLists ), ppCommandLists );
 
 	// Synchronize
-	Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
+	Flush();
 
 
 	return true;
@@ -502,7 +552,7 @@ void CRendererD3D12::ResizeViewport( unsigned int newWidth, unsigned int newHeig
 	if ( (newWidth != m_vpWidth) || (newHeight != m_vpHeight) )
 	{
 		// Flush all current GPU commands
-		Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
+		Flush();
 
 		// Release the resources holding references to the swap chain (requirement of
 		// IDXGISwapChain::ResizeBuffers) and reset the frame fence values to the
@@ -613,6 +663,11 @@ ComPtr<IDXGISwapChain4> CRendererD3D12::CreateSwapChain( HWND hwnd, ComPtr<IDXGI
 	desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
 	desc.Flags = 0; // TODO: Check for tearing
 
+	// Check tearing support
+	CheckTearingSupport();
+	if (m_bTearingSupport)
+		desc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+
 	ComPtr<IDXGISwapChain1> dxgiSwapChain1;
 	ThrowIfFailed( factory->CreateSwapChainForHwnd( commandQueue.Get(), hwnd, &desc, nullptr, nullptr, &dxgiSwapChain1) );
 
@@ -717,11 +772,11 @@ void CRendererD3D12::PopulateCommandList()
 
 	// the command allocator and command list are reset. This prepares the command list for recording the next frame.
 	ThrowIfFailed( commandAllocator->Reset() );
-	m_commandList->Reset(commandAllocator, m_bDrawFullscreenTriangle ? m_pipelineState.Get() : nullptr); // todo: set default PSO
+	m_commandList->Reset(commandAllocator, m_bDrawFullscreenTriangle ? m_pipelineState.Get() : nullptr);
 
 	m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
 
-	ID3D12DescriptorHeap* ppHeaps[] = { m_descriptorHeapCBVandSRVs.Get(), m_descriptorHeapSamplers.Get() };
+	ID3D12DescriptorHeap* ppHeaps[] = { m_descriptorHeapCBVandSRVs.Get() };
 	m_commandList->SetDescriptorHeaps( _countof(ppHeaps), ppHeaps );
 
 	// set Root Descriptor Tables
@@ -729,8 +784,6 @@ void CRendererD3D12::PopulateCommandList()
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle( m_descriptorHeapCBVandSRVs->GetGPUDescriptorHandleForHeapStart(), 1, m_nDescriptorSizeCBV_SRV_UAV);
 	m_commandList->SetGraphicsRootDescriptorTable(1, srvHandle);
-
-	m_commandList->SetGraphicsRootDescriptorTable(2, m_descriptorHeapSamplers->GetGPUDescriptorHandleForHeapStart());
 
 	// Viewport and scissor test
 	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (FLOAT) m_vpWidth, (FLOAT) m_vpHeight, 0.0f, 1.0f);
@@ -743,13 +796,14 @@ void CRendererD3D12::PopulateCommandList()
 	// Before the render target can be cleared, it must be transitioned to the RENDER_TARGET state.
 	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET) );
 
-	static const float ClearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 	// Clear RTV
+	static const float ClearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	CD3DX12_CPU_DESCRIPTOR_HANDLE backBufferRTV( m_descriptorHeapRTV->GetCPUDescriptorHandleForHeapStart(), m_nCurrentBackBufferIndex, m_nDescriptorSizeRTV );
 
 	m_commandList->ClearRenderTargetView(backBufferRTV, ClearColor, 0, nullptr);
 	m_commandList->OMSetRenderTargets(1, &backBufferRTV, FALSE, nullptr);
+
 
 	// draw command
 	m_commandList->IASetVertexBuffers(0, 0, nullptr);
@@ -765,79 +819,18 @@ void CRendererD3D12::PopulateCommandList()
 }
 
 //-----------------------------------------------------------------------------
-void CRendererD3D12::CreateSamplers()
+void CRendererD3D12::CheckTearingSupport()
 {
-	// Get a handle to the start of the descriptor heap.
-	CD3DX12_CPU_DESCRIPTOR_HANDLE samplerHandle(m_descriptorHeapSamplers->GetCPUDescriptorHandleForHeapStart());
+	ComPtr<IDXGIFactory6> factory;
+	HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(&factory));
+	BOOL allowTearing = FALSE;
 
-	// At first, set common stuff for all samplers
-	D3D12_SAMPLER_DESC samplerDesc = {};
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
-	samplerDesc.MipLODBias = 0.0f;
-	samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
-	samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0.0f;
+	if (SUCCEEDED(hr))
+	{
+		hr = factory->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allowTearing, sizeof(allowTearing));
+	}
 
-
-	// Point Clamp
-	samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
-	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-
-	m_device->CreateSampler(&samplerDesc, samplerHandle);
-	samplerHandle.Offset(m_nDescriptorSizeSampler);
-
-
-	// Point Wrap
-	samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
-	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-
-	m_device->CreateSampler( &samplerDesc, samplerHandle );
-	samplerHandle.Offset( m_nDescriptorSizeSampler );
-
-
-	// Linear Clamp
-	samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-
-	m_device->CreateSampler( &samplerDesc, samplerHandle );
-	samplerHandle.Offset( m_nDescriptorSizeSampler );
-
-
-	// Linear Wrap
-	samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-
-	m_device->CreateSampler( &samplerDesc, samplerHandle );
-	samplerHandle.Offset( m_nDescriptorSizeSampler );
-
-
-	// Aniso Clamp
-	samplerDesc.Filter = D3D12_FILTER_ANISOTROPIC;
-	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-	samplerDesc.MaxAnisotropy = 16;
-
-	m_device->CreateSampler( &samplerDesc, samplerHandle );
-	samplerHandle.Offset( m_nDescriptorSizeSampler );
-
-
-	// Aniso Wrap
-	samplerDesc.Filter = D3D12_FILTER_ANISOTROPIC;
-	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	samplerDesc.MaxAnisotropy = 16;
-
-	m_device->CreateSampler( &samplerDesc, samplerHandle );
+	m_bTearingSupport = SUCCEEDED(hr) && (allowTearing == TRUE);
 }
 
 //-----------------------------------------------------------------------------
@@ -894,4 +887,10 @@ void CRendererD3D12::Flush( ComPtr<ID3D12CommandQueue> commandQueue, ComPtr<ID3D
 
 	uint64_t fenceValueForSignal = Signal( commandQueue, fence, fenceValue );
 	WaitForFenceValue( fence, fenceValueForSignal, fenceEvent );
+}
+
+//-----------------------------------------------------------------------------
+void CRendererD3D12::Flush()
+{
+	Flush(m_commandQueue, m_fence, m_fenceValue, m_fenceEvent);
 }
