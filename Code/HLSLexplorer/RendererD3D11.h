@@ -49,7 +49,6 @@ private:
 	ID3D11VertexShader*		m_pVS;
 
 	ID3D11Buffer* m_pPSConstantBuffer;
-	SConstantBuffer m_PSConstantBufferData;
 
 	// textures
 	ID3D11ShaderResourceView* m_pInputTextures[8];
