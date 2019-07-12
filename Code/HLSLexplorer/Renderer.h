@@ -9,6 +9,7 @@ public:
 	virtual ~CRenderer() { }
 
 	virtual void Update();
+	virtual void SetCursorPosition( unsigned int x, unsigned int y );
 
 	// constant buffer
 	struct SConstantBuffer
@@ -21,7 +22,7 @@ public:
 
 		float elapsedTime;
 		unsigned int numFrames;
-		float pad[2];
+		unsigned cursorPos[2];
 
 		float viewportX;
 		float viewportY;

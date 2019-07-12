@@ -23,6 +23,7 @@ private:
 	void OnCloseEvent( wxCloseEvent& evt );
 
 	void UpdateWindowTitle();
+	void OnMouseMotion( wxMouseEvent& evt );
 
 	void OnFilePickerTexture0( wxFileDirPickerEvent& evt );
 	void OnFilePickerTexture1( wxFileDirPickerEvent& evt );

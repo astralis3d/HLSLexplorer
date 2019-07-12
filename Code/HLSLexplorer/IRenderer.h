@@ -29,5 +29,6 @@ public:
 	virtual ETextureType GetTextureType( int index ) const = 0;
 	virtual void ResetTexture( int index ) = 0;
 
+	virtual void SetCursorPosition( unsigned int x, unsigned int y ) = 0;
 	virtual void ResizeViewport(unsigned int newWidth, unsigned int newHeight) = 0;
 };

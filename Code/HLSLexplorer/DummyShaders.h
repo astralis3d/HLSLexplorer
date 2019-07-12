@@ -15,7 +15,7 @@ static const char szDummyPS[] =
 "{\n "
 "	float  elapsedTime;\n"
 "	uint   numFrames;\n"
-"	float2 pad;\n"
+"	uint2  cursorPos;\n"
 "\n"
 "	float2 viewportSize;\n"
 "	float2 viewportInvSize;\n"

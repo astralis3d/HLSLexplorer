@@ -17,3 +17,9 @@ void CRenderer::Update()
 	// Update for next frame
 	t0 = t1;
 }
+
+void CRenderer::SetCursorPosition( unsigned int x, unsigned int y )
+{
+	m_PSConstantBufferData.cursorPos[0] = x;
+	m_PSConstantBufferData.cursorPos[1] = y;
+}

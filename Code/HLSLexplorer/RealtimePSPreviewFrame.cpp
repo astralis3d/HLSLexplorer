@@ -47,6 +47,7 @@ CRealtimePSPreviewFrame::CRealtimePSPreviewFrame( wxWindow* parent )
 	{
 		m_renderingPanel->Connect( wxEVT_SIZE, wxSizeEventHandler( CRealtimePSPreviewFrame::OnRenderingPanelSize ), nullptr, this );
 		m_renderingPanel->Connect( wxEVT_IDLE, wxIdleEventHandler( CRealtimePSPreviewFrame::OnIdleEvent ), nullptr, this );
+		m_renderingPanel->Connect( wxEVT_MOTION, wxMouseEventHandler( CRealtimePSPreviewFrame::OnMouseMotion ), nullptr, this );
 	}
 
 	Connect(wxEVT_CLOSE_WINDOW, wxCloseEventHandler( CRealtimePSPreviewFrame::OnCloseEvent), nullptr, this );
@@ -146,6 +147,17 @@ void CRealtimePSPreviewFrame::UpdateWindowTitle()
 								GetRenderer()->GetRendererAPI() == RENDERER_API_D3D11 ? "D3D11" : "D3D12",
 								m_renderingPanel->GetClientSize().x,
 								m_renderingPanel->GetClientSize().y) );
+}
+
+//-----------------------------------------------------------------------------
+void CRealtimePSPreviewFrame::OnMouseMotion( wxMouseEvent& evt )
+{
+	if (m_pRenderer)
+	{
+		m_pRenderer->SetCursorPosition( static_cast<unsigned int>(evt.GetX()), static_cast<unsigned int>(evt.GetY()) );
+	}
+
+	evt.Skip();
 }
 
 // helper for getting filename from path.
