@@ -18,6 +18,17 @@ void CRenderer::Update()
 	t0 = t1;
 }
 
+//-----------------------------------------------------------------------------
+void CRenderer::ResizeViewport( unsigned int newWidth, unsigned int newHeight )
+{
+	// Update parameters
+	m_PSConstantBufferData.viewportX = (float) newWidth;
+	m_PSConstantBufferData.viewportY = (float) newHeight;
+	m_PSConstantBufferData.viewportInvX = 1.0f / (float) newWidth;
+	m_PSConstantBufferData.viewportInvY = 1.0f / (float) newHeight;
+}
+
+//-----------------------------------------------------------------------------
 void CRenderer::SetCursorPosition( unsigned int x, unsigned int y )
 {
 	m_PSConstantBufferData.cursorPos[0] = x;

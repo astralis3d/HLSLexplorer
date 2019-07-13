@@ -308,6 +308,9 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 		ThrowIfFailed( m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)) );
 	}
 
+	// At the end, update cbuffer params
+	CRenderer::ResizeViewport(createParams.width, createParams.height);
+
 	return true;
 }  
 
@@ -551,6 +554,8 @@ void CRendererD3D12::ResizeViewport( unsigned int newWidth, unsigned int newHeig
 	// See https://github.com/microsoft/DirectX-Graphics-Samples/blob/master/Samples/Desktop/D3D12Fullscreen/src/D3D12Fullscreen.cpp
 	if ( (newWidth != m_vpWidth) || (newHeight != m_vpHeight) )
 	{
+		CRenderer::ResizeViewport(newWidth, newHeight);
+
 		// Flush all current GPU commands
 		Flush();
 

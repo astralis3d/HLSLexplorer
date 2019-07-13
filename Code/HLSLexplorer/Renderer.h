@@ -9,6 +9,7 @@ public:
 	virtual ~CRenderer() { }
 
 	virtual void Update();
+	virtual void ResizeViewport(unsigned int newWidth, unsigned int newHeight);
 	virtual void SetCursorPosition( unsigned int x, unsigned int y );
 
 	// constant buffer

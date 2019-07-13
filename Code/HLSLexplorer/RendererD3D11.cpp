@@ -282,6 +282,9 @@ bool CRendererD3D11::Initialize(const SRendererCreateParams& createParams)
 	CreateSamplers();
 	CreateConstantBuffers();
 
+	// At the end, update cbuffer params
+	CRenderer::ResizeViewport( createParams.width, createParams.height );
+
 	return true;
 }
 
@@ -380,6 +383,8 @@ void CRendererD3D11::Update()
 //-----------------------------------------------------------------------------
 void CRendererD3D11::ResizeViewport( unsigned int newWidth, unsigned int newHeight )
 {
+	CRenderer::ResizeViewport(newWidth, newHeight);
+
 	m_vpWidth = newWidth;
 	m_vpHeight = newHeight;
 
@@ -409,12 +414,6 @@ void CRendererD3D11::ResizeViewport( unsigned int newWidth, unsigned int newHeig
 			return;
 		}
 	}
-
-	// Update parameters
-	m_PSConstantBufferData.viewportX = (float) m_vpWidth;
-	m_PSConstantBufferData.viewportY = (float) m_vpHeight;
-	m_PSConstantBufferData.viewportInvX = 1.0f / (float )m_vpWidth;
-	m_PSConstantBufferData.viewportInvY = 1.0f / (float) m_vpHeight;
 }
 
 void CRendererD3D11::ResetTexture( int index )
