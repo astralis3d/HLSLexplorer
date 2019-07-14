@@ -1,7 +1,6 @@
 #pragma once
 
 class IRenderer;
-
 class wxFileDirPickerEvent;
 
 class CRealtimePSPreviewFrame : public wxFrame
@@ -13,9 +12,9 @@ public:
 	void InitD3D11();
 	void InitD3D12();
 
-	void SetVisibilityPtr(bool* p) {  m_bVisibility = p;}
+	void SetVisibilityPtr(bool* p);
 
-	IRenderer* GetRenderer() { return m_pRenderer; }
+	IRenderer* GetRenderer();
 
 private:
 	void OnRenderingPanelSize( wxSizeEvent& evt );
@@ -24,22 +23,6 @@ private:
 
 	void UpdateWindowTitle();
 	void OnMouseMotion( wxMouseEvent& evt );
-
-	void OnFilePickerTexture0( wxFileDirPickerEvent& evt );
-	void OnFilePickerTexture1( wxFileDirPickerEvent& evt );
-	void OnFilePickerTexture2( wxFileDirPickerEvent& evt );
-	void OnFilePickerTexture3( wxFileDirPickerEvent& evt );
-	void OnFilePickerTexture4( wxFileDirPickerEvent& evt );
-	void OnFilePickerTexture5( wxFileDirPickerEvent& evt );
-
-	void OnResetTexture0( wxCommandEvent& evt );
-	void OnResetTexture1( wxCommandEvent& evt );
-	void OnResetTexture2( wxCommandEvent& evt );
-	void OnResetTexture3( wxCommandEvent& evt );
-	void OnResetTexture4( wxCommandEvent& evt );
-	void OnResetTexture5( wxCommandEvent& evt );
-	void OnResetTexture6( wxCommandEvent& evt );
-	void OnResetTextureAll( wxCommandEvent& evt );
 
 	void UpdateUIForTexture( const wchar_t* path, unsigned int index);
 	void ResetUIForTexture( unsigned int index );
@@ -51,5 +34,5 @@ private:
 	//CDriverD3D11 m_driverD3D11;
 	IRenderer* m_pRenderer;
 
-	DECLARE_EVENT_TABLE();
+	//DECLARE_EVENT_TABLE();
 };

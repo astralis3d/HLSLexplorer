@@ -8,24 +8,6 @@
 #include "RendererD3D11.h"
 #include "RendererD3D12.h"
 
-BEGIN_EVENT_TABLE( CRealtimePSPreviewFrame, wxFrame )
-	EVT_FILEPICKER_CHANGED( XRCID( "m_pickerTexture0" ), CRealtimePSPreviewFrame::OnFilePickerTexture0 )
-	EVT_FILEPICKER_CHANGED( XRCID( "m_pickerTexture1" ), CRealtimePSPreviewFrame::OnFilePickerTexture1 )
-	EVT_FILEPICKER_CHANGED( XRCID( "m_pickerTexture2" ), CRealtimePSPreviewFrame::OnFilePickerTexture2 )
-	EVT_FILEPICKER_CHANGED( XRCID( "m_pickerTexture3" ), CRealtimePSPreviewFrame::OnFilePickerTexture3 )
-	EVT_FILEPICKER_CHANGED( XRCID( "m_pickerTexture4" ), CRealtimePSPreviewFrame::OnFilePickerTexture4 )
-	EVT_FILEPICKER_CHANGED( XRCID( "m_pickerTexture5" ), CRealtimePSPreviewFrame::OnFilePickerTexture5 )
-
-	EVT_BUTTON( XRCID( "m_btnReset0" ), CRealtimePSPreviewFrame::OnResetTexture0 )
-	EVT_BUTTON( XRCID( "m_btnReset1" ), CRealtimePSPreviewFrame::OnResetTexture1 )
-	EVT_BUTTON( XRCID( "m_btnReset2" ), CRealtimePSPreviewFrame::OnResetTexture2 )
-	EVT_BUTTON( XRCID( "m_btnReset3" ), CRealtimePSPreviewFrame::OnResetTexture3 )
-	EVT_BUTTON( XRCID( "m_btnReset4" ), CRealtimePSPreviewFrame::OnResetTexture4 )
-	EVT_BUTTON( XRCID( "m_btnReset5" ), CRealtimePSPreviewFrame::OnResetTexture5 )
-	EVT_BUTTON( XRCID( "m_btnReset6" ), CRealtimePSPreviewFrame::OnResetTexture6 )
-	EVT_BUTTON( XRCID( "m_btnResetAllTextures" ), CRealtimePSPreviewFrame::OnResetTextureAll )
-END_EVENT_TABLE()
-
 struct SRendererCreateParams
 {
 	HWND hwnd;
@@ -51,6 +33,30 @@ CRealtimePSPreviewFrame::CRealtimePSPreviewFrame( wxWindow* parent )
 	}
 
 	Connect(wxEVT_CLOSE_WINDOW, wxCloseEventHandler( CRealtimePSPreviewFrame::OnCloseEvent), nullptr, this );
+
+	for (int i = 0; i < 7; i++)
+	{
+		XRCCTRL(*this, wxString::Format("m_btnReset%d", i), wxButton)->Bind(wxEVT_BUTTON, [this, i](wxCommandEvent&)
+		{
+			m_pRenderer->ResetTexture( i );
+			ResetUIForTexture( i );
+		});
+
+		XRCCTRL(*this, wxString::Format("m_pickerTexture%d", i), wxFilePickerCtrl)->Bind(wxEVT_FILEPICKER_CHANGED, [=](wxFileDirPickerEvent& evt)
+		{
+			const wxString path = evt.GetPath();
+			UpdateUIForTexture( path.wc_str(), i );
+		});
+	}
+
+	XRCCTRL( *this, "m_btnResetAllTextures", wxButton )->Bind(wxEVT_BUTTON, [this](wxCommandEvent&)
+	{
+		for ( int i=0; i < 7; i++ )
+		{
+			m_pRenderer->ResetTexture( i );
+			ResetUIForTexture( i );
+		}
+	} );
 }
 
 CRealtimePSPreviewFrame::~CRealtimePSPreviewFrame()
@@ -111,6 +117,19 @@ void CRealtimePSPreviewFrame::InitD3D12()
 	}
 }
 
+//-----------------------------------------------------------------------------
+void CRealtimePSPreviewFrame::SetVisibilityPtr( bool* p )
+{
+	m_bVisibility = p;
+}
+
+//-----------------------------------------------------------------------------
+IRenderer* CRealtimePSPreviewFrame::GetRenderer()
+{
+	return m_pRenderer;
+}
+
+//-----------------------------------------------------------------------------
 void CRealtimePSPreviewFrame::OnRenderingPanelSize( wxSizeEvent& evt )
 {
 	const int width = m_renderingPanel->GetClientSize().x;
@@ -125,6 +144,7 @@ void CRealtimePSPreviewFrame::OnRenderingPanelSize( wxSizeEvent& evt )
 	evt.Skip();
 }
 
+//-----------------------------------------------------------------------------
 void CRealtimePSPreviewFrame::OnIdleEvent( wxIdleEvent& evt )
 {
 	evt.RequestMore(true);
@@ -133,6 +153,7 @@ void CRealtimePSPreviewFrame::OnIdleEvent( wxIdleEvent& evt )
 	m_pRenderer->Render();
 }
 
+//-----------------------------------------------------------------------------
 void CRealtimePSPreviewFrame::OnCloseEvent( wxCloseEvent& WXUNUSED(evt) )
 {
 	*m_bVisibility = false;
@@ -160,9 +181,10 @@ void CRealtimePSPreviewFrame::OnMouseMotion( wxMouseEvent& evt )
 	evt.Skip();
 }
 
-// helper for getting filename from path.
+//-----------------------------------------------------------------------------
 wxString GetFilenameFromPath(const wxString& fullpath)
 {
+	// helper for getting filename from path.
 	const std::size_t posLastSlash = fullpath.find_last_of("\\");
 	const wxString filename = fullpath.substr(posLastSlash+1);
 
@@ -202,101 +224,4 @@ void CRealtimePSPreviewFrame::ResetUIForTexture( unsigned int index )
 {
 	wxStaticText* pStatic = XRCCTRL( *this, wxString::Format( "m_textTexture%d", index ), wxStaticText );
 	pStatic->SetLabel( wxString::Format( "texture%d (null)", index ) );
-}
-
-//------------------------------------------------------------------------
-void CRealtimePSPreviewFrame::OnFilePickerTexture0( wxFileDirPickerEvent& evt )
-{
-	const wxString path = evt.GetPath();
-	
-	UpdateUIForTexture( path.wc_str(), 0 );
-}
-
-//------------------------------------------------------------------------
-void CRealtimePSPreviewFrame::OnFilePickerTexture1( wxFileDirPickerEvent& evt )
-{
-	const wxString path = evt.GetPath();
-
-	UpdateUIForTexture( path.wc_str(), 1 );
-}
-
-//------------------------------------------------------------------------
-void CRealtimePSPreviewFrame::OnFilePickerTexture2( wxFileDirPickerEvent& evt )
-{
-	const wxString path = evt.GetPath();
-
-	UpdateUIForTexture( path.wc_str(), 2 );
-}
-
-//------------------------------------------------------------------------
-void CRealtimePSPreviewFrame::OnFilePickerTexture3( wxFileDirPickerEvent& evt )
-{
-	const wxString path = evt.GetPath();
-
-	UpdateUIForTexture( path.wc_str(), 3 );
-}
-
-void CRealtimePSPreviewFrame::OnFilePickerTexture4( wxFileDirPickerEvent& evt )
-{
-	const wxString path = evt.GetPath();
-
-	UpdateUIForTexture( path.wc_str(), 4 );
-}
-
-void CRealtimePSPreviewFrame::OnFilePickerTexture5( wxFileDirPickerEvent& evt )
-{
-	const wxString path = evt.GetPath();
-
-	UpdateUIForTexture( path.wc_str(), 5 );
-}
-
-void CRealtimePSPreviewFrame::OnResetTexture0( wxCommandEvent& WXUNUSED(evt) )
-{
-	m_pRenderer->ResetTexture( 0 );
-	ResetUIForTexture( 0 );
-}
-
-void CRealtimePSPreviewFrame::OnResetTexture1( wxCommandEvent& WXUNUSED( evt ) )
-{
-	m_pRenderer->ResetTexture( 1 );
-	ResetUIForTexture( 1 );
-}
-
-void CRealtimePSPreviewFrame::OnResetTexture2( wxCommandEvent& WXUNUSED( evt ) )
-{
-	m_pRenderer->ResetTexture( 2 );
-	ResetUIForTexture( 2 );
-}
-
-void CRealtimePSPreviewFrame::OnResetTexture3( wxCommandEvent& WXUNUSED( evt ) )
-{
-	m_pRenderer->ResetTexture( 3 );
-	ResetUIForTexture( 3 );
-}
-
-void CRealtimePSPreviewFrame::OnResetTexture4( wxCommandEvent& WXUNUSED( evt ) )
-{
-	m_pRenderer->ResetTexture( 4 );
-	ResetUIForTexture( 4 );
-}
-
-void CRealtimePSPreviewFrame::OnResetTexture5( wxCommandEvent& WXUNUSED( evt ) )
-{
-	m_pRenderer->ResetTexture( 5 );
-	ResetUIForTexture( 5 );
-}
-
-void CRealtimePSPreviewFrame::OnResetTexture6( wxCommandEvent& WXUNUSED( evt ) )
-{
-	m_pRenderer->ResetTexture( 6 );
-	ResetUIForTexture( 6 );
-}
-
-void CRealtimePSPreviewFrame::OnResetTextureAll( wxCommandEvent& WXUNUSED( evt ) )
-{
-	for ( int i=0; i < 6; i++ )
-	{
-		m_pRenderer->ResetTexture( i );
-		ResetUIForTexture( i );
-	}
 }
