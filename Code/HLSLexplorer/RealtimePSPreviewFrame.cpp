@@ -30,6 +30,18 @@ CRealtimePSPreviewFrame::CRealtimePSPreviewFrame( wxWindow* parent )
 		m_renderingPanel->Connect( wxEVT_SIZE, wxSizeEventHandler( CRealtimePSPreviewFrame::OnRenderingPanelSize ), nullptr, this );
 		m_renderingPanel->Connect( wxEVT_IDLE, wxIdleEventHandler( CRealtimePSPreviewFrame::OnIdleEvent ), nullptr, this );
 		m_renderingPanel->Connect( wxEVT_MOTION, wxMouseEventHandler( CRealtimePSPreviewFrame::OnMouseMotion ), nullptr, this );
+
+		m_renderingPanel->Bind(wxEVT_RIGHT_DOWN, [=](wxMouseEvent& e)
+		{
+			m_bIsRightDown = true;
+			SetCursor(wxCURSOR_CROSS);
+		});
+
+		m_renderingPanel->Bind(wxEVT_RIGHT_UP, [=](wxMouseEvent& e)
+		{
+			m_bIsRightDown = false;
+			SetCursor(wxCURSOR_ARROW);
+		});
 	}
 
 	Connect(wxEVT_CLOSE_WINDOW, wxCloseEventHandler( CRealtimePSPreviewFrame::OnCloseEvent), nullptr, this );
@@ -160,8 +172,9 @@ void CRealtimePSPreviewFrame::OnIdleEvent( wxIdleEvent& evt )
 		const float col_x = col.x / (float) 255.0f;
 		const float col_y = col.y / (float) 255.0f;
 		const float col_z = col.z / (float) 255.0f;
+		const float col_a = col.w / (float) 255.0f;
 
-		SetStatusText( wxString::Format("Right click: [%d %d] %.5f, %.5f, %.5f", x, y, col_x, col_y, col_z) );
+		SetStatusText( wxString::Format("Right click: [%d %d] %.5f, %.5f, %.5f, %.5f", x, y, col_x, col_y, col_z, col_a) );
 	}
 }
 
@@ -189,8 +202,6 @@ void CRealtimePSPreviewFrame::OnMouseMotion( wxMouseEvent& evt )
 	{
 		m_pRenderer->SetCursorPosition( static_cast<unsigned int>(evt.GetX()), static_cast<unsigned int>(evt.GetY()) );
 	}
-
-	m_bIsRightDown = evt.RightIsDown();
 
 	evt.Skip();
 }
