@@ -34,5 +34,7 @@ private:
 	//CDriverD3D11 m_driverD3D11;
 	IRenderer* m_pRenderer;
 
+	bool m_bIsRightDown;
+
 	//DECLARE_EVENT_TABLE();
 };

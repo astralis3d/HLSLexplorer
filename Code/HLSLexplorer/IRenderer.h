@@ -31,4 +31,6 @@ public:
 
 	virtual void SetCursorPosition( unsigned int x, unsigned int y ) = 0;
 	virtual void ResizeViewport(unsigned int newWidth, unsigned int newHeight) = 0;
+
+	virtual Vec4 GetColorAtCursorPosition(unsigned int& x, unsigned int& y) const = 0;
 };

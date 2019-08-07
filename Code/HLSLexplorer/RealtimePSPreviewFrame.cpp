@@ -151,6 +151,18 @@ void CRealtimePSPreviewFrame::OnIdleEvent( wxIdleEvent& evt )
 
 	m_pRenderer->Update();
 	m_pRenderer->Render();
+
+	if (m_bIsRightDown)
+	{
+		unsigned int x, y;
+		const Vec4 col = m_pRenderer->GetColorAtCursorPosition(x, y);
+
+		const float col_x = col.x / (float) 255.0f;
+		const float col_y = col.y / (float) 255.0f;
+		const float col_z = col.z / (float) 255.0f;
+
+		SetStatusText( wxString::Format("Right click: [%d %d] %.5f, %.5f, %.5f", x, y, col_x, col_y, col_z) );
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -177,6 +189,8 @@ void CRealtimePSPreviewFrame::OnMouseMotion( wxMouseEvent& evt )
 	{
 		m_pRenderer->SetCursorPosition( static_cast<unsigned int>(evt.GetX()), static_cast<unsigned int>(evt.GetY()) );
 	}
+
+	m_bIsRightDown = evt.RightIsDown();
 
 	evt.Skip();
 }

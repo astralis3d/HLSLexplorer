@@ -29,6 +29,14 @@ public:
 
 	virtual void ResizeViewport(unsigned int newWidth, unsigned int newHeight);
 
+	virtual Vec4 GetColorAtCursorPosition(unsigned int& x, unsigned int& y) const
+	{
+		x = m_PSConstantBufferData.cursorPos[0];
+		y = m_PSConstantBufferData.cursorPos[1];
+
+		return m_colorData;
+	}
+
 private:
 	void CreateSamplers();
 	void CreateConstantBuffers();
@@ -55,4 +63,9 @@ private:
 
 	// samplers
 	ID3D11SamplerState* m_pSamplers[6];
+
+
+	ID3D11Texture2D* m_copyTex2D;
+
+	Vec4 m_colorData;
 };

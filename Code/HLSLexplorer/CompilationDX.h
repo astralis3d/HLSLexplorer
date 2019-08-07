@@ -20,8 +20,5 @@ namespace nmCompile
 
 inline bool IsShaderProfile6(EShaderProfile shaderProfile)
 {
-	return	(shaderProfile == EShaderProfile::ShaderProfile_6_0) ||
-			(shaderProfile == EShaderProfile::ShaderProfile_6_1) ||
-			(shaderProfile == EShaderProfile::ShaderProfile_6_2) ||
-			(shaderProfile == EShaderProfile::ShaderProfile_6_3);
+	return (static_cast<int>(shaderProfile) >= static_cast<int>(EShaderProfile::ShaderProfile_6_0) );
 }

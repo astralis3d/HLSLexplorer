@@ -285,6 +285,27 @@ bool CRendererD3D11::Initialize(const SRendererCreateParams& createParams)
 	// At the end, update cbuffer params
 	CRenderer::ResizeViewport( createParams.width, createParams.height );
 
+	{
+		D3D11_TEXTURE2D_DESC texDesc = {};
+
+		//texDesc.Width = createParams.width;
+		//texDesc.Height = createParams.height;
+		texDesc.Width = texDesc.Height = 1;
+		texDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+		texDesc.Usage = D3D11_USAGE_STAGING;
+		texDesc.SampleDesc = {1, 0};
+		texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		texDesc.ArraySize = 1;
+		texDesc.MipLevels = 1;
+		texDesc.BindFlags = 0;
+
+		HRESULT hr = m_pD3DDevice->CreateTexture2D(&texDesc, nullptr, &m_copyTex2D);
+		if (FAILED(hr))
+		{
+			return false;
+		}
+	}
+
 	return true;
 }
 
@@ -329,9 +350,35 @@ void CRendererD3D11::Render()
 
 	pDevCon->PSSetConstantBuffers(12, 1, &m_pPSConstantBuffer);
 
-
 	pDevCon->Draw( 3, 0 );
-	
+
+
+
+	ID3D11Texture2D* pBackBuffer = nullptr;
+	m_pDXIGSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**) &pBackBuffer );
+
+	const unsigned int cursor_x = m_PSConstantBufferData.cursorPos[0];
+	const unsigned int cursor_y = m_PSConstantBufferData.cursorPos[1];
+
+	D3D11_BOX box;
+	box.left = cursor_x;
+	box.right = cursor_x + 1;
+	box.top = cursor_y;
+	box.bottom = cursor_y + 1;
+	box.front = 0;
+	box.back = 1;
+
+	pDevCon->CopySubresourceRegion(m_copyTex2D, 0, 0, 0, 0, pBackBuffer, 0, &box);
+
+	pBackBuffer->Release();
+
+	// map the staging buffer with content of selected pixel
+	D3D11_MAPPED_SUBRESOURCE mappedSubr;
+	pDevCon->Map(m_copyTex2D, 0, D3D11_MAP_READ, 0, &mappedSubr);
+	m_colorData = *reinterpret_cast<Vec4*>(mappedSubr.pData);
+	pDevCon->Unmap(m_copyTex2D, 0);
+
+
 	// present back buffer to screen
 	m_pDXIGSwapChain->Present(1, 0);
 }
@@ -360,6 +407,8 @@ void CRendererD3D11::Cleanup()
 	SAFE_RELEASE( m_pVS );
 	SAFE_RELEASE( m_pPS );
 	SAFE_RELEASE( m_pRTV );
+
+	SAFE_RELEASE( m_copyTex2D );
 
 	SAFE_RELEASE( m_pPSConstantBuffer );
 

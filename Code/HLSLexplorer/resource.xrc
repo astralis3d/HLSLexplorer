@@ -1103,6 +1103,10 @@
         </object>
       </object>
     </object>
+    <object class="wxStatusBar" name="m_statusBar">
+      <style>wxSTB_SIZEGRIP</style>
+      <fields>1</fields>
+    </object>
   </object>
   <object class="wxDialog" name="GoToLineDialog">
     <style>wxDEFAULT_DIALOG_STYLE</style>

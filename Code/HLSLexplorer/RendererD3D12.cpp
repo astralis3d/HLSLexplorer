@@ -256,7 +256,7 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 				staticSamplers[i].MipLODBias = 0.0f;
 
 				staticSamplers[i].ShaderRegister = i;
-				staticSamplers[i].RegisterSpace = 0.0f;
+				staticSamplers[i].RegisterSpace = 0;
 			}
 			
 			// Point Clamp

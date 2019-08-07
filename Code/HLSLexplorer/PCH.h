@@ -27,6 +27,16 @@ enum class ETextureType
 	ETexType_CubeArray
 };
 
+struct Vec4
+{
+	Vec4()
+	{
+		x = y = z = w = 0.0f;
+	}
+
+	unsigned char x, y, z, w;
+};
+
 #ifndef SAFE_RELEASE
 # define SAFE_RELEASE(p)	{ if(p) { (p)->Release(); (p)=nullptr; } }
 #endif
