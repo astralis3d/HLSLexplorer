@@ -28,7 +28,7 @@ public:
 
 	virtual void ResizeViewport(unsigned int newWidth, unsigned int newHeight);
 
-	virtual Vec4 GetColorAtCursorPosition(unsigned int& x, unsigned int& y) const { return Vec4(); }
+	virtual Vec4 GetColorAtCursorPosition(unsigned int& x, unsigned int& y) const;
 
 private:
 	static const UINT NUM_FRAMES = 2;

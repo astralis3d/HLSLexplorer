@@ -581,6 +581,14 @@ void CRendererD3D12::ResizeViewport( unsigned int newWidth, unsigned int newHeig
 	}	
 }
 
+Vec4 CRendererD3D12::GetColorAtCursorPosition( unsigned int& x, unsigned int& y ) const
+{
+	x = m_PSConstantBufferData.cursorPos[0];
+	y = m_PSConstantBufferData.cursorPos[1];
+
+	return Vec4();
+}
+
 //-----------------------------------------------------------------------------
 void CRendererD3D12::GetHardwareAdapter( IDXGIFactory2* pFactory, IDXGIAdapter1** ppAdapter )
 {

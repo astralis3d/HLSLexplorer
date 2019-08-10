@@ -108,6 +108,8 @@ private:
 	void ClearRecentFiles();
 	std::string GetRecentFilesPath() const;
 
+	void CompileAndUpdatePreview();
+
 	void OpenShaderFile(const wxString& filepath);
 
 	wxNotebook* CreateDisassemblerOutputNotebook( wxWindow* parent );

@@ -1,6 +1,8 @@
 #include "PCH.h"
 #include "RendererD3D11.h"
 #include <d3dcompiler.h>
+#include <VersionHelpers.h>
+#include <algorithm>
 
 #include "DDSTextureLoader.h"
 #include "WICTextureLoader.h"
@@ -215,14 +217,14 @@ bool CRendererD3D11::Initialize(const SRendererCreateParams& createParams)
 	{
 		DXGI_SWAP_CHAIN_DESC sd;
 		ZeroMemory(&sd, sizeof(sd));
-		sd.BufferCount = 1;
+		sd.BufferCount = 2;
 		sd.BufferDesc.Width =  m_vpWidth;
 		sd.BufferDesc.Height = m_vpHeight;
 		sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		sd.BufferDesc.RefreshRate.Numerator = 0;
 		sd.BufferDesc.RefreshRate.Denominator = 0;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+		sd.SwapEffect = IsWindows8OrGreater() ? DXGI_SWAP_EFFECT_FLIP_DISCARD : DXGI_SWAP_EFFECT_DISCARD;
 		sd.OutputWindow = createParams.hwnd;
 		sd.Windowed = TRUE;
 		sd.SampleDesc.Count = 1;
@@ -288,10 +290,9 @@ bool CRendererD3D11::Initialize(const SRendererCreateParams& createParams)
 	{
 		D3D11_TEXTURE2D_DESC texDesc = {};
 
-		//texDesc.Width = createParams.width;
-		//texDesc.Height = createParams.height;
-		texDesc.Width = texDesc.Height = 1;
-		texDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+		texDesc.Width = 1;
+		texDesc.Height = 1;
+		texDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 		texDesc.Usage = D3D11_USAGE_STAGING;
 		texDesc.SampleDesc = {1, 0};
 		texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -357,8 +358,13 @@ void CRendererD3D11::Render()
 	ID3D11Texture2D* pBackBuffer = nullptr;
 	m_pDXIGSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**) &pBackBuffer );
 
-	const unsigned int cursor_x = m_PSConstantBufferData.cursorPos[0];
-	const unsigned int cursor_y = m_PSConstantBufferData.cursorPos[1];
+	D3D11_TEXTURE2D_DESC tex2DDesc = {};
+	pBackBuffer->GetDesc(&tex2DDesc);
+
+	// Avoid getting value of pixel out of bounds. This can happen when having a fullscreen and then reducing
+	// the size of window.
+	const unsigned int cursor_x = std::min<unsigned int>(m_PSConstantBufferData.cursorPos[0], tex2DDesc.Width - 1);
+	const unsigned int cursor_y = std::min<unsigned int>(m_PSConstantBufferData.cursorPos[1], tex2DDesc.Height - 1);
 
 	D3D11_BOX box;
 	box.left = cursor_x;
@@ -443,7 +449,7 @@ void CRendererD3D11::ResizeViewport( unsigned int newWidth, unsigned int newHeig
 	SAFE_RELEASE( m_pRTV );
 
 	HRESULT hr = S_OK;
-	hr = m_pDXIGSwapChain->ResizeBuffers( 1, newWidth, newHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0 );
+	hr = m_pDXIGSwapChain->ResizeBuffers( 2, newWidth, newHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0 );
 
 	// Create render target view
 	{

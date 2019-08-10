@@ -227,6 +227,127 @@ std::string CMyFrame::GetRecentFilesPath() const
 }
 
 //-----------------------------------------------------------------------------
+void CMyFrame::CompileAndUpdatePreview()
+{
+	// Entrypoint from textctrl
+	wxTextCtrl* pTextctrlEntrypoint = XRCCTRL( *this, "textEntrypoint", wxTextCtrl );
+	const wxString strEntrypoint = pTextctrlEntrypoint->GetValue();
+
+	// Text from editor
+	wxString sourceHLSL = m_pEditHLSL->GetText();
+	const char* pszSourceHLSL = sourceHLSL.c_str();
+
+	// Current status
+	const bool isShaderProfile6 = IsShaderProfile6(m_D3DOptions.shaderProfile);
+	const bool isShaderProfile5 = !isShaderProfile6;
+
+	IRenderer* pRenderer = nullptr;
+
+	if (m_bPSPreviewVisible)
+		pRenderer = m_pPSPreviewFrame->GetRenderer();
+
+	// Keep track the current line in ASM textfields
+	const int currLineDXBCBefore = m_pEditASM_DXBC->GetCurrentLine();
+	const int currLineDXILBefore = m_pEditASM_DXIL->GetCurrentLine();
+	const int currLineGCNBefore = m_pEditASM_GCNISA->GetCurrentLine();
+
+	// This is out DXBC data
+	std::vector<unsigned char> compiledDXBC;
+
+	if ( m_compilerLoader.IsValid() )
+	{
+		if (isShaderProfile5)
+		{
+			m_pEditASM_DXBC->SetText( wxString( "Please wait..." ) );
+
+			const std::string strCompiledASM = nmCompile::Compile( m_D3DOptions, pszSourceHLSL, strEntrypoint.c_str(), m_strHLSLPath.c_str(), &m_compilerLoader, compiledDXBC );
+			const wxString wstrCompiledASM = wxString( strCompiledASM );
+
+			m_pEditASM_DXBC->SetText( wstrCompiledASM );
+
+			std::string strCompiledGCNISA;
+			if (compiledDXBC.size() > 0)
+			{
+				// Send to AMD GCN ISA to get assembly
+				const E_ASIC_TYPE asicType = m_pControlsPanel->GetSelectedAsicType();
+				strCompiledGCNISA = m_gcnisa.Compile( compiledDXBC.data(), compiledDXBC.size(), asicType );
+
+				// If real-time Pixel Shader preview is visible, update it
+				if (m_bPSPreviewVisible && m_D3DOptions.shaderType == EShaderType::ShaderType_PS && pRenderer)
+				{
+					const ERendererAPI rendererAPI = pRenderer->GetRendererAPI();
+
+					if (rendererAPI == RENDERER_API_D3D11)
+						pRenderer->UpdatePixelShader( (const void*)compiledDXBC.data(), compiledDXBC.size(), m_D3DOptions.shaderProfile );
+				}
+			}		
+			m_pEditASM_GCNISA->SetText( strCompiledGCNISA );
+		}
+		else
+		{
+			// User has selected Shader Model 6.0+
+			m_pEditASM_DXBC->SetText(wxT("An old DirectX Shader Compiler does not support Shader Model 6.0+"));
+			m_pEditASM_GCNISA->SetText(wxT("AMD GCN ISA is supported only for Shader Model 4.0/5.0 shaders"));
+		}
+	}	
+	else
+	{	
+		wxMessageBox( "D3Dcompiler dll is not loaded. Please locate valid dll manually.", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_WARNING, 0 );
+	}
+
+	// For modern compiler SM6.0+
+	if ( m_modernCompierLoader.IsValid() )
+	{
+		std::vector<unsigned char> DXIL_bytecode;
+
+		// Compiled ASM for Modern DXBC
+		const std::string strCompiledASM = nmCompile::CompileModern( m_D3DOptions, pszSourceHLSL, strEntrypoint.wc_str(), m_strHLSLPath.c_str(), DXIL_bytecode );
+		m_pEditASM_DXIL->SetText( strCompiledASM );
+
+		if (pRenderer)
+		{
+			const ERendererAPI rendererAPI = pRenderer->GetRendererAPI();
+
+			if (m_bPSPreviewVisible && m_D3DOptions.shaderType == ShaderType_PS && rendererAPI == RENDERER_API_D3D12)
+			{
+				if (isShaderProfile6)
+					pRenderer->UpdatePixelShader( (const void*) DXIL_bytecode.data(), DXIL_bytecode.size(), m_D3DOptions.shaderProfile );
+				else
+					pRenderer->UpdatePixelShader( (const void*) compiledDXBC.data(), compiledDXBC.size(), m_D3DOptions.shaderProfile );
+			}
+		}
+
+
+		// If user selected shader model 6.0+, go to this tab immediately.
+		if (isShaderProfile6)
+		{
+			m_pRightWindow->SetSelection( 1 );
+		}
+	}
+
+	// How many lines in ASM textfields after compilation
+	const int totalLinesDXBCAfter = m_pEditASM_DXBC->GetLineCount();
+	const int totalLinesDXILAfter = m_pEditASM_DXIL->GetLineCount();
+	const int totalLinesGCNAfter = m_pEditASM_GCNISA->GetLineCount();
+
+	// Go to line where it was before, don't reset to 0.
+	if (currLineDXBCBefore <= totalLinesDXBCAfter)
+	{
+		m_pEditASM_DXBC->GotoLine(currLineDXBCBefore);
+	}
+
+	if (currLineDXILBefore <= totalLinesDXILAfter)
+	{
+		m_pEditASM_DXIL->GotoLine(currLineDXILBefore);
+	}
+
+	if (currLineGCNBefore <= totalLinesGCNAfter)
+	{
+		m_pEditASM_GCNISA->GotoLine(currLineGCNBefore);
+	}
+}
+
+//-----------------------------------------------------------------------------
 void CMyFrame::OpenShaderFile( const wxString& filepath )
 {
 	// Attempt to read file	
@@ -329,122 +450,7 @@ void CMyFrame::OnMenuFileLoadD3DCompilerDLL( wxCommandEvent& WXUNUSED(evt) )
 //------------------------------------------------------------------------
 void CMyFrame::OnMenuFileCompile( wxCommandEvent& evt )
 {
-	// Entrypoint from textctrl
-	wxTextCtrl* pTextctrlEntrypoint = XRCCTRL( *this, "textEntrypoint", wxTextCtrl );
-	const wxString strEntrypoint = pTextctrlEntrypoint->GetValue();
-
-	// Text from editor
-	wxString sourceHLSL = m_pEditHLSL->GetText();
-	const char* pszSourceHLSL = sourceHLSL.c_str();
-
-	// Current status
-	const bool isShaderProfile6 = IsShaderProfile6(m_D3DOptions.shaderProfile);
-	const bool isShaderProfile5 = !isShaderProfile6;
-
-	IRenderer* pRenderer = nullptr;
-	
-	if (m_bPSPreviewVisible)
-		pRenderer = m_pPSPreviewFrame->GetRenderer();
-
-	// Keep track the current line in ASM textfields
-	const int currLineDXBCBefore = m_pEditASM_DXBC->GetCurrentLine();
-	const int currLineDXILBefore = m_pEditASM_DXIL->GetCurrentLine();
-	const int currLineGCNBefore = m_pEditASM_GCNISA->GetCurrentLine();
-
-	// This is out DXBC data
-	std::vector<unsigned char> compiledDXBC;
-
-	if ( m_compilerLoader.IsValid() )
-	{
-		if (isShaderProfile5)
-		{
-			m_pEditASM_DXBC->SetText( wxString( "Please wait..." ) );
-
-			const std::string strCompiledASM = nmCompile::Compile( m_D3DOptions, pszSourceHLSL, strEntrypoint.c_str(), m_strHLSLPath.c_str(), &m_compilerLoader, compiledDXBC );
-			const wxString wstrCompiledASM = wxString( strCompiledASM );
-
-			m_pEditASM_DXBC->SetText( wstrCompiledASM );
-
-			std::string strCompiledGCNISA;
-			if (compiledDXBC.size() > 0)
-			{
-				// Send to AMD GCN ISA to get assembly
-				const E_ASIC_TYPE asicType = m_pControlsPanel->GetSelectedAsicType();
-				strCompiledGCNISA = m_gcnisa.Compile( compiledDXBC.data(), compiledDXBC.size(), asicType );
-
-				// If real-time Pixel Shader preview is visible, update it
-				if (m_bPSPreviewVisible && m_D3DOptions.shaderType == EShaderType::ShaderType_PS && pRenderer)
-				{
-					const ERendererAPI rendererAPI = pRenderer->GetRendererAPI();
-
-					if (rendererAPI == RENDERER_API_D3D11)
-						pRenderer->UpdatePixelShader( (const void*)compiledDXBC.data(), compiledDXBC.size(), m_D3DOptions.shaderProfile );
-				}
-			}		
-			m_pEditASM_GCNISA->SetText( strCompiledGCNISA );
-		}
-		else
-		{
-			// User has selected Shader Model 6.0+
-			m_pEditASM_DXBC->SetText(wxT("An old DirectX Shader Compiler does not support Shader Model 6.0+"));
-			m_pEditASM_GCNISA->SetText(wxT("AMD GCN ISA is supported only for Shader Model 4.0/5.0 shaders"));
-		}
-	}	
-	else
-	{	
-		wxMessageBox( "D3Dcompiler dll is not loaded. Please locate valid dll manually.", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_WARNING, 0 );
-	}
-
-	// For modern compiler SM6.0+
-	if ( m_modernCompierLoader.IsValid() )
-	{
-		std::vector<unsigned char> DXIL_bytecode;
-
-		// Compiled ASM for Modern DXBC
-		const std::string strCompiledASM = nmCompile::CompileModern( m_D3DOptions, pszSourceHLSL, strEntrypoint.wc_str(), m_strHLSLPath.c_str(), DXIL_bytecode );
-		m_pEditASM_DXIL->SetText( strCompiledASM );
-		
-		if (pRenderer)
-		{
-			const ERendererAPI rendererAPI = pRenderer->GetRendererAPI();
-
-			if (m_bPSPreviewVisible && m_D3DOptions.shaderType == ShaderType_PS && rendererAPI == RENDERER_API_D3D12)
-			{
-				if (isShaderProfile6)
-					pRenderer->UpdatePixelShader( (const void*) DXIL_bytecode.data(), DXIL_bytecode.size(), m_D3DOptions.shaderProfile );
-				else
-					pRenderer->UpdatePixelShader( (const void*) compiledDXBC.data(), compiledDXBC.size(), m_D3DOptions.shaderProfile );
-			}
-		}
-		
-
-		// If user selected shader model 6.0+, go to this tab immediately.
-		if (isShaderProfile6)
-		{
-			m_pRightWindow->SetSelection( 1 );
-		}
-	}
-
-	// How many lines in ASM textfields after compilation
-	const int totalLinesDXBCAfter = m_pEditASM_DXBC->GetLineCount();
-	const int totalLinesDXILAfter = m_pEditASM_DXIL->GetLineCount();
-	const int totalLinesGCNAfter = m_pEditASM_GCNISA->GetLineCount();
-
-	// Go to line where it was before, don't reset to 0.
-	if (currLineDXBCBefore <= totalLinesDXBCAfter)
-	{
-		m_pEditASM_DXBC->GotoLine(currLineDXBCBefore);
-	}
-
-	if (currLineDXILBefore <= totalLinesDXILAfter)
-	{
-		m_pEditASM_DXIL->GotoLine(currLineDXILBefore);
-	}
-
-	if (currLineGCNBefore <= totalLinesGCNAfter)
-	{
-		m_pEditASM_GCNISA->GotoLine(currLineGCNBefore);
-	}
+	CompileAndUpdatePreview();
 
 	evt.Skip();
 }
@@ -466,6 +472,9 @@ void CMyFrame::OnMenuFileShowPSPreviewD3D11( wxCommandEvent& evt )
 	m_pPSPreviewFrame->SetFocus();
 	m_bPSPreviewVisible = true;
 
+	// Try to compile & update pixel shader just after opening pixel shader preview
+	CompileAndUpdatePreview();
+
 	evt.Skip();
 }
 
@@ -484,6 +493,9 @@ void CMyFrame::OnMenuFileShowPSPreviewD3D12( wxCommandEvent& evt )
 	m_pPSPreviewFrame->InitD3D12();
 	m_pPSPreviewFrame->SetFocus();
 	m_bPSPreviewVisible = true;
+
+	// Try to compile & update pixel shader just after opening pixel shader preview
+	CompileAndUpdatePreview();
 
 	evt.Skip();
 }
