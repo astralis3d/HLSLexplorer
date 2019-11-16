@@ -113,7 +113,7 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 	UINT dxgiFactoryFlags = 0;
 
 #if _DEBUG
-	ComPtr<ID3D12Debug> debugInterface;
+	ID3D12DebugPtr debugInterface;
 	if (SUCCEEDED( D3D12GetDebugInterface( IID_PPV_ARGS( &debugInterface ) ) ))
 	{
 		debugInterface->EnableDebugLayer();
@@ -123,11 +123,11 @@ bool CRendererD3D12::Initialize( const SRendererCreateParams& createParams )
 #endif
 
 	// Create DXGI factory.
-	ComPtr<IDXGIFactory4> factory;
+	IDXGIFactory4Ptr factory;
 	ThrowIfFailed( CreateDXGIFactory2( dxgiFactoryFlags, IID_PPV_ARGS( &factory ) ) );
 
 	// Create hardware D3D12 device.
-	ComPtr<IDXGIAdapter1> hardwareAdapter;
+	IDXGIAdapter1Ptr hardwareAdapter;
 	GetHardwareAdapter( factory.Get(), &hardwareAdapter );
 
 	// Check if D3D12-compatible adapter was found.
@@ -453,7 +453,7 @@ bool CRendererD3D12::LoadTextureFromFile( const wchar_t* path, int index )
 	std::unique_ptr<uint8_t[]> imageData;
 	std::vector<D3D12_SUBRESOURCE_DATA> subresources;
 
-	ComPtr<ID3D12Resource> textureUploadHeap;
+	ID3D12ResourcePtr textureUploadHeap;
 
 	if (!fileName.substr(fileName.length() - 4).compare(std::wstring(L".dds")))
 	{
@@ -480,7 +480,7 @@ bool CRendererD3D12::LoadTextureFromFile( const wchar_t* path, int index )
 		IID_PPV_ARGS(&textureUploadHeap)) );
 
 	// temp commandlist, make sure it's OPEN after creation
-	ComPtr<ID3D12GraphicsCommandList> tempCommandlist = CreateCommandList( m_device, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[m_nCurrentBackBufferIndex], false );
+	ID3D12GraphicsCommandListPtr tempCommandlist = CreateCommandList( m_device, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[m_nCurrentBackBufferIndex], false );
 
 	UpdateSubresources( tempCommandlist.Get(), m_textures[index].Get(), textureUploadHeap.Get(), 0, 0, subresourceSize, subresources.data() );
 
@@ -592,7 +592,7 @@ Vec4 CRendererD3D12::GetColorAtCursorPosition( unsigned int& x, unsigned int& y 
 //-----------------------------------------------------------------------------
 void CRendererD3D12::GetHardwareAdapter( IDXGIFactory2* pFactory, IDXGIAdapter1** ppAdapter )
 {
-	ComPtr<IDXGIAdapter1> adapter;
+	IDXGIAdapter1Ptr adapter;
 	*ppAdapter = nullptr;
 
 	UINT destAdapterIndex = 0;
@@ -632,9 +632,9 @@ void CRendererD3D12::GetHardwareAdapter( IDXGIFactory2* pFactory, IDXGIAdapter1*
 }
 
 //-----------------------------------------------------------------------------
-ComPtr<ID3D12Device> CRendererD3D12::CreateDevice( ComPtr<IDXGIAdapter1> adapter )
+ID3D12DevicePtr CRendererD3D12::CreateDevice( IDXGIAdapter1Ptr adapter )
 {
-	ComPtr<ID3D12Device> d3d12Device;
+	ID3D12DevicePtr d3d12Device;
 	ThrowIfFailed( D3D12CreateDevice( adapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&d3d12Device) ));
 
 	// TODO: Add some control of debug messages in debug mode
@@ -643,9 +643,9 @@ ComPtr<ID3D12Device> CRendererD3D12::CreateDevice( ComPtr<IDXGIAdapter1> adapter
 }
 
 //-----------------------------------------------------------------------------
-ComPtr<ID3D12CommandQueue> CRendererD3D12::CreateCommandQueue( ComPtr<ID3D12Device> device, D3D12_COMMAND_LIST_TYPE type )
+ID3D12CommandQueuePtr CRendererD3D12::CreateCommandQueue( ID3D12DevicePtr device, D3D12_COMMAND_LIST_TYPE type )
 {
-	ComPtr<ID3D12CommandQueue> d3d12CommandQueue;
+	ID3D12CommandQueuePtr d3d12CommandQueue;
 
 	D3D12_COMMAND_QUEUE_DESC desc = {};
 	desc.Type = type;
@@ -659,9 +659,9 @@ ComPtr<ID3D12CommandQueue> CRendererD3D12::CreateCommandQueue( ComPtr<ID3D12Devi
 }
 
 //-----------------------------------------------------------------------------
-ComPtr<IDXGISwapChain4> CRendererD3D12::CreateSwapChain( HWND hwnd, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> commandQueue, const UINT width, const UINT height, const UINT bufferCount )
+IDXGISwapChain4Ptr CRendererD3D12::CreateSwapChain( HWND hwnd, IDXGIFactory4Ptr factory, ID3D12CommandQueuePtr commandQueue, const UINT width, const UINT height, const UINT bufferCount )
 {
-	ComPtr<IDXGISwapChain4> dxgiSwapChain4;
+	IDXGISwapChain4Ptr dxgiSwapChain4;
 
 	DXGI_SWAP_CHAIN_DESC1 desc = {};
 	desc.Width = width;
@@ -681,7 +681,7 @@ ComPtr<IDXGISwapChain4> CRendererD3D12::CreateSwapChain( HWND hwnd, ComPtr<IDXGI
 	if (m_bTearingSupport)
 		desc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
-	ComPtr<IDXGISwapChain1> dxgiSwapChain1;
+	IDXGISwapChain1Ptr dxgiSwapChain1;
 	ThrowIfFailed( factory->CreateSwapChainForHwnd( commandQueue.Get(), hwnd, &desc, nullptr, nullptr, &dxgiSwapChain1) );
 
 	// Disable the Alt+Enter fullscreen toggle feature. Switching to fullscreen will be handled manually.
@@ -696,14 +696,14 @@ ComPtr<IDXGISwapChain4> CRendererD3D12::CreateSwapChain( HWND hwnd, ComPtr<IDXGI
 }
 
 //-----------------------------------------------------------------------------
-ComPtr<ID3D12DescriptorHeap> CRendererD3D12::CreateDescriptorHeap( ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE type, const UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_FLAGS flags )
+ID3D12DescriptorHeapPtr CRendererD3D12::CreateDescriptorHeap( ID3D12DevicePtr device, D3D12_DESCRIPTOR_HEAP_TYPE type, const UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_FLAGS flags )
 {
 	// A view in DirectX 12 is also called a descriptor.
 	// Similar to a view, a descriptor describes a resource.
 	// Since the swap chain contains multiple back buffer textures, one descriptor is needed to describe each back buffer texture.
 	// The m_RTVDescriptorHeap variable is used to store the descriptor heap that contains the render target views for the swap chain back buffers.
 
-	ComPtr<ID3D12DescriptorHeap> descriptorHeap;
+	ID3D12DescriptorHeapPtr descriptorHeap;
 
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
 	desc.NumDescriptors = numDescriptors;
@@ -717,18 +717,18 @@ ComPtr<ID3D12DescriptorHeap> CRendererD3D12::CreateDescriptorHeap( ComPtr<ID3D12
 }
 
 //-----------------------------------------------------------------------------
-ComPtr<ID3D12CommandAllocator> CRendererD3D12::CreateCommandAllocator( ComPtr<ID3D12Device> device, D3D12_COMMAND_LIST_TYPE type )
+ID3D12CommandAllocatorPtr CRendererD3D12::CreateCommandAllocator( ID3D12DevicePtr device, D3D12_COMMAND_LIST_TYPE type )
 {
-	ComPtr<ID3D12CommandAllocator> commandAllocator;
+	ID3D12CommandAllocatorPtr commandAllocator;
 	ThrowIfFailed( device->CreateCommandAllocator( type, IID_PPV_ARGS( &commandAllocator ) ) );
 
 	return commandAllocator;
 }
 
 //-----------------------------------------------------------------------------
-ComPtr<ID3D12GraphicsCommandList> CRendererD3D12::CreateCommandList( ComPtr<ID3D12Device> device, D3D12_COMMAND_LIST_TYPE type, ComPtr<ID3D12CommandAllocator> allocator, bool bClose /*= true */ )
+ID3D12GraphicsCommandListPtr CRendererD3D12::CreateCommandList( ID3D12DevicePtr device, D3D12_COMMAND_LIST_TYPE type, ID3D12CommandAllocatorPtr allocator, bool bClose /*= true */ )
 {
-	ComPtr<ID3D12GraphicsCommandList> commandList;
+	ID3D12GraphicsCommandListPtr commandList;
 	ThrowIfFailed( device->CreateCommandList( 0, type, allocator.Get(), nullptr, IID_PPV_ARGS( &commandList ) ) );
 
 	if (bClose)
@@ -742,9 +742,9 @@ ComPtr<ID3D12GraphicsCommandList> CRendererD3D12::CreateCommandList( ComPtr<ID3D
 }
 
 //-----------------------------------------------------------------------------
-ComPtr<ID3D12Fence> CRendererD3D12::CreateFence( ComPtr<ID3D12Device> device )
+ID3D12FencePtr CRendererD3D12::CreateFence( ID3D12DevicePtr device )
 {
-	ComPtr<ID3D12Fence> fence;
+	ID3D12FencePtr fence;
 	ThrowIfFailed( device->CreateFence( 0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS( &fence ) ) );
 
 	return fence;
@@ -760,7 +760,7 @@ HANDLE CRendererD3D12::CreateEventHandle()
 }
 
 //-----------------------------------------------------------------------------
-void CRendererD3D12::UpdateRenderTargetViews( ComPtr<ID3D12Device> device, ComPtr<IDXGISwapChain4> swapchain, ComPtr<ID3D12DescriptorHeap> descriptorHeap )
+void CRendererD3D12::UpdateRenderTargetViews( ID3D12DevicePtr device, IDXGISwapChain4Ptr swapchain, ID3D12DescriptorHeapPtr descriptorHeap )
 {
 	// In order to iterate the descriptors in a descriptor heap,
 	// a handle to the first descriptor in the heap is retrieved.
@@ -847,7 +847,7 @@ void CRendererD3D12::CheckTearingSupport()
 }
 
 //-----------------------------------------------------------------------------
-uint64_t CRendererD3D12::Signal( ComPtr<ID3D12CommandQueue> commandQueue, ComPtr<ID3D12Fence> fence, uint64_t& fenceValue )
+uint64_t CRendererD3D12::Signal( ID3D12CommandQueuePtr commandQueue, ID3D12FencePtr fence, uint64_t& fenceValue )
 {
 	//   ID3D12CommandQueue::Signal method:
 	// 
@@ -872,7 +872,7 @@ uint64_t CRendererD3D12::Signal( ComPtr<ID3D12CommandQueue> commandQueue, ComPtr
 }
 
 //-----------------------------------------------------------------------------
-void CRendererD3D12::WaitForFenceValue( ComPtr<ID3D12Fence> fence, uint64_t fenceValue, HANDLE fenceEvent )
+void CRendererD3D12::WaitForFenceValue( ID3D12FencePtr fence, uint64_t fenceValue, HANDLE fenceEvent )
 {
 	// This method is used to block CPU thread until the specified fence value has been reached
 
@@ -891,7 +891,7 @@ void CRendererD3D12::WaitForFenceValue( ComPtr<ID3D12Fence> fence, uint64_t fenc
 }
 
 //-----------------------------------------------------------------------------
-void CRendererD3D12::Flush( ComPtr<ID3D12CommandQueue> commandQueue, ComPtr<ID3D12Fence> fence, uint64_t& fenceValue, HANDLE fenceEvent )
+void CRendererD3D12::Flush( ID3D12CommandQueuePtr commandQueue, ID3D12FencePtr fence, uint64_t& fenceValue, HANDLE fenceEvent )
 {
 	// The Signal function returns the fence value to wait for. 
 	// The WaitForFenceValue function is used to wait for the fence to be signaled with a specified value.

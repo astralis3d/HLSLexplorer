@@ -4,7 +4,7 @@
 
 struct SRendererCreateParams;
 
-enum ERendererAPI
+enum ERendererAPI : uint8
 {
 	RENDERER_API_D3D11,
 	RENDERER_API_D3D12

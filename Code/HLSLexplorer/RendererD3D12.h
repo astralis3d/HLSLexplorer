@@ -5,9 +5,29 @@
 #include <wrl.h>
 #include "Renderer.h"
 
-struct SRendererCreateParams;
-
 using Microsoft::WRL::ComPtr;
+
+#define D3D12_COMPTR(x)	typedef ComPtr<x> x##Ptr;
+
+D3D12_COMPTR(IDXGISwapChain1)
+D3D12_COMPTR(IDXGISwapChain4)
+D3D12_COMPTR(IDXGIAdapter1)
+D3D12_COMPTR(IDXGIFactory4)
+
+D3D12_COMPTR(ID3D12Device)
+D3D12_COMPTR(ID3D12CommandQueue)
+D3D12_COMPTR(ID3D12Resource)
+D3D12_COMPTR(ID3D12DescriptorHeap)
+D3D12_COMPTR(ID3D12Fence)
+D3D12_COMPTR(ID3D12PipelineState)
+D3D12_COMPTR(ID3D12RootSignature)
+D3D12_COMPTR(ID3D12GraphicsCommandList)
+D3D12_COMPTR(ID3D12CommandAllocator)
+
+D3D12_COMPTR(ID3D12Debug)
+D3D12_COMPTR(ID3DBlob)
+
+struct SRendererCreateParams;
 
 class CRendererD3D12 : public CRenderer
 {
@@ -34,15 +54,15 @@ private:
 	static const UINT NUM_FRAMES = 2;
 
 	void GetHardwareAdapter( IDXGIFactory2* pFactory, IDXGIAdapter1** ppAdapter );
-	ComPtr<ID3D12Device> CreateDevice( ComPtr<IDXGIAdapter1> adapter );
-	ComPtr<ID3D12CommandQueue> CreateCommandQueue( ComPtr<ID3D12Device> device, D3D12_COMMAND_LIST_TYPE type );
-	ComPtr<IDXGISwapChain4> CreateSwapChain( HWND hwnd, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> commandQueue, const UINT width, const UINT height, const UINT bufferCount );
-	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap( ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE type, const UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_FLAGS flags );
-	ComPtr<ID3D12CommandAllocator> CreateCommandAllocator( ComPtr<ID3D12Device> device, D3D12_COMMAND_LIST_TYPE type );
-	ComPtr<ID3D12GraphicsCommandList> CreateCommandList( ComPtr<ID3D12Device> device, D3D12_COMMAND_LIST_TYPE type, ComPtr<ID3D12CommandAllocator> allocator, bool bClose = true );
-	void UpdateRenderTargetViews( ComPtr<ID3D12Device> device, ComPtr<IDXGISwapChain4> swapchain, ComPtr<ID3D12DescriptorHeap> descriptorHeap );
+	ID3D12DevicePtr CreateDevice( IDXGIAdapter1Ptr adapter );
+	ID3D12CommandQueuePtr CreateCommandQueue( ID3D12DevicePtr device, D3D12_COMMAND_LIST_TYPE type );
+	IDXGISwapChain4Ptr CreateSwapChain( HWND hwnd, IDXGIFactory4Ptr factory, ID3D12CommandQueuePtr commandQueue, const UINT width, const UINT height, const UINT bufferCount );
+	ID3D12DescriptorHeapPtr CreateDescriptorHeap( ID3D12DevicePtr device, D3D12_DESCRIPTOR_HEAP_TYPE type, const UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_FLAGS flags );
+	ID3D12CommandAllocatorPtr CreateCommandAllocator( ID3D12DevicePtr device, D3D12_COMMAND_LIST_TYPE type );
+	ID3D12GraphicsCommandListPtr CreateCommandList( ID3D12DevicePtr device, D3D12_COMMAND_LIST_TYPE type, ID3D12CommandAllocatorPtr allocator, bool bClose = true );
+	void UpdateRenderTargetViews( ID3D12DevicePtr device, IDXGISwapChain4Ptr swapchain, ID3D12DescriptorHeapPtr descriptorHeap );
 
-	ComPtr<ID3D12Fence> CreateFence( ComPtr<ID3D12Device> device );
+	ID3D12FencePtr CreateFence( ID3D12DevicePtr device );
 	HANDLE CreateEventHandle();
 
 	void PopulateCommandList();
@@ -50,37 +70,37 @@ private:
 
 	void CheckTearingSupport();
 
-	uint64_t Signal( ComPtr<ID3D12CommandQueue> commandQueue, ComPtr<ID3D12Fence> fence, uint64_t& fenceValue );
-	void WaitForFenceValue( ComPtr<ID3D12Fence> fence, uint64_t fenceValue, HANDLE fenceEvent );
-	void Flush( ComPtr<ID3D12CommandQueue> commandQueue, ComPtr<ID3D12Fence> fence, uint64_t& fenceValue, HANDLE fenceEvent );
+	uint64_t Signal( ID3D12CommandQueuePtr commandQueue, ID3D12FencePtr fence, uint64_t& fenceValue );
+	void WaitForFenceValue( ID3D12FencePtr fence, uint64_t fenceValue, HANDLE fenceEvent );
+	void Flush( ID3D12CommandQueuePtr commandQueue, ID3D12FencePtr fence, uint64_t& fenceValue, HANDLE fenceEvent );
 	void Flush();
 
 private:
-	ComPtr<ID3D12Device>		m_device;
+	ID3D12DevicePtr			m_device;
 
-	ComPtr<ID3D12CommandQueue>	m_commandQueue;
-	ComPtr<IDXGISwapChain4>		m_swapChain;
-	ComPtr<ID3D12Resource>		m_backBuffers[NUM_FRAMES];
-	ComPtr<ID3D12GraphicsCommandList> m_commandList;
-	ComPtr<ID3D12CommandAllocator> m_commandAllocators[NUM_FRAMES];
+	ID3D12CommandQueuePtr	m_commandQueue;
+	IDXGISwapChain4Ptr		m_swapChain;
+	ID3D12ResourcePtr		m_backBuffers[NUM_FRAMES];
+	ID3D12GraphicsCommandListPtr m_commandList;
+	ID3D12CommandAllocatorPtr m_commandAllocators[NUM_FRAMES];
 
-	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapRTV;
-	ComPtr<ID3D12DescriptorHeap> m_descriptorHeapCBVandSRVs;
+	ID3D12DescriptorHeapPtr m_descriptorHeapRTV;
+	ID3D12DescriptorHeapPtr m_descriptorHeapCBVandSRVs;
 
-	ComPtr<ID3D12Resource>		m_sceneConstantBuffer;
+	ID3D12ResourcePtr		m_sceneConstantBuffer;
 	unsigned char*				m_pCbvDataBegin;
 
-	ComPtr<ID3D12Resource>		m_textures[8];
+	ID3D12ResourcePtr		m_textures[8];
 
-	ComPtr<ID3D12RootSignature> m_rootSignature;
-	ComPtr<ID3D12PipelineState>	m_pipelineState;
+	ID3D12RootSignaturePtr m_rootSignature;
+	ID3D12PipelineStatePtr	m_pipelineState;
 
 	UINT m_nCurrentBackBufferIndex;
 
 	UINT m_nDescriptorSizeCBV_SRV_UAV;
 	UINT m_nDescriptorSizeRTV;
 
-	ComPtr<ID3D12Fence> m_fence;
+	ID3D12FencePtr m_fence;
 	uint64_t m_fenceValue = 0;
 	uint64_t m_frameFenceValue[NUM_FRAMES];
 	HANDLE m_fenceEvent;

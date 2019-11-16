@@ -214,6 +214,7 @@
   <ItemGroup>
     <ClInclude Include="AboutDialog.h" />
     <ClInclude Include="App.h" />
+    <ClInclude Include="BaseTypes.h" />
     <ClInclude Include="CompilationDX.h" />
     <ClInclude Include="CompilerLoader.h" />
     <ClInclude Include="CompilerModernDXLoader.h" />

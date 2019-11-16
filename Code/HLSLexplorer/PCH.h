@@ -7,6 +7,8 @@
 # define _CRTDBG_MAP_ALLOC
 #endif
 
+#include "BaseTypes.h"
+
 // wxWidgets
 #include <wx/wxprec.h>
 
@@ -14,7 +16,7 @@
 # undef GetHwnd
 #endif
 
-enum class ETextureType
+enum class ETextureType : uint8
 {
 	ETexType_Invalid,
 

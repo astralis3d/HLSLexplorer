@@ -165,6 +165,7 @@
     <ClInclude Include="IRenderer.h">
       <Filter>Application\gui\RealtimePixelShaderPreview\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="BaseTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Application">
