@@ -891,7 +891,7 @@ HRESULT DirectX::CreateWICTextureFromFile(
 {
     return CreateWICTextureFromFileEx(d3dDevice, nullptr,
         fileName, maxsize,
-        D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+        D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0, 0,
         WIC_LOADER_DEFAULT,
         texture, textureView);
 }
@@ -908,7 +908,7 @@ HRESULT DirectX::CreateWICTextureFromFile(
     return CreateWICTextureFromFileEx(d3dDevice, d3dContext,
         fileName,
         maxsize,
-        D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+        D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0, 0,
         WIC_LOADER_DEFAULT,
         texture, textureView);
 }

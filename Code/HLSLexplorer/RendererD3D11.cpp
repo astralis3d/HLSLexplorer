@@ -116,11 +116,11 @@ bool CRendererD3D11::LoadTextureFromFile( const WCHAR* path, int index )
 	SAFE_RELEASE( m_pInputTextures[index] );
 	if (!fileName.substr(fileName.length() - 4).compare(L".dds"))
 	{
-		hr = DirectX::CreateDDSTextureFromFile( m_pD3DDevice, m_pD3DDeviceContext, path, nullptr, &m_pInputTextures[index] );
+		hr = DirectX::CreateDDSTextureFromFile( m_pD3DDevice, path, nullptr, &m_pInputTextures[index] );
 	}
 	else
 	{
-		hr = DirectX::CreateWICTextureFromFile( m_pD3DDevice, m_pD3DDeviceContext, path, nullptr, &m_pInputTextures[index] );
+		hr = DirectX::CreateWICTextureFromFile( m_pD3DDevice, path, nullptr, &m_pInputTextures[index] );
 	}
 
 	const bool bSuccess = (hr == S_OK);

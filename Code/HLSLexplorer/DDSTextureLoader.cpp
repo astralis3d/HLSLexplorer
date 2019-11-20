@@ -1833,7 +1833,7 @@ HRESULT DirectX::CreateDDSTextureFromFile(
 {
     return CreateDDSTextureFromFileEx(d3dDevice, nullptr,
         fileName, maxsize,
-        D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+        D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0, 0,
         false,
         texture, textureView, alphaMode);
 }
@@ -1851,7 +1851,7 @@ HRESULT DirectX::CreateDDSTextureFromFile(
     return CreateDDSTextureFromFileEx(d3dDevice, d3dContext,
         fileName,
         maxsize,
-        D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+        D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0, 0,
         false,
         texture, textureView, alphaMode);
 }
