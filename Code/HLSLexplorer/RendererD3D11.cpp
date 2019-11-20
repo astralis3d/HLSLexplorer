@@ -110,23 +110,26 @@ ERendererAPI CRendererD3D11::GetRendererAPI() const
 
 bool CRendererD3D11::LoadTextureFromFile( const WCHAR* path, int index )
 {
-	SAFE_RELEASE( m_pInputTextures[index] );
+	const std::wstring fileName(path);
+	HRESULT hr = E_FAIL;
 
-	HRESULT hr = S_OK;
-	hr = DirectX::CreateDDSTextureFromFile( m_pD3DDevice, m_pD3DDeviceContext, path, nullptr, &m_pInputTextures[index] );
-	if (FAILED(hr))
+	SAFE_RELEASE( m_pInputTextures[index] );
+	if (!fileName.substr(fileName.length() - 4).compare(L".dds"))
+	{
+		hr = DirectX::CreateDDSTextureFromFile( m_pD3DDevice, m_pD3DDeviceContext, path, nullptr, &m_pInputTextures[index] );
+	}
+	else
 	{
 		hr = DirectX::CreateWICTextureFromFile( m_pD3DDevice, m_pD3DDeviceContext, path, nullptr, &m_pInputTextures[index] );
-
-		if ( FAILED(hr) )
-		{
-			return false;
-		}
 	}
 
-	m_pD3DDeviceContext->PSSetShaderResources( index, 1, &m_pInputTextures[index] );
+	const bool bSuccess = (hr == S_OK);
+	if (bSuccess)
+	{
+		m_pD3DDeviceContext->PSSetShaderResources( index, 1, &m_pInputTextures[index] );
+	}
 
-	return true;
+	return bSuccess;
 }
 
 ETextureType CRendererD3D11::GetTextureType( int index ) const
