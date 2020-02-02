@@ -656,7 +656,7 @@
         <flag>wxALIGN_CENTER_VERTICAL|wxTOP|wxBOTTOM|wxLEFT</flag>
         <border>10</border>
         <object class="wxStaticBitmap" name="m_icon">
-          <bitmap>image001.png</bitmap>
+          <bitmap>resource/image001.png</bitmap>
         </object>
       </object>
       <object class="sizeritem">
@@ -784,6 +784,23 @@
         <style>wxTAB_TRAVERSAL|wxBORDER_SIMPLE</style>
         <object class="wxBoxSizer">
           <orient>wxVERTICAL</orient>
+          <object class="sizeritem">
+            <option>0</option>
+            <flag>wxEXPAND</flag>
+            <border>5</border>
+            <object class="wxToolBar" name="m_toolBar1">
+              <bitmapsize>16,16</bitmapsize>
+              <margins></margins>
+              <packing>1</packing>
+              <separation>5</separation>
+              <object class="tool" name="toolSaveTexture">
+                <label>Save</label>
+                <tooltip>Save to file</tooltip>
+                <longhelp>Save texture to file</longhelp>
+                <bitmap>resource/save.png</bitmap>
+              </object>
+            </object>
+          </object>
           <object class="sizeritem">
             <option>1</option>
             <flag>wxEXPAND|wxBOTTOM</flag>

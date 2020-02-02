@@ -50,6 +50,8 @@ public:
 
 	virtual Vec4 GetColorAtCursorPosition(unsigned int& x, unsigned int& y) const;
 
+	virtual bool SaveTextureToFile(const std::wstring& path);
+
 private:
 	static const UINT NUM_FRAMES = 2;
 

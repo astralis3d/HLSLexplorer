@@ -29,13 +29,9 @@ public:
 
 	virtual void ResizeViewport(unsigned int newWidth, unsigned int newHeight);
 
-	virtual Vec4 GetColorAtCursorPosition(unsigned int& x, unsigned int& y) const
-	{
-		x = m_PSConstantBufferData.cursorPos[0];
-		y = m_PSConstantBufferData.cursorPos[1];
+	virtual Vec4 GetColorAtCursorPosition(unsigned int& x, unsigned int& y) const;
 
-		return m_colorData;
-	}
+	virtual bool SaveTextureToFile(const std::wstring& path);
 
 private:
 	void CreateSamplers();

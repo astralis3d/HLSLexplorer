@@ -72,6 +72,12 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>Application\gui\RealtimePixelShaderPreview\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="ScreenGrab\ScreenGrab.cpp">
+      <Filter>ThirdParty\ScreenGrab</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenGrab\ScreenGrab12.cpp">
+      <Filter>ThirdParty\ScreenGrab</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Edit.h">
@@ -166,6 +172,12 @@
       <Filter>Application\gui\RealtimePixelShaderPreview\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="BaseTypes.h" />
+    <ClInclude Include="ScreenGrab\ScreenGrab.h">
+      <Filter>ThirdParty\ScreenGrab</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenGrab\ScreenGrab12.h">
+      <Filter>ThirdParty\ScreenGrab</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Application">
@@ -224,6 +236,9 @@
     </Filter>
     <Filter Include="Application\gui\RealtimePixelShaderPreview\Renderer\D3D11">
       <UniqueIdentifier>{cc0f4467-b7d2-4764-9920-d02c90d27d60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\ScreenGrab">
+      <UniqueIdentifier>{b5f2c178-6446-4d9e-9020-1a34b00a673e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

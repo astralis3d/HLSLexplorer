@@ -15,6 +15,12 @@ struct SRendererCreateParams
 	unsigned int height;
 };
 
+BEGIN_EVENT_TABLE(CRealtimePSPreviewFrame, wxFrame)
+
+	EVT_TOOL( XRCID("toolSaveTexture"), CRealtimePSPreviewFrame::OnToolbarButtonSave )
+
+END_EVENT_TABLE()
+
 CRealtimePSPreviewFrame::CRealtimePSPreviewFrame( wxWindow* parent )
 	: m_pRenderer(nullptr)
 {
@@ -204,6 +210,30 @@ void CRealtimePSPreviewFrame::OnMouseMotion( wxMouseEvent& evt )
 	}
 
 	evt.Skip();
+}
+
+//-----------------------------------------------------------------------------
+void CRealtimePSPreviewFrame::OnToolbarButtonSave( wxCommandEvent& evt )
+{
+	// Get path to saved file
+	const std::wstring file = wxFileSelector( "Save the texture", wxEmptyString, wxEmptyString, "dds",
+					wxString::Format
+					(
+						"DDS (*.dds)|*.dds|PNG (*.png)|*.png|JPG (*.jpg)|*.jpg|BMP (*.bmp)|*.bmp|All files (%s)|%s",
+						wxFileSelectorDefaultWildcardStr,
+						wxFileSelectorDefaultWildcardStr
+					),
+					wxFD_SAVE | wxFD_CHANGE_DIR | wxFD_NO_FOLLOW,
+					this).ToStdWstring();
+
+	if (file.empty())
+		return;
+
+	const bool bResult = m_pRenderer->SaveTextureToFile( file );
+	if (!bResult)
+	{
+		wxMessageBox("An error occurred while saving the texture to file. Make sure you have specified proper extension.", wxMessageBoxCaptionStr, wxOK | wxICON_WARNING);
+	}
 }
 
 //-----------------------------------------------------------------------------

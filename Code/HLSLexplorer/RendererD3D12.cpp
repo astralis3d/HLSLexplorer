@@ -8,6 +8,9 @@
 #include "DDSTextureLoader12.h"
 #include "WICTextureLoader12.h"
 
+#include "ScreenGrab/ScreenGrab12.h"
+#include <wincodec.h>
+
 // TODO: move to project's linker properties
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -587,6 +590,40 @@ Vec4 CRendererD3D12::GetColorAtCursorPosition( unsigned int& x, unsigned int& y 
 	y = m_PSConstantBufferData.cursorPos[1];
 
 	return Vec4();
+}
+
+//-----------------------------------------------------------------------------
+bool CRendererD3D12::SaveTextureToFile( const std::wstring& path )
+{
+	// Wait for rendering to finish
+	Flush();
+
+	// D3D12 stuff
+	ID3D12CommandQueue* pCommandQueue = m_commandQueue.Get();
+	ID3D12Resource* pBackbuffer = m_backBuffers[m_nCurrentBackBufferIndex].Get();
+
+	// Mark result value as fail
+	HRESULT hr = E_FAIL;
+
+	const std::wstring extension = path.substr( path.length() - 4);
+	if (extension == L".dds")
+	{
+		hr = DirectX::SaveDDSTextureToFile( pCommandQueue, pBackbuffer, path.c_str() );
+	}
+	else if (extension == L".png")
+	{
+		hr = DirectX::SaveWICTextureToFile( pCommandQueue, pBackbuffer, GUID_ContainerFormatPng, path.c_str() );
+	}
+	else if (extension == L".jpg")
+	{
+		hr = DirectX::SaveWICTextureToFile( pCommandQueue, pBackbuffer, GUID_ContainerFormatJpeg, path.c_str() );
+	}
+	else if (extension == L".bmp")
+	{
+		hr = DirectX::SaveWICTextureToFile( pCommandQueue, pBackbuffer, GUID_ContainerFormatBmp, path.c_str() );
+	}
+
+	return (hr == S_OK);
 }
 
 //-----------------------------------------------------------------------------

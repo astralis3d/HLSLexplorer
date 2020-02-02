@@ -7,6 +7,9 @@
 #include "DDSTextureLoader.h"
 #include "WICTextureLoader.h"
 
+#include "ScreenGrab/ScreenGrab.h"
+#include <wincodec.h>
+
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
@@ -472,6 +475,53 @@ void CRendererD3D11::ResizeViewport( unsigned int newWidth, unsigned int newHeig
 			return;
 		}
 	}
+}
+
+Vec4 CRendererD3D11::GetColorAtCursorPosition( unsigned int& x, unsigned int& y ) const
+{
+	x = m_PSConstantBufferData.cursorPos[0];
+	y = m_PSConstantBufferData.cursorPos[1];
+
+	return m_colorData;
+}
+
+bool CRendererD3D11::SaveTextureToFile( const std::wstring& path )
+{
+	HRESULT hr = E_FAIL;
+
+	// Get backbuffer
+	ID3D11Texture2D* pBackBuffer = nullptr;
+	hr = m_pDXIGSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**) &pBackBuffer );
+	if ( FAILED(hr) )
+	{
+		return false;
+	}
+
+	// Mark result value as fail
+	hr = E_FAIL;
+
+	const std::wstring extension = path.substr( path.length() - 4);
+	if (extension == L".dds")
+	{
+		hr = DirectX::SaveDDSTextureToFile( m_pD3DDeviceContext, pBackBuffer, path.c_str() );
+	}
+	else if (extension == L".png")
+	{
+		hr = DirectX::SaveWICTextureToFile( m_pD3DDeviceContext, pBackBuffer, GUID_ContainerFormatPng, path.c_str() );
+	}
+	else if (extension == L".jpg")
+	{
+		hr = DirectX::SaveWICTextureToFile( m_pD3DDeviceContext, pBackBuffer, GUID_ContainerFormatJpeg, path.c_str() );
+	}
+	else if (extension == L".bmp")
+	{
+		hr = DirectX::SaveWICTextureToFile( m_pD3DDeviceContext, pBackBuffer, GUID_ContainerFormatBmp, path.c_str() );
+	}
+
+	// Release refcount for backbuffer
+	pBackBuffer->Release();
+
+	return (hr == S_OK);
 }
 
 void CRendererD3D11::ResetTexture( int index )

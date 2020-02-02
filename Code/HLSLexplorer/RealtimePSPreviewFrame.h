@@ -24,6 +24,8 @@ private:
 	void UpdateWindowTitle();
 	void OnMouseMotion( wxMouseEvent& evt );
 
+	void OnToolbarButtonSave( wxCommandEvent& evt );
+
 	void UpdateUIForTexture( const wchar_t* path, unsigned int index);
 	void ResetUIForTexture( unsigned int index );
 
@@ -36,5 +38,5 @@ private:
 
 	bool m_bIsRightDown;
 
-	//DECLARE_EVENT_TABLE();
+	DECLARE_EVENT_TABLE();
 };
