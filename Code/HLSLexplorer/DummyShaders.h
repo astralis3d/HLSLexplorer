@@ -2,6 +2,27 @@
 
 #pragma once
 
+static const char szFullscreenVS[] =
+"struct VS_OUTPUT_POSTFX\n"
+"{\n"
+"	float4 PositionH : SV_Position;\n"
+"	float2 TextureUV : Texcoord;\n"
+"};\n"
+"VS_OUTPUT_POSTFX QuadVS( in uint id : SV_VertexID )\n"
+"{\n"
+"	VS_OUTPUT_POSTFX Output;\n"
+"\n"
+"	Output.PositionH.x = float( id / 2 ) * 4.0 - 1.0;\n"
+"	Output.PositionH.y = float( id % 2 ) * 4.0 - 1.0;\n"
+"	Output.PositionH.z = 0.0;\n"
+"	Output.PositionH.w = 1.0;\n"
+"\n"
+"	Output.TextureUV.x = (float)(id / 2) * 2.0;\n"
+"	Output.TextureUV.y = 1.0 - (float)(id % 2) * 2.0;\n"
+"\n"
+"	return Output;\n"
+"}\n";
+
 static const char szDummyPS[] =
 "cbuffer cbPerFrame : register (b0)\n"
 "{\n "

@@ -2,6 +2,7 @@
 #include "RendererD3D12.h"
 #include <d3dcompiler.h>
 #include "d3dx12.h"
+#include "DummyShaders.h"
 
 #include "CompilationDX.h"
 
@@ -15,6 +16,9 @@
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 
+// Use the function from RendererD3D11.cpp
+extern HRESULT CompileShader( const void* sourceData, UINT sourceLength, LPCSTR szEntryPoint, LPCSTR szShaderTarget, ID3DBlob** ppOutBlob );
+
 namespace
 {
 	inline void ThrowIfFailed( HRESULT hr )
@@ -23,29 +27,6 @@ namespace
 		{
 			throw std::exception();
 		}
-	}
-
-	HRESULT CompileShaderFromFile( const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderTarget, ID3DBlob** ppOutBlob )
-	{
-		HRESULT hr = S_OK;
-		DWORD dwFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-
-		ID3DBlob* pErrorBlob = nullptr;
-
-		hr = D3DCompileFromFile( szFileName, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, szEntryPoint, szShaderTarget,
-								 dwFlags, 0, ppOutBlob, &pErrorBlob );
-
-		if (FAILED( hr ))
-		{
-			OutputDebugStringA( reinterpret_cast<const char*>(pErrorBlob->GetBufferPointer()) );
-			SAFE_RELEASE( pErrorBlob );
-
-			return hr;
-		}
-
-		SAFE_RELEASE( pErrorBlob );
-
-		return S_OK;
 	}
 
 	ETextureType TranslateTextureTypeD3D12( D3D12_SRV_DIMENSION srvDimensionD3D12 )
@@ -403,7 +384,7 @@ void CRendererD3D12::UpdatePixelShader( const void* dxbcData, unsigned int size,
 	else
 	{
 		// Shader model 4, 5.
-		ThrowIfFailed( CompileShaderFromFile( L"FullscreenVS.hlsl", "QuadVS", "vs_5_0", &blobVS ) );
+		ThrowIfFailed( CompileShader( szFullscreenVS, ARRAYSIZE(szFullscreenVS), "QuadVS", "vs_5_0", &blobVS ) );
 	}
 
 	// Create new Pipeline State Object

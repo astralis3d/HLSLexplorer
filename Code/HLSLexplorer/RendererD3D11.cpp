@@ -3,6 +3,7 @@
 #include <d3dcompiler.h>
 #include <VersionHelpers.h>
 #include <algorithm>
+#include "DummyShaders.h"
 
 #include "DDSTextureLoader.h"
 #include "WICTextureLoader.h"
@@ -21,32 +22,27 @@ struct SRendererCreateParams
 };
 
 
-// Compiles shader from file
+// Compiles shader
+HRESULT CompileShader( const void* sourceData, UINT sourceLength, LPCSTR szEntryPoint, LPCSTR szShaderTarget, ID3DBlob** ppOutBlob )
+{
+	HRESULT hr = S_OK;
+	DWORD dwFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+
+	ID3DBlob* pErrorBlob = nullptr;
+	hr = D3DCompile(sourceData, sourceLength, nullptr, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, szEntryPoint, szShaderTarget, dwFlags, 0, ppOutBlob, &pErrorBlob);
+
+	if ( FAILED(hr) && pErrorBlob)
+	{
+		OutputDebugStringA( reinterpret_cast<const char*>(pErrorBlob->GetBufferPointer()) );	
+	}		
+
+	SAFE_RELEASE( pErrorBlob );
+
+	return hr;
+}
+
 namespace
 {
-	HRESULT CompileShaderFromFile( const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderTarget, ID3DBlob** ppOutBlob )
-	{
-		HRESULT hr = S_OK;
-		DWORD dwFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-
-		ID3DBlob* pErrorBlob = nullptr;
-
-		hr = D3DCompileFromFile( szFileName, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, szEntryPoint, szShaderTarget,
-								 dwFlags, 0, ppOutBlob, &pErrorBlob );
-
-		if ( FAILED(hr) )
-		{
-			OutputDebugStringA( reinterpret_cast<const char*>(pErrorBlob->GetBufferPointer()) );
-			SAFE_RELEASE( pErrorBlob );
-
-			return hr;
-		}
-	
-		SAFE_RELEASE( pErrorBlob );
-
-		return S_OK;
-	}
-
 	ETextureType TranslateTextureTypeD3D11(D3D11_SRV_DIMENSION srvDimensionD3D11)
 	{
 		switch (srvDimensionD3D11)
@@ -270,7 +266,7 @@ bool CRendererD3D11::Initialize(const SRendererCreateParams& createParams)
 	{
 		ID3DBlob* pBlobVS = nullptr;
 
-		hr = CompileShaderFromFile( L"FullscreenVS.hlsl", "QuadVS", "vs_5_0", &pBlobVS );
+		hr = CompileShader( szFullscreenVS, ARRAYSIZE(szFullscreenVS), "QuadVS", "vs_5_0", &pBlobVS );
 		if ( FAILED(hr) )
 		{
 			::MessageBox(nullptr, L"Unable to compile vertex shader", L"Error", MB_OK | MB_ICONERROR );
