@@ -43,7 +43,7 @@ private:
 
 	ID3D11Device* m_pD3DDevice;
 	ID3D11DeviceContext* m_pD3DDeviceContext;
-	IDXGISwapChain*	m_pDXIGSwapChain;
+	IDXGISwapChain*	m_SwapChain;
 	D3D_FEATURE_LEVEL m_featureLevel;
 
 	ID3D11InputLayout* m_pInputLayout;

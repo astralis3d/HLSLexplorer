@@ -86,7 +86,7 @@ namespace
 CRendererD3D11::CRendererD3D11() 
 	: m_pD3DDevice(nullptr)
 	, m_pD3DDeviceContext(nullptr)
-	, m_pDXIGSwapChain(nullptr)
+	, m_SwapChain(nullptr)
 	, m_pVS( nullptr )
 	, m_pPS( nullptr )
 {
@@ -232,7 +232,7 @@ bool CRendererD3D11::Initialize(const SRendererCreateParams& createParams)
 		sd.SampleDesc.Count = 1;
 		sd.SampleDesc.Quality = 0;
 
-		hr = dxgiFactory->CreateSwapChain( m_pD3DDevice, &sd, &m_pDXIGSwapChain );
+		hr = dxgiFactory->CreateSwapChain( m_pD3DDevice, &sd, &m_SwapChain );
 		if (FAILED(hr))
 		{
 			return false;
@@ -247,7 +247,7 @@ bool CRendererD3D11::Initialize(const SRendererCreateParams& createParams)
 	{
 		ID3D11Texture2D* pBackBuffer = nullptr;
 
-		hr = m_pDXIGSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**) &pBackBuffer );
+		hr = m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**) &pBackBuffer );
 		if ( FAILED(hr) )
 		{
 			return false;
@@ -358,7 +358,7 @@ void CRendererD3D11::Render()
 
 
 	ID3D11Texture2D* pBackBuffer = nullptr;
-	m_pDXIGSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**) &pBackBuffer );
+	m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**) &pBackBuffer );
 
 	D3D11_TEXTURE2D_DESC tex2DDesc = {};
 	pBackBuffer->GetDesc(&tex2DDesc);
@@ -388,7 +388,7 @@ void CRendererD3D11::Render()
 
 
 	// present back buffer to screen
-	m_pDXIGSwapChain->Present(1, 0);
+	m_SwapChain->Present(1, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -410,7 +410,7 @@ void CRendererD3D11::Cleanup()
 	SAFE_RELEASE( m_pD3DDevice );
 	SAFE_RELEASE( m_pD3DDeviceContext );
 	SAFE_RELEASE( m_pInputLayout );
-	SAFE_RELEASE( m_pDXIGSwapChain );
+	SAFE_RELEASE( m_SwapChain );
 
 	SAFE_RELEASE( m_pVS );
 	SAFE_RELEASE( m_pPS );
@@ -445,19 +445,19 @@ void CRendererD3D11::ResizeViewport( unsigned int newWidth, unsigned int newHeig
 	m_vpWidth = newWidth;
 	m_vpHeight = newHeight;
 
-	if (!m_pDXIGSwapChain || !m_pD3DDevice || !m_pD3DDevice)
+	if (!m_SwapChain || !m_pD3DDevice || !m_pD3DDevice)
 		return;
 
 	SAFE_RELEASE( m_pRTV );
 
 	HRESULT hr = S_OK;
-	hr = m_pDXIGSwapChain->ResizeBuffers( 2, newWidth, newHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0 );
+	hr = m_SwapChain->ResizeBuffers( 2, newWidth, newHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0 );
 
 	// Create render target view
 	{
 		ID3D11Texture2D* pBackBuffer = nullptr;
 
-		hr = m_pDXIGSwapChain->GetBuffer( 0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer );
+		hr = m_SwapChain->GetBuffer( 0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer );
 		if (FAILED(hr) )
 		{
 			return;
@@ -487,7 +487,7 @@ bool CRendererD3D11::SaveTextureToFile( const std::wstring& path )
 
 	// Get backbuffer
 	ID3D11Texture2D* pBackBuffer = nullptr;
-	hr = m_pDXIGSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**) &pBackBuffer );
+	hr = m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**) &pBackBuffer );
 	if ( FAILED(hr) )
 	{
 		return false;

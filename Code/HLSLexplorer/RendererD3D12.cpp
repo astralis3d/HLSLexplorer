@@ -356,30 +356,11 @@ void CRendererD3D12::UpdatePixelShader( const void* dxbcData, unsigned int size,
 	ComPtr<ID3DBlob> blobVS;
 	if ( IsShaderProfile6(shaderProfile) )
 	{
-		// TODO: I'm pretty sure I can do better than... this.
-		FILE* f = fopen("FullscreenVS.hlsl", "r");
-		if (!f)
-		{
-			m_bDrawFullscreenTriangle = false;
-			return;
-		}
-
-		fseek(f, 0, SEEK_END);
-		int file_size = ftell(f);
-		fseek(f, 0, SEEK_SET);
-
-		char* data = new char[file_size];
-		memset(data, 0, sizeof(char) * file_size);
-		fread(data, 1, file_size, f);
-		fclose(f);
-		
 		std::vector<unsigned char> vs_60_blob;
-		nmCompile::CompileModern_Simple( data, L"QuadVS", L"vs_6_0", vs_60_blob);
-		
-		delete [] data;
+		nmCompile::CompileModern_Simple( szFullscreenVS, L"QuadVS", L"vs_6_0", vs_60_blob);
 
 		ThrowIfFailed( D3DCreateBlob(vs_60_blob.size(), &blobVS) );
-		memcpy(blobVS->GetBufferPointer(), vs_60_blob.data(), vs_60_blob.size() );		
+		memcpy(blobVS->GetBufferPointer(), vs_60_blob.data(), vs_60_blob.size() );
 	}
 	else
 	{
