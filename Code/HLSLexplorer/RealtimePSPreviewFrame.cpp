@@ -223,7 +223,7 @@ void CRealtimePSPreviewFrame::OnToolbarButtonSave( wxCommandEvent& evt )
 						wxFileSelectorDefaultWildcardStr,
 						wxFileSelectorDefaultWildcardStr
 					),
-					wxFD_SAVE | wxFD_CHANGE_DIR | wxFD_NO_FOLLOW,
+					wxFD_SAVE | wxFD_NO_FOLLOW | wxFD_OVERWRITE_PROMPT,
 					this).ToStdWstring();
 
 	if (file.empty())
