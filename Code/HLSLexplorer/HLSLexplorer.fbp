@@ -3684,7 +3684,7 @@
                                 <property name="gripper">0</property>
                                 <property name="hidden"></property>
                                 <property name="id">wxID_ANY</property>
-                                <property name="label">Copyright (c) Mateusz Nagórka 2017-2019</property>
+                                <property name="label">Copyright (c) Mateusz Nagórka 2017-2020</property>
                                 <property name="markup">0</property>
                                 <property name="max_size"></property>
                                 <property name="maximize_button">0</property>

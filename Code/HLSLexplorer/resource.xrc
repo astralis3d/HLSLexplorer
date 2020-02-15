@@ -703,7 +703,7 @@
             <flag>wxTOP|wxRIGHT|wxLEFT|wxALIGN_CENTER_HORIZONTAL</flag>
             <border>5</border>
             <object class="wxStaticText" name="m_staticCopyright">
-              <label>Copyright (c) Mateusz Nagórka 2017-2019</label>
+              <label>Copyright (c) Mateusz Nagórka 2017-2020</label>
               <wrap>-1</wrap>
             </object>
           </object>
