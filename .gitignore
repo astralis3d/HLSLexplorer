@@ -25,7 +25,8 @@ Bin/recent.dat
 x64/
 x86/
 bld/
-[Bb]in/*.exe
+[Bb]in/HLSLexplorer.Debug.exe
+[Bb]in/HLSLexplorer.Release.exe
 [Oo]bj/
 [Ll]og/
 
