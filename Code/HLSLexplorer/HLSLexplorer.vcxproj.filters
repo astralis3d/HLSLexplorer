@@ -57,18 +57,6 @@
     <ClCompile Include="RendererD3D11.cpp">
       <Filter>Application\gui\RealtimePixelShaderPreview\Renderer\D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="DDSTextureLoader.cpp">
-      <Filter>ThirdParty</Filter>
-    </ClCompile>
-    <ClCompile Include="DDSTextureLoader12.cpp">
-      <Filter>ThirdParty</Filter>
-    </ClCompile>
-    <ClCompile Include="WICTextureLoader.cpp">
-      <Filter>ThirdParty</Filter>
-    </ClCompile>
-    <ClCompile Include="WICTextureLoader12.cpp">
-      <Filter>ThirdParty</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>Application\gui\RealtimePixelShaderPreview\Renderer</Filter>
     </ClCompile>
@@ -77,6 +65,18 @@
     </ClCompile>
     <ClCompile Include="ScreenGrab\ScreenGrab12.cpp">
       <Filter>ThirdParty\ScreenGrab</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureLoaders\DDSTextureLoader.cpp">
+      <Filter>ThirdParty\TextureLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureLoaders\DDSTextureLoader12.cpp">
+      <Filter>ThirdParty\TextureLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureLoaders\WICTextureLoader.cpp">
+      <Filter>ThirdParty\TextureLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureLoaders\WICTextureLoader12.cpp">
+      <Filter>ThirdParty\TextureLoaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -153,18 +153,6 @@
     <ClInclude Include="RendererD3D11.h">
       <Filter>Application\gui\RealtimePixelShaderPreview\Renderer\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="DDSTextureLoader.h">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="DDSTextureLoader12.h">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="WICTextureLoader.h">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="WICTextureLoader12.h">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>Application\gui\RealtimePixelShaderPreview\Renderer</Filter>
     </ClInclude>
@@ -177,6 +165,21 @@
     </ClInclude>
     <ClInclude Include="ScreenGrab\ScreenGrab12.h">
       <Filter>ThirdParty\ScreenGrab</Filter>
+    </ClInclude>
+    <ClInclude Include="RendererDefines.h">
+      <Filter>Application\gui\RealtimePixelShaderPreview\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureLoaders\DDSTextureLoader.h">
+      <Filter>ThirdParty\TextureLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureLoaders\DDSTextureLoader12.h">
+      <Filter>ThirdParty\TextureLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureLoaders\WICTextureLoader.h">
+      <Filter>ThirdParty\TextureLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureLoaders\WICTextureLoader12.h">
+      <Filter>ThirdParty\TextureLoaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -239,6 +242,9 @@
     </Filter>
     <Filter Include="ThirdParty\ScreenGrab">
       <UniqueIdentifier>{b5f2c178-6446-4d9e-9020-1a34b00a673e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\TextureLoaders">
+      <UniqueIdentifier>{bcc932df-56ad-422d-baad-859e88569fdd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

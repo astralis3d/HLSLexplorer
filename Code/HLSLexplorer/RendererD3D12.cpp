@@ -6,8 +6,8 @@
 
 #include "CompilationDX.h"
 
-#include "DDSTextureLoader12.h"
-#include "WICTextureLoader12.h"
+#include "TextureLoaders/DDSTextureLoader12.h"
+#include "TextureLoaders/WICTextureLoader12.h"
 
 #include "ScreenGrab/ScreenGrab12.h"
 #include <wincodec.h>
@@ -88,7 +88,7 @@ CRendererD3D12::CRendererD3D12()
 //-----------------------------------------------------------------------------
 ERendererAPI CRendererD3D12::GetRendererAPI() const
 {
-	return RENDERER_API_D3D12;
+	return ERendererAPI::RENDERER_API_D3D12;
 }
 
 //-----------------------------------------------------------------------------

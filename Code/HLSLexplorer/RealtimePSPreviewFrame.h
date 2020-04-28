@@ -1,5 +1,7 @@
 #pragma once
 
+#include "RendererDefines.h"
+
 class IRenderer;
 class wxFileDirPickerEvent;
 
@@ -9,8 +11,7 @@ public:
 	CRealtimePSPreviewFrame(wxWindow* parent);
 	virtual ~CRealtimePSPreviewFrame();
 
-	void InitD3D11();
-	void InitD3D12();
+	void InitRenderer(ERendererAPI api);
 
 	void SetVisibilityPtr(bool* p);
 

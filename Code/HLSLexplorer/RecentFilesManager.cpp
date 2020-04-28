@@ -5,7 +5,7 @@
 CRecentFilesManager::CRecentFilesManager()
 	: m_nNumRecentFiles(0)
 {
-
+	m_recentFileList.reserve(MAX_RECENT_FILES);
 }
 
 //-----------------------------------------------------------------------------

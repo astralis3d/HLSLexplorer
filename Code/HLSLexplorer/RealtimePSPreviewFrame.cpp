@@ -85,39 +85,21 @@ CRealtimePSPreviewFrame::~CRealtimePSPreviewFrame()
 	m_pRenderer = nullptr;
 }
 
-void CRealtimePSPreviewFrame::InitD3D11()
+void CRealtimePSPreviewFrame::InitRenderer( ERendererAPI api )
 {
 	wxSplitterWindow* pSplitter = XRCCTRL( *this, "Splitter", wxSplitterWindow );
 	wxPanel* renderingPanel = (wxPanel*)pSplitter->GetWindow1();
 
-	m_pRenderer = new CRendererD3D11();
+	if (api == ERendererAPI::RENDERER_API_D3D11)
+		m_pRenderer = new CRendererD3D11();
+	else if (api == ERendererAPI::RENDERER_API_D3D12)
+		m_pRenderer = new CRendererD3D12();
+
 	if (!m_pRenderer)
-		return;
-
-	SRendererCreateParams createParams;
-	createParams.hwnd = renderingPanel->GetHWND();
-	createParams.width = renderingPanel->GetClientSize().GetWidth();
-	createParams.height = renderingPanel->GetClientSize().GetHeight();
-
-	const bool bSuccess = m_pRenderer->Initialize( createParams );
-	if ( bSuccess )
 	{
-		UpdateWindowTitle();
-
-		// render the first time
-		m_pRenderer->Update();
-		m_pRenderer->Render();
-	}
-}
-
-void CRealtimePSPreviewFrame::InitD3D12()
-{
-	wxSplitterWindow* pSplitter = XRCCTRL( *this, "Splitter", wxSplitterWindow );
-	wxPanel* renderingPanel = (wxPanel*)pSplitter->GetWindow1();
-
-	m_pRenderer = new CRendererD3D12();
-	if (!m_pRenderer)
+		// #TODO: Logging
 		return;
+	}
 
 	SRendererCreateParams createParams;
 	createParams.hwnd = renderingPanel->GetHWND();
@@ -178,9 +160,9 @@ void CRealtimePSPreviewFrame::OnIdleEvent( wxIdleEvent& evt )
 		const float col_x = col.x / (float) 255.0f;
 		const float col_y = col.y / (float) 255.0f;
 		const float col_z = col.z / (float) 255.0f;
-		const float col_a = col.w / (float) 255.0f;
+		const float col_w = col.w / (float) 255.0f;
 
-		SetStatusText( wxString::Format("Right click: [%d %d] %.5f, %.5f, %.5f, %.5f", x, y, col_x, col_y, col_z, col_a) );
+		SetStatusText( wxString::Format("Right click: [%d %d] %.5f, %.5f, %.5f, %.5f", x, y, col_x, col_y, col_z, col_w) );
 	}
 }
 
@@ -196,7 +178,7 @@ void CRealtimePSPreviewFrame::OnCloseEvent( wxCloseEvent& WXUNUSED(evt) )
 void CRealtimePSPreviewFrame::UpdateWindowTitle()
 {
 	SetTitle( wxString::Format("Real-Time Pixel Shader Preview (%s) - %dx%d",
-								GetRenderer()->GetRendererAPI() == RENDERER_API_D3D11 ? "D3D11" : "D3D12",
+								GetRenderer()->GetRendererAPI() == ERendererAPI::RENDERER_API_D3D11 ? "D3D11" : "D3D12",
 								m_renderingPanel->GetClientSize().x,
 								m_renderingPanel->GetClientSize().y) );
 }
@@ -258,13 +240,33 @@ void CRealtimePSPreviewFrame::UpdateUIForTexture( const wchar_t* path, unsigned 
 		const ETextureType type = m_pRenderer->GetTextureType( index );
 		switch (type)
 		{
-			case ETextureType::ETexType_1D:			texType = "1D";			break;
-			case ETextureType::ETexType_1DArray:	texType = "1DArr";		break;
-			case ETextureType::ETexType_2D:			texType = "2D";			break;
-			case ETextureType::ETexType_2DArray:	texType = "2DArr";		break;
-			case ETextureType::ETexType_3D:			texType = "3D";			break;
-			case ETextureType::ETexType_Cube:		texType = "Cube";		break;
-			case ETextureType::ETexType_CubeArray:	texType = "CubeArr";	break;
+			case ETextureType::ETexType_1D:
+				texType = "1D";
+				break;
+
+			case ETextureType::ETexType_1DArray:
+				texType = "1DArr";
+				break;
+
+			case ETextureType::ETexType_2D:	
+				texType = "2D";
+				break;
+
+			case ETextureType::ETexType_2DArray:
+				texType = "2DArr";
+				break;
+
+			case ETextureType::ETexType_3D:
+				texType = "3D";
+				break;
+
+			case ETextureType::ETexType_Cube:
+				texType = "Cube";
+				break;
+
+			case ETextureType::ETexType_CubeArray:
+				texType = "CubeArr";
+				break;
 		}
 
 		pStatic->SetLabel( wxString::Format( "texture%d (%s, %s)", 

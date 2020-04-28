@@ -5,8 +5,8 @@
 #include <algorithm>
 #include "DummyShaders.h"
 
-#include "DDSTextureLoader.h"
-#include "WICTextureLoader.h"
+#include "TextureLoaders/DDSTextureLoader.h"
+#include "TextureLoaders/WICTextureLoader.h"
 
 #include "ScreenGrab/ScreenGrab.h"
 #include <wincodec.h>
@@ -104,7 +104,7 @@ CRendererD3D11::CRendererD3D11()
 //-----------------------------------------------------------------------------
 ERendererAPI CRendererD3D11::GetRendererAPI() const
 {
-	return RENDERER_API_D3D11;
+	return ERendererAPI::RENDERER_API_D3D11;
 }
 
 bool CRendererD3D11::LoadTextureFromFile( const WCHAR* path, int index )

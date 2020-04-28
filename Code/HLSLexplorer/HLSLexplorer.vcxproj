@@ -174,14 +174,6 @@ wxrc -c -o "../resource.cpp" ../resource.xrc</Command>
     <ClCompile Include="CompilationDXIL.cpp" />
     <ClCompile Include="CompilerModernDXLoader.cpp" />
     <ClCompile Include="ControlsPanel.cpp" />
-    <ClCompile Include="DDSTextureLoader.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="DDSTextureLoader12.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="DisassemblerGCNISA.cpp" />
     <ClCompile Include="RendererD3D11.cpp" />
     <ClCompile Include="RendererD3D12.cpp" />
@@ -212,11 +204,19 @@ wxrc -c -o "../resource.cpp" ../resource.xrc</Command>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="WICTextureLoader.cpp">
+    <ClCompile Include="TextureLoaders\DDSTextureLoader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="WICTextureLoader12.cpp">
+    <ClCompile Include="TextureLoaders\DDSTextureLoader12.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TextureLoaders\WICTextureLoader.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TextureLoaders\WICTextureLoader12.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -230,8 +230,6 @@ wxrc -c -o "../resource.cpp" ../resource.xrc</Command>
     <ClInclude Include="CompilerModernDXLoader.h" />
     <ClInclude Include="ControlsPanel.h" />
     <ClInclude Include="d3dx12.h" />
-    <ClInclude Include="DDSTextureLoader.h" />
-    <ClInclude Include="DDSTextureLoader12.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="DisassemblerGCNISA.h" />
     <ClInclude Include="RendererD3D11.h" />
@@ -251,11 +249,14 @@ wxrc -c -o "../resource.cpp" ../resource.xrc</Command>
     <ClInclude Include="RealtimePSPreviewFrame.h" />
     <ClInclude Include="RecentFilesManager.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RendererDefines.h" />
     <ClInclude Include="resource1.h" />
     <ClInclude Include="ScreenGrab\ScreenGrab.h" />
     <ClInclude Include="ScreenGrab\ScreenGrab12.h" />
-    <ClInclude Include="WICTextureLoader.h" />
-    <ClInclude Include="WICTextureLoader12.h" />
+    <ClInclude Include="TextureLoaders\DDSTextureLoader.h" />
+    <ClInclude Include="TextureLoaders\DDSTextureLoader12.h" />
+    <ClInclude Include="TextureLoaders\WICTextureLoader.h" />
+    <ClInclude Include="TextureLoaders\WICTextureLoader12.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.xrc" />

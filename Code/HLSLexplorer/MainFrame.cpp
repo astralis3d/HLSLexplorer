@@ -277,7 +277,7 @@ void CMyFrame::CompileAndUpdatePreview()
 				{
 					const ERendererAPI rendererAPI = pRenderer->GetRendererAPI();
 
-					if (rendererAPI == RENDERER_API_D3D11)
+					if (rendererAPI == ERendererAPI::RENDERER_API_D3D11)
 						pRenderer->UpdatePixelShader( (const void*)compiledDXBC.data(), compiledDXBC.size(), m_D3DOptions.shaderProfile );
 				}
 			}		
@@ -308,7 +308,7 @@ void CMyFrame::CompileAndUpdatePreview()
 		{
 			const ERendererAPI rendererAPI = pRenderer->GetRendererAPI();
 
-			if (m_bPSPreviewVisible && m_D3DOptions.shaderType == ShaderType_PS && rendererAPI == RENDERER_API_D3D12)
+			if (m_bPSPreviewVisible && m_D3DOptions.shaderType == ShaderType_PS && rendererAPI == ERendererAPI::RENDERER_API_D3D12)
 			{
 				if (isShaderProfile6)
 					pRenderer->UpdatePixelShader( (const void*) DXIL_bytecode.data(), DXIL_bytecode.size(), m_D3DOptions.shaderProfile );
@@ -468,7 +468,7 @@ void CMyFrame::OnMenuFileShowPSPreviewD3D11( wxCommandEvent& evt )
 	m_pPSPreviewFrame = new CRealtimePSPreviewFrame(this);
 	m_pPSPreviewFrame->SetVisibilityPtr( &m_bPSPreviewVisible );
 	m_pPSPreviewFrame->Show( true );
-	m_pPSPreviewFrame->InitD3D11();
+	m_pPSPreviewFrame->InitRenderer(ERendererAPI::RENDERER_API_D3D11);
 	m_pPSPreviewFrame->SetFocus();
 	m_bPSPreviewVisible = true;
 
@@ -490,7 +490,7 @@ void CMyFrame::OnMenuFileShowPSPreviewD3D12( wxCommandEvent& evt )
 	m_pPSPreviewFrame = new CRealtimePSPreviewFrame(this);
 	m_pPSPreviewFrame->SetVisibilityPtr( &m_bPSPreviewVisible );
 	m_pPSPreviewFrame->Show( true );
-	m_pPSPreviewFrame->InitD3D12();
+	m_pPSPreviewFrame->InitRenderer(ERendererAPI::RENDERER_API_D3D12);
 	m_pPSPreviewFrame->SetFocus();
 	m_bPSPreviewVisible = true;
 
