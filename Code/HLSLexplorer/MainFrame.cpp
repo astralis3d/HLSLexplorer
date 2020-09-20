@@ -56,6 +56,13 @@ wxBEGIN_EVENT_TABLE( CMyFrame, wxFrame )
 	EVT_SIZE( CMyFrame::OnSize )
 wxEND_EVENT_TABLE()
 
+CMyFrame* g_mainFramePointer = nullptr;
+
+static void onShaderTypeCallback(bool bEnabled)
+{
+	if (g_mainFramePointer)
+		g_mainFramePointer->OnChangeShaderTypeEvent(bEnabled);
+}
 
 CMyFrame::CMyFrame( const wxString& str )
 	: wxFrame( nullptr, wxID_ANY, str, wxDefaultPosition, wxSize(1280, 800) )
@@ -65,6 +72,8 @@ CMyFrame::CMyFrame( const wxString& str )
 
 	m_recentFilesManager.LoadFromFile( GetRecentFilesPath() );
 	UpdateRecentFiles();
+
+	g_mainFramePointer = this;
 }
 
 //------------------------------------------------------------------------
@@ -110,7 +119,7 @@ void CMyFrame::InitializeUI()
 	pSizerEditorsParent->Add( m_pSplitter, 1, wxEXPAND | wxALL, 0 );
 
 	// Controls panel sizer.
-	m_pControlsPanel = new CControlsPanel( m_mainPanel, &m_D3DOptions );
+	m_pControlsPanel = new CControlsPanel( m_mainPanel, &m_D3DOptions, onShaderTypeCallback );
 	wxBoxSizer* pSizerControls = new wxBoxSizer( wxVERTICAL );
 	pSizerControls->Add( m_pControlsPanel, 0, wxEXPAND | wxALL );
 
@@ -134,8 +143,8 @@ void CMyFrame::InitializeMenu()
 	fileMenu->AppendSeparator();
 	fileMenu->Append( ID_COMPILE, "Compile\tF5" );
 	fileMenu->AppendCheckItem( ID_TOGGLEPANELVISIBILITY, "Show panel\tF6" );
-	fileMenu->Append( ID_REALTIME_PIXEL_SHADER_PREVIEW_D3D11, "Real-time PS preview (D3D11)...\tF7" );
-	fileMenu->Append( ID_REALTIME_PIXEL_SHADER_PREVIEW_D3D12, "Real-time PS preview (D3D12)...\tF8" );
+	fileMenu->Append( ID_REALTIME_PIXEL_SHADER_PREVIEW_D3D11, "Real-time PS preview (D3D11)...\tF7", wxEmptyString )->Enable(false);
+	fileMenu->Append( ID_REALTIME_PIXEL_SHADER_PREVIEW_D3D12, "Real-time PS preview (D3D12)...\tF8", wxEmptyString )->Enable(false);
 	fileMenu->Check( ID_TOGGLEPANELVISIBILITY, true );
 	fileMenu->AppendSeparator();
 
@@ -876,4 +885,11 @@ void CMyFrame::OnMouseRightWindowGCNISAActive( wxMouseEvent& evt )
 	m_pEditSelected = m_pEditASM_GCNISA;
 
 	evt.Skip();
+}
+
+//-----------------------------------------------------------------------------
+void CMyFrame::OnChangeShaderTypeEvent( bool bEnabled )
+{
+	GetMenuBar()->FindItem(ID_REALTIME_PIXEL_SHADER_PREVIEW_D3D11)->Enable(bEnabled);
+	GetMenuBar()->FindItem(ID_REALTIME_PIXEL_SHADER_PREVIEW_D3D12)->Enable(bEnabled);
 }

@@ -8,10 +8,12 @@
 #include "Defines.h"
 #include "DisassemblerGCNISA.h"
 
+typedef void(*lpfnOnEvent)(bool);
+
 class CControlsPanel : public wxPanel
 {
 public:
-	CControlsPanel(wxWindow* parent, SD3DOptions* D3DOptions);
+	CControlsPanel(wxWindow* parent, SD3DOptions* D3DOptions, lpfnOnEvent eventFunction);
 
 	E_ASIC_TYPE GetSelectedAsicType() const;
 
@@ -81,6 +83,9 @@ private:
 
 	E_ASIC_TYPE m_selectedAsic;
 
+	lpfnOnEvent m_lpfnOnEvent;
+
+private:
 	wxDECLARE_EVENT_TABLE();
 };
 

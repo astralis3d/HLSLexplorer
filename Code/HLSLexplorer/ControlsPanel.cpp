@@ -86,8 +86,9 @@ namespace
 }
 
 //------------------------------------------------------------------------
-CControlsPanel::CControlsPanel( wxWindow* parent, SD3DOptions* D3DOptions )
+CControlsPanel::CControlsPanel( wxWindow* parent, SD3DOptions* D3DOptions, lpfnOnEvent eventFunction )
 	: m_selectedAsic(E_ASIC_TYPE::AT_TAHITI)
+	, m_lpfnOnEvent(eventFunction)
 {
 	if (D3DOptions)
 	{
@@ -145,7 +146,12 @@ void CControlsPanel::OnChangeAsicChoice( wxCommandEvent& evt )
 //------------------------------------------------------------------------
 void CControlsPanel::OnShaderTarget_Type( wxCommandEvent& evt )
 {
-	m_pOptions->shaderType = (EShaderType)evt.GetSelection();
+	const EShaderType shaderType = (EShaderType) evt.GetSelection();
+	m_pOptions->shaderType = shaderType;
+
+	// Trigger an event function to update status of Pixel Shader Preview (available or not)
+	const bool enablePixelShaderPreview = (shaderType == ShaderType_PS);
+	m_lpfnOnEvent(enablePixelShaderPreview);
 }
 
 //------------------------------------------------------------------------

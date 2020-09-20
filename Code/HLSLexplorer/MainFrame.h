@@ -100,6 +100,8 @@ public:
 	void OnMouseRightWindowDXILActive( wxMouseEvent& evt );
 	void OnMouseRightWindowGCNISAActive( wxMouseEvent& evt );
 
+	void OnChangeShaderTypeEvent(bool bEnabled);
+
 private:
 	void InitializeUI();
 	void InitializeMenu();
