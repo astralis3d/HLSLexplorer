@@ -28,24 +28,12 @@ bool CRecentFilesManager::Empty() const
 }
 
 //-----------------------------------------------------------------------------
-bool CRecentFilesManager::Contains( const std::string& name ) const
-{
-	for (const auto& x : m_recentFileList )
-	{
-		if (name == x)
-			return true;
-	}
-
-	return false;
-}
-
-//-----------------------------------------------------------------------------
 void CRecentFilesManager::AddRecent( const std::string& recentFile )
 {
-	if ( Contains(recentFile) )
+	auto it = std::find(std::begin(m_recentFileList), std::end(m_recentFileList), recentFile);
+	if ( it != std::end(m_recentFileList) )
 	{
 		// if it's already within list, remove it from current place...
-		auto it = std::find( std::begin(m_recentFileList), std::end(m_recentFileList), recentFile );
 		m_recentFileList.erase(it);
 
 		// ...and move it to the top

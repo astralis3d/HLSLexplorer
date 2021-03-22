@@ -16,7 +16,6 @@ public:
 	unsigned int Count() const;
 	
 	bool Empty() const;
-	bool Contains(const std::string& name) const;
 
 	void AddRecent(const std::string& recentFile);
 
